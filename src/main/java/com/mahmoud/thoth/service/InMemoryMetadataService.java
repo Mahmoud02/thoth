@@ -2,7 +2,7 @@ package com.mahmoud.thoth.service;
 
 import org.springframework.stereotype.Service;
 
-import com.mahmoud.thoth.shared.BucketAlreadyExistsException;
+import com.mahmoud.thoth.shared.exception.BucketAlreadyExistsException;
 
 import java.util.HashMap;
 import java.util.Map;
