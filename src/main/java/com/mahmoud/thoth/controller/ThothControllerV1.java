@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,5 +47,34 @@ public class ThothControllerV1 {
         } catch (IOException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+    @GetMapping("/buckets/{bucketName}/metadata")
+    public ResponseEntity<Map<String, Long>> getBucketMetadata(@PathVariable String bucketName) {
+        return ResponseEntity.ok(metadataService.getBucketMetadata(bucketName));
+    }
+
+    @GetMapping("/buckets/{bucketName}/size")
+    public ResponseEntity<Long> getBucketSize(@PathVariable String bucketName) {
+        return ResponseEntity.ok(metadataService.getBucketSize(bucketName));
+    }
+
+    @GetMapping("/buckets/{bucketName}/{objectName}/metadata")
+    public ResponseEntity<Map<String, Object>> getObjectMetadata(@PathVariable String bucketName, @PathVariable String objectName) {
+        Map<String, Object> objectMetadata = metadataService.getObjectMetadata(bucketName, objectName);
+        if (objectMetadata != null) {
+            return ResponseEntity.ok(objectMetadata);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/buckets")
+    public ResponseEntity<Map<String, Map<String, Long>>> listBuckets(){
+        return ResponseEntity.ok(metadataService.getBuckets());
+    }
+
+    @GetMapping("/buckets/{bucketName}")
+    public ResponseEntity<Map<String, Long>> listObjects(@PathVariable String bucketName){
+        return ResponseEntity.ok(metadataService.getBucketMetadata(bucketName));
     }
 }
