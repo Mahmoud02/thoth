@@ -2,7 +2,7 @@ package com.mahmoud.thoth.controller;
 
 import com.mahmoud.thoth.service.MetadataService;
 import com.mahmoud.thoth.service.StorageService;
-
+import com.mahmoud.thoth.query.*;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,8 @@ public class ThothControllerV1 {
 
     private final StorageService storageService;
     private final MetadataService metadataService;
-
+    private final QueryParser queryParser;
+    private final QueryHandler queryHandler;
 
     @PostMapping("/buckets/{bucketName}")
     public ResponseEntity<String> createBucket(@PathVariable String bucketName) {
@@ -76,5 +77,16 @@ public class ThothControllerV1 {
     @GetMapping("/buckets/{bucketName}")
     public ResponseEntity<Map<String, Long>> listObjects(@PathVariable String bucketName){
         return ResponseEntity.ok(metadataService.getBucketMetadata(bucketName));
+    }
+
+    @PostMapping("/query")
+    public ResponseEntity<Object> executeQuery(@RequestParam("query") String query, @RequestParam(value = "file", required = false) MultipartFile file) {
+        try {
+            Map<String, Object> queryMap = queryParser.parseQuery(query);
+            Object result = queryHandler.handleQuery(queryMap, file);
+            return ResponseEntity.ok(result);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Query execution failed");
+        }
     }
 }
