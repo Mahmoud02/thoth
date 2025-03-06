@@ -29,7 +29,7 @@ public class ThothControllerV1 {
         return ResponseEntity.status(HttpStatus.CREATED).body("Bucket created");
     }
 
-    @PutMapping("/buckets/{bucketName}/{objectName}")
+    @PutMapping(value = "/buckets/{bucketName}/{objectName}", consumes = "multipart/form-data")
     public ResponseEntity<String> uploadObject(@PathVariable String bucketName, @PathVariable String objectName, @RequestParam("file") MultipartFile file) {
         try {
             storageService.uploadObject(bucketName, objectName, file.getInputStream());
