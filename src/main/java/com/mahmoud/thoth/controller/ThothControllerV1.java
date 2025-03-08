@@ -6,6 +6,7 @@ import com.mahmoud.thoth.dto.BucketDTO;
 import com.mahmoud.thoth.mapper.BucketMapper;
 import com.mahmoud.thoth.query.*;
 import lombok.RequiredArgsConstructor;
+import lombok.var;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +34,7 @@ public class ThothControllerV1 {
         this.metadataService.createBucket(bucketName);
         return ResponseEntity.status(HttpStatus.CREATED).body("Bucket created");
     }
-
+    
     @PutMapping(value = "/buckets/{bucketName}/{objectName}", consumes = "multipart/form-data")
     public ResponseEntity<String> uploadObject(@PathVariable String bucketName, @PathVariable String objectName, @RequestParam("file") MultipartFile file) {
         try {
@@ -55,8 +56,8 @@ public class ThothControllerV1 {
         }
     }
     @GetMapping("/buckets/{bucketName}/metadata")
-    public ResponseEntity<Map<String, Long>> getBucketMetadata(@PathVariable String bucketName) {
-        return ResponseEntity.ok(metadataService.getBucketMetadata(bucketName));
+    public ResponseEntity<BucketDTO> getBucketMetadata(@PathVariable String bucketName) {
+        return ResponseEntity.ok(bucketMapper.toBucketDTO(bucketName,metadataService.getBucketMetadata(bucketName)));
     }
 
     @GetMapping("/buckets/{bucketName}/size")
@@ -76,14 +77,9 @@ public class ThothControllerV1 {
 
     @GetMapping("/buckets")
     public ResponseEntity<List<BucketDTO>> listBuckets() {
-        Map<String, Map<String, Long>> buckets = metadataService.getBuckets();
+        var buckets = metadataService.getBuckets();
         List<String> bucketNames = new ArrayList<>(buckets.keySet());
         return ResponseEntity.ok(bucketMapper.toBucketDTOList(bucketNames));
-    }
-
-    @GetMapping("/buckets/{bucketName}")
-    public ResponseEntity<Map<String, Long>> listObjects(@PathVariable String bucketName){
-        return ResponseEntity.ok(metadataService.getBucketMetadata(bucketName));
     }
 
     @PostMapping("/query")
