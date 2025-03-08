@@ -2,6 +2,8 @@ package com.mahmoud.thoth.controller;
 
 import com.mahmoud.thoth.service.MetadataService;
 import com.mahmoud.thoth.service.StorageService;
+import com.mahmoud.thoth.dto.BucketDTO;
+import com.mahmoud.thoth.mapper.BucketMapper;
 import com.mahmoud.thoth.query.*;
 import lombok.RequiredArgsConstructor;
 
@@ -12,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +26,7 @@ public class ThothControllerV1 {
     private final MetadataService metadataService;
     private final QueryParser queryParser;
     private final QueryHandler queryHandler;
+    private final BucketMapper bucketMapper;
 
     @PostMapping("/buckets/{bucketName}")
     public ResponseEntity<String> createBucket(@PathVariable String bucketName) {
@@ -70,8 +75,10 @@ public class ThothControllerV1 {
     }
 
     @GetMapping("/buckets")
-    public ResponseEntity<Map<String, Map<String, Long>>> listBuckets(){
-        return ResponseEntity.ok(metadataService.getBuckets());
+    public ResponseEntity<List<BucketDTO>> listBuckets() {
+        Map<String, Map<String, Long>> buckets = metadataService.getBuckets();
+        List<String> bucketNames = new ArrayList<>(buckets.keySet());
+        return ResponseEntity.ok(bucketMapper.toBucketDTOList(bucketNames));
     }
 
     @GetMapping("/buckets/{bucketName}")
