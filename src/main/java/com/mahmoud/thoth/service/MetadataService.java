@@ -13,4 +13,5 @@ public interface MetadataService {
     Map<String, Object> getObjectMetadata(String bucketName, String objectName);
     Map<String, BucketMetadata> getBuckets();
     void updateBucket(String bucketName, UpdateBucketDTO updateBucketDTO);
+    void deleteBucket(String bucketName);
 }

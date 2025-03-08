@@ -68,6 +68,7 @@ public class InMemoryMetadataService implements MetadataService {
     public Map<String, BucketMetadata> getBuckets() {
         return bucketsMetadata;
     }
+
     @Override
     public void updateBucket(String bucketName, UpdateBucketDTO updateBucketDTO) {
         BucketMetadata bucketMetadata = bucketsMetadata.remove(bucketName);
@@ -78,9 +79,11 @@ public class InMemoryMetadataService implements MetadataService {
                 objectsMetadata.put(updateBucketDTO.getName(), objects);
             }
         }
-        Map<String, Long> objectMetadata = objectsMetadata.remove(bucketName);
-        if (objectMetadata != null) {
-            objectsMetadata.put(updateBucketDTO.getName(), objectMetadata);
-        }
+    }
+
+    @Override
+    public void deleteBucket(String bucketName) {
+        bucketsMetadata.remove(bucketName);
+        objectsMetadata.remove(bucketName);
     }
 }

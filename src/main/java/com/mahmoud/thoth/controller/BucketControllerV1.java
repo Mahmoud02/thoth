@@ -29,8 +29,14 @@ public class BucketControllerV1 {
     @PutMapping("/{bucketName}")
     public ResponseEntity<BucketDTO> updateBucket(@PathVariable String bucketName, @RequestBody UpdateBucketDTO updateBucketDTO) {
         this.metadataService.updateBucket(bucketName, updateBucketDTO);
-        BucketDTO updatedBucketDTO = bucketMapper.toBucketDTO(updateBucketDTO.getName(), metadataService.getBucketMetadata(updateBucketDTO.getName()));
+        BucketDTO updatedBucketDTO = bucketMapper.toBucketDTO(updateBucketDTO.getName(), metadataService.getBucketMetadata(updateBucketDTO.getNewName()));
         return ResponseEntity.ok(updatedBucketDTO);
+    }
+
+    @DeleteMapping("/{bucketName}")
+    public ResponseEntity<Void> deleteBucket(@PathVariable String bucketName) {
+        this.metadataService.deleteBucket(bucketName);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{bucketName}")
