@@ -12,38 +12,38 @@ import java.util.Map;
 @Service
 public class InMemoryMetadataService implements MetadataService {
 
-    private final Map<String, BucketMetadata> bucketMetadata = new HashMap<>();
-    private final Map<String, Map<String, Long>> objectMetadata = new HashMap<>();
+    private final Map<String, BucketMetadata> bucketsMetadata = new HashMap<>();
+    private final Map<String, Map<String, Long>> objectsMetadata = new HashMap<>();
 
     @Override
     public void createBucket(String bucketName) {
-        if (bucketMetadata.containsKey(bucketName)) {
+        if (bucketsMetadata.containsKey(bucketName)) {
             throw new BucketAlreadyExistsException("Bucket already exists: " + bucketName);
         }
-        bucketMetadata.put(bucketName, new BucketMetadata(LocalDateTime.now(), LocalDateTime.now()));
-        objectMetadata.put(bucketName, new HashMap<>());
+        bucketsMetadata.put(bucketName, new BucketMetadata(LocalDateTime.now(), LocalDateTime.now()));
+        objectsMetadata.put(bucketName, new HashMap<>());
     }
 
     @Override
     public void addObjectMetadata(String bucketName, String objectName, long size) {
-        if (bucketMetadata.containsKey(bucketName)) {
-            objectMetadata.get(bucketName).put(objectName, size);
-            bucketMetadata.get(bucketName).setLastUpdatedDate(LocalDateTime.now());
+        if (bucketsMetadata.containsKey(bucketName)) {
+            objectsMetadata.get(bucketName).put(objectName, size);
+            bucketsMetadata.get(bucketName).setLastUpdatedDate(LocalDateTime.now());
         }
     }
 
     @Override
     public BucketMetadata getBucketMetadata(String bucketName) {
-        return bucketMetadata.get(bucketName);
+        return bucketsMetadata.get(bucketName);
     }
 
     @Override
     public long getBucketSize(String bucketName) {
-        if (!objectMetadata.containsKey(bucketName)) {
+        if (!objectsMetadata.containsKey(bucketName)) {
             return 0;
         }
         long totalSize = 0;
-        for (long size : objectMetadata.get(bucketName).values()) {
+        for (long size : objectsMetadata.get(bucketName).values()) {
             totalSize += size;
         }
         return totalSize;
@@ -52,12 +52,12 @@ public class InMemoryMetadataService implements MetadataService {
     @Override
     public Map<String, Object> getObjectMetadata(String bucketName, String objectName) {
         Map<String, Object> objectMetadataMap = new HashMap<>();
-        if (objectMetadata.containsKey(bucketName) && objectMetadata.get(bucketName).containsKey(objectName)) {
-            objectMetadataMap.put("size", objectMetadata.get(bucketName).get(objectName));
+        if (objectsMetadata.containsKey(bucketName) && objectsMetadata.get(bucketName).containsKey(objectName)) {
+            objectMetadataMap.put("size", objectsMetadata.get(bucketName).get(objectName));
             objectMetadataMap.put("bucket", bucketName);
             objectMetadataMap.put("object", objectName);
-            objectMetadataMap.put("creationDate", bucketMetadata.get(bucketName).getCreationDate());
-            objectMetadataMap.put("lastUpdatedDate", bucketMetadata.get(bucketName).getLastUpdatedDate());
+            objectMetadataMap.put("creationDate", bucketsMetadata.get(bucketName).getCreationDate());
+            objectMetadataMap.put("lastUpdatedDate", bucketsMetadata.get(bucketName).getLastUpdatedDate());
             return objectMetadataMap;
         }
         return null;
@@ -65,6 +65,6 @@ public class InMemoryMetadataService implements MetadataService {
 
     @Override
     public Map<String, BucketMetadata> getBuckets() {
-        return bucketMetadata;
+        return bucketsMetadata;
     }
 }

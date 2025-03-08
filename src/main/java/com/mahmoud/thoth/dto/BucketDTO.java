@@ -2,6 +2,7 @@ package com.mahmoud.thoth.dto;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -12,8 +13,8 @@ public class BucketDTO {
     private String name;
     private long totalSize;
     private int totalFiles;
-    private String createdAt;
-    private String updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private List<String> files;
 }
     
