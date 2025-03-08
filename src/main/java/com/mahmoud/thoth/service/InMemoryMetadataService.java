@@ -1,5 +1,6 @@
 package com.mahmoud.thoth.service;
 
+import com.mahmoud.thoth.dto.UpdateBucketDTO;
 import com.mahmoud.thoth.model.BucketMetadata;
 import com.mahmoud.thoth.shared.exception.BucketAlreadyExistsException;
 
@@ -66,5 +67,20 @@ public class InMemoryMetadataService implements MetadataService {
     @Override
     public Map<String, BucketMetadata> getBuckets() {
         return bucketsMetadata;
+    }
+    @Override
+    public void updateBucket(String bucketName, UpdateBucketDTO updateBucketDTO) {
+        BucketMetadata bucketMetadata = bucketsMetadata.remove(bucketName);
+        if (bucketMetadata != null) {
+            bucketsMetadata.put(updateBucketDTO.getName(), bucketMetadata);
+            Map<String, Long> objects = objectsMetadata.remove(bucketName);
+            if (objects != null) {
+                objectsMetadata.put(updateBucketDTO.getName(), objects);
+            }
+        }
+        Map<String, Long> objectMetadata = objectsMetadata.remove(bucketName);
+        if (objectMetadata != null) {
+            objectsMetadata.put(updateBucketDTO.getName(), objectMetadata);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.mahmoud.thoth.controller;
 
 import com.mahmoud.thoth.dto.BucketDTO;
+import com.mahmoud.thoth.dto.UpdateBucketDTO;
 import com.mahmoud.thoth.mapper.BucketMapper;
 import com.mahmoud.thoth.service.MetadataService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,13 @@ public class BucketControllerV1 {
         this.metadataService.createBucket(bucketName);
         BucketDTO bucketDTO = bucketMapper.toBucketDTO(bucketName, metadataService.getBucketMetadata(bucketName));
         return ResponseEntity.status(HttpStatus.CREATED).body(bucketDTO);
+    }
+
+    @PutMapping("/{bucketName}")
+    public ResponseEntity<BucketDTO> updateBucket(@PathVariable String bucketName, @RequestBody UpdateBucketDTO updateBucketDTO) {
+        this.metadataService.updateBucket(bucketName, updateBucketDTO);
+        BucketDTO updatedBucketDTO = bucketMapper.toBucketDTO(updateBucketDTO.getName(), metadataService.getBucketMetadata(updateBucketDTO.getName()));
+        return ResponseEntity.ok(updatedBucketDTO);
     }
 
     @GetMapping("/{bucketName}")
