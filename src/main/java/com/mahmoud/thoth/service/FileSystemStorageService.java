@@ -49,4 +49,10 @@ public class FileSystemStorageService implements StorageService {
         Path objectPath = Paths.get(storagePath, bucketName, objectName);
         return Files.readAllBytes(objectPath);
     }
+
+    @Override
+    public void deleteObject(String bucketName, String objectName) throws IOException {
+        Path objectPath = Paths.get(storagePath, bucketName, objectName);
+        Files.deleteIfExists(objectPath);
+    }
 }

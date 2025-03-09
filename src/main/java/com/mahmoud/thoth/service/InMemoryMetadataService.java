@@ -17,15 +17,10 @@ public class InMemoryMetadataService implements MetadataService {
     }
 
     @Override
-    public Map<String, Object> getObjectMetadata(String bucketName, String objectName) {
-        Map<String, Object> objectMetadataMap = new HashMap<>();
-        if (objectsMetadata.containsKey(bucketName) && objectsMetadata.get(bucketName).containsKey(objectName)) {
-            objectMetadataMap.put("size", objectsMetadata.get(bucketName).get(objectName));
-            objectMetadataMap.put("bucket", bucketName);
-            objectMetadataMap.put("object", objectName);
-            return objectMetadataMap;
+    public void removeObjectMetadata(String bucketName, String objectName) {
+        if (objectsMetadata.containsKey(bucketName)) {
+            objectsMetadata.get(bucketName).remove(objectName);
         }
-        return null;
     }
 
     @Override

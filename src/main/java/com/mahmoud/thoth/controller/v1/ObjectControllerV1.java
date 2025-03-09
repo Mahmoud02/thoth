@@ -1,5 +1,6 @@
 package com.mahmoud.thoth.controller.v1;
 
+import com.mahmoud.thoth.dto.UploadObjectRequest;
 import com.mahmoud.thoth.service.MetadataService;
 import com.mahmoud.thoth.service.StorageService;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.validation.Valid;
 import java.io.IOException;
 import java.util.Map;
 
@@ -19,9 +21,11 @@ public class ObjectControllerV1 {
     private final StorageService storageService;
     private final MetadataService metadataService;
 
-    @PutMapping(value = "/{bucketName}/{objectName}", consumes = "multipart/form-data")
-    public ResponseEntity<String> uploadObject(@PathVariable String bucketName, @PathVariable String objectName, @RequestParam("file") MultipartFile file) {
+    @PostMapping(value = "/{bucketName}/objects", consumes = "multipart/form-data")
+    public ResponseEntity<String> uploadObject(@PathVariable String bucketName, @Valid @ModelAttribute UploadObjectRequest uploadObjectRequest) {
         try {
+            String objectName = uploadObjectRequest.getObjectName();
+            MultipartFile file = uploadObjectRequest.getFile();
             storageService.uploadObject(bucketName, objectName, file.getInputStream());
             metadataService.addObjectMetadata(bucketName, objectName, file.getSize());
             return ResponseEntity.ok("Object uploaded");
@@ -30,7 +34,7 @@ public class ObjectControllerV1 {
         }
     }
 
-    @GetMapping("/{bucketName}/{objectName}")
+    @GetMapping("/{bucketName}/objects/{objectName}")
     public ResponseEntity<byte[]> downloadObject(@PathVariable String bucketName, @PathVariable String objectName) {
         try {
             byte[] data = storageService.downloadObject(bucketName, objectName);
@@ -40,13 +44,14 @@ public class ObjectControllerV1 {
         }
     }
 
-    @GetMapping("/{bucketName}/{objectName}/metadata")
-    public ResponseEntity<Map<String, Object>> getObjectMetadata(@PathVariable String bucketName, @PathVariable String objectName) {
-        Map<String, Object> objectMetadata = metadataService.getObjectMetadata(bucketName, objectName);
-        if (objectMetadata != null) {
-            return ResponseEntity.ok(objectMetadata);
-        } else {
-            return ResponseEntity.notFound().build();
+    @DeleteMapping("/{bucketName}/objects/{objectName}")
+    public ResponseEntity<String> deleteObject(@PathVariable String bucketName, @PathVariable String objectName) {
+        try {
+            storageService.deleteObject(bucketName, objectName);
+            metadataService.removeObjectMetadata(bucketName, objectName);
+            return ResponseEntity.ok("Object deleted");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Delete failed");
         }
     }
 }
