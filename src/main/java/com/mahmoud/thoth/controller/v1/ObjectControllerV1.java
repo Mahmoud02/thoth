@@ -2,15 +2,10 @@ package com.mahmoud.thoth.controller.v1;
 
 import com.mahmoud.thoth.dto.ObjectMetadataDTO;
 import com.mahmoud.thoth.dto.UploadObjectRequest;
-import com.mahmoud.thoth.mapper.ObjectMetadataMapper;
-import com.mahmoud.thoth.service.MetadataService;
-import com.mahmoud.thoth.service.StorageService;
+import com.mahmoud.thoth.service.ObjectService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
 import jakarta.validation.Valid;
 import java.io.IOException;
 import java.util.List;
@@ -20,54 +15,36 @@ import java.util.List;
 @RequestMapping("/v1/thoth/buckets")
 public class ObjectControllerV1 {
 
-    private final StorageService storageService;
-    private final MetadataService metadataService;
-    private final ObjectMetadataMapper objectMetadataMapper;
+    private final ObjectService objectService;
 
     @PostMapping(value = "/{bucketName}/objects", consumes = "multipart/form-data")
-    public ResponseEntity<ObjectMetadataDTO> uploadObject(@PathVariable String bucketName, @Valid @ModelAttribute UploadObjectRequest uploadObjectRequest) {
-        try {
-            String objectName = uploadObjectRequest.getObjectName();
-            MultipartFile file = uploadObjectRequest.getFile();
-            storageService.uploadObject(bucketName, objectName, file.getInputStream());
-            metadataService.addObjectMetadata(bucketName, objectName, file.getSize(), file.getContentType());
-
-            ObjectMetadataDTO objectMetadata = objectMetadataMapper.toObjectMetadataDTO(bucketName, objectName, file);
-
-            return ResponseEntity.ok(objectMetadata);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+    public ResponseEntity<ObjectMetadataDTO> uploadObject(
+            @PathVariable String bucketName, 
+            @Valid @ModelAttribute UploadObjectRequest uploadObjectRequest) throws IOException {
+        ObjectMetadataDTO objectMetadata = objectService.uploadObject(bucketName, uploadObjectRequest);
+        return ResponseEntity.ok(objectMetadata);
     }
 
     @GetMapping("/{bucketName}/objects/{objectName}")
-    public ResponseEntity<byte[]> downloadObject(@PathVariable String bucketName, @PathVariable String objectName) {
-        try {
-            byte[] data = storageService.downloadObject(bucketName, objectName);
-            return ResponseEntity.ok(data);
-        } catch (IOException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<byte[]> downloadObject(
+            @PathVariable String bucketName, 
+            @PathVariable String objectName) throws IOException {
+        byte[] data = objectService.downloadObject(bucketName, objectName);
+        return ResponseEntity.ok(data);
     }
 
     @DeleteMapping("/{bucketName}/objects/{objectName}")
-    public ResponseEntity<String> deleteObject(@PathVariable String bucketName, @PathVariable String objectName) {
-        try {
-            storageService.deleteObject(bucketName, objectName);
-            metadataService.removeObjectMetadata(bucketName, objectName);
-            return ResponseEntity.ok("Object deleted");
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Delete failed");
-        }
+    public ResponseEntity<String> deleteObject(
+            @PathVariable String bucketName, 
+            @PathVariable String objectName) throws IOException {
+        objectService.deleteObject(bucketName, objectName);
+        return ResponseEntity.ok("Object deleted");
     }
 
     @GetMapping("/{bucketName}/objects")
-    public ResponseEntity<List<ObjectMetadataDTO>> listObjects(@PathVariable String bucketName) {
-        try {
-            List<ObjectMetadataDTO> objects = storageService.listObjects(bucketName);
-            return ResponseEntity.ok(objects);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+    public ResponseEntity<List<ObjectMetadataDTO>> listObjects(
+            @PathVariable String bucketName) throws IOException {
+        List<ObjectMetadataDTO> objects = objectService.listObjects(bucketName);
+        return ResponseEntity.ok(objects);
     }
 }
