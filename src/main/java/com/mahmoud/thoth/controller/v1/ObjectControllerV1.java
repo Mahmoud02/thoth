@@ -2,6 +2,7 @@ package com.mahmoud.thoth.controller.v1;
 
 import com.mahmoud.thoth.dto.ObjectMetadataDTO;
 import com.mahmoud.thoth.dto.UploadObjectRequest;
+import com.mahmoud.thoth.mapper.ObjectMetadataMapper;
 import com.mahmoud.thoth.service.MetadataService;
 import com.mahmoud.thoth.service.StorageService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class ObjectControllerV1 {
 
     private final StorageService storageService;
     private final MetadataService metadataService;
+    private final ObjectMetadataMapper objectMetadataMapper;
 
     @PostMapping(value = "/{bucketName}/objects", consumes = "multipart/form-data")
     public ResponseEntity<ObjectMetadataDTO> uploadObject(@PathVariable String bucketName, @Valid @ModelAttribute UploadObjectRequest uploadObjectRequest) {
@@ -28,13 +30,9 @@ public class ObjectControllerV1 {
             String objectName = uploadObjectRequest.getObjectName();
             MultipartFile file = uploadObjectRequest.getFile();
             storageService.uploadObject(bucketName, objectName, file.getInputStream());
-            metadataService.addObjectMetadata(bucketName, objectName, file.getSize());
+            metadataService.addObjectMetadata(bucketName, objectName, file.getSize(), file.getContentType());
 
-            ObjectMetadataDTO objectMetadata = new ObjectMetadataDTO();
-            objectMetadata.setBucketName(bucketName);
-            objectMetadata.setObjectName(objectName);
-            objectMetadata.setSize(file.getSize());
-            objectMetadata.setContentType(file.getContentType());
+            ObjectMetadataDTO objectMetadata = objectMetadataMapper.toObjectMetadataDTO(bucketName, objectName, file);
 
             return ResponseEntity.ok(objectMetadata);
         } catch (IOException e) {

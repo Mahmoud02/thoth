@@ -2,6 +2,7 @@ package com.mahmoud.thoth.mapper;
 
 import com.mahmoud.thoth.dto.ObjectMetadataDTO;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,6 +21,15 @@ public class ObjectMetadataMapper {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return metadata;
+    }
+
+    public ObjectMetadataDTO toObjectMetadataDTO(String bucketName, String objectName, MultipartFile file) {
+        ObjectMetadataDTO metadata = new ObjectMetadataDTO();
+        metadata.setBucketName(bucketName);
+        metadata.setObjectName(objectName);
+        metadata.setSize(file.getSize());
+        metadata.setContentType(file.getContentType());
         return metadata;
     }
 }
