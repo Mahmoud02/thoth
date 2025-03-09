@@ -1,6 +1,6 @@
 package com.mahmoud.thoth.store.impl;
 
-import com.mahmoud.thoth.dto.UpdateBucketDTO;
+import com.mahmoud.thoth.dto.UpdateBucketRequestDTO;
 import com.mahmoud.thoth.model.BucketMetadata;
 import com.mahmoud.thoth.store.BucketStore;
 import com.mahmoud.thoth.shared.exception.BucketAlreadyExistsException;
@@ -40,7 +40,7 @@ public class InMemoryBucketStore implements BucketStore {
     }
 
     @Override
-    public void updateBucket(String bucketName, UpdateBucketDTO updateBucketDTO) {
+    public void updateBucket(String bucketName, UpdateBucketRequestDTO updateBucketDTO) {
         BucketMetadata bucketMetadata = bucketsMetadata.remove(bucketName);
         if (bucketMetadata != null) {
             bucketsMetadata.put(updateBucketDTO.getName(), bucketMetadata);

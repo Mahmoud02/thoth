@@ -1,7 +1,7 @@
 package com.mahmoud.thoth.store;
 
 import com.mahmoud.thoth.model.BucketMetadata;
-import com.mahmoud.thoth.dto.UpdateBucketDTO;
+import com.mahmoud.thoth.dto.UpdateBucketRequestDTO;
 
 import java.util.Map;
 
@@ -10,6 +10,6 @@ public interface BucketStore {
     BucketMetadata getBucketMetadata(String bucketName);
     long getBucketSize(String bucketName);
     Map<String, BucketMetadata> getBuckets();
-    void updateBucket(String bucketName, UpdateBucketDTO updateBucketDTO);
+    void updateBucket(String bucketName, UpdateBucketRequestDTO updateBucketDTO);
     void deleteBucket(String bucketName);
 }
