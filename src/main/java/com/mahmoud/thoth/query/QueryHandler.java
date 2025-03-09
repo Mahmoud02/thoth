@@ -2,6 +2,7 @@ package com.mahmoud.thoth.query;
 
 import com.mahmoud.thoth.service.MetadataService;
 import com.mahmoud.thoth.service.StorageService;
+import com.mahmoud.thoth.store.BucketStore;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,16 +18,18 @@ public class QueryHandler {
 
     private final StorageService storageService;
     private final MetadataService metadataService;
+    private final BucketStore bucketStore;
 
     
     public Object handleQuery(Map<String, Object> queryMap, MultipartFile file) throws IOException {
         String action = (String) queryMap.get("action");
         String resource = (String) queryMap.get("resource");
+        @SuppressWarnings("unchecked")
         Map<String, String> conditions = (Map<String, String>) queryMap.get("conditions");
 
         if ("CREATE_BUCKET".equals(action) && "BUCKET".equals(resource)) {
             String bucketName = conditions.get("name");
-            metadataService.createBucket(bucketName);
+            bucketStore.createBucket(bucketName);
             return "Bucket created";
             
         } else if ("UPLOAD_OBJECT".equals(action) && "OBJECT".equals(resource)) {
@@ -41,19 +44,19 @@ public class QueryHandler {
             return storageService.downloadObject(bucketName, objectName);
         } else if ("GET_BUCKET_METADATA".equals(action) && "BUCKET".equals(resource)) {
             String bucketName = conditions.get("name");
-            return metadataService.getBucketMetadata(bucketName);
+            return bucketStore.getBucketMetadata(bucketName);
         } else if ("GET_BUCKET_SIZE".equals(action) && "BUCKET".equals(resource)) {
             String bucketName = conditions.get("name");
-            return metadataService.getBucketSize(bucketName);
+            return bucketStore.getBucketSize(bucketName);
         } else if ("GET_METADATA".equals(action) && "OBJECT".equals(resource)) {
             String bucketName = conditions.get("bucket");
             String objectName = conditions.get("name");
             return metadataService.getObjectMetadata(bucketName, objectName);
         } else if ("LIST_BUCKETS".equals(action) && "BUCKET".equals(resource)) {
-            return metadataService.getBuckets();
+            return bucketStore.getBuckets();
         } else if ("LIST_OBJECTS".equals(action) && "BUCKET".equals(resource)) {
             String bucketName = conditions.get("name");
-            return metadataService.getBucketMetadata(bucketName);
+            return bucketStore.getBucketMetadata(bucketName);
         }
 
         return "Invalid query";
