@@ -3,7 +3,8 @@ package com.mahmoud.thoth.store.impl;
 import com.mahmoud.thoth.dto.UpdateBucketRequestDTO;
 import com.mahmoud.thoth.model.BucketMetadata;
 import com.mahmoud.thoth.store.BucketStore;
-import com.mahmoud.thoth.shared.exception.BucketAlreadyExistsException;
+import com.mahmoud.thoth.shared.exception.ResourceConflictException;
+import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -18,7 +19,7 @@ public class InMemoryBucketStore implements BucketStore {
     @Override
     public void createBucket(String bucketName) {
         if (bucketsMetadata.containsKey(bucketName)) {
-            throw new BucketAlreadyExistsException("Bucket already exists: " + bucketName);
+            throw new ResourceConflictException("Bucket already exists: " + bucketName);
         }
         bucketsMetadata.put(bucketName, new BucketMetadata(LocalDateTime.now(), LocalDateTime.now()));
     }
@@ -49,6 +50,9 @@ public class InMemoryBucketStore implements BucketStore {
 
     @Override
     public void deleteBucket(String bucketName) {
+        if (!bucketsMetadata.containsKey(bucketName)) {
+            throw new ResourceNotFoundException("Bucket not found: " + bucketName);
+        }
         bucketsMetadata.remove(bucketName);
     }
 }
