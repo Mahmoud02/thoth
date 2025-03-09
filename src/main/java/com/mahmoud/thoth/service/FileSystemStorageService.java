@@ -3,6 +3,8 @@ package com.mahmoud.thoth.service;
 
 import org.springframework.stereotype.Service;
 
+import com.mahmoud.thoth.store.BucketStore;
+
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +21,7 @@ import java.nio.file.Paths;
 public class FileSystemStorageService implements StorageService {
 
     private final String storagePath = "thoth-storage"; 
-    private final MetadataService metadataService ;
+    private final BucketStore bucketStore;
 
     @PostConstruct
     public void init() {
@@ -29,8 +31,8 @@ public class FileSystemStorageService implements StorageService {
     @Override
     public void uploadObject(String bucketName, String objectName, InputStream inputStream) throws IOException {
         
-        if (metadataService.getBucketMetadata(bucketName) == null) {
-            metadataService.createBucket(bucketName);
+        if (bucketStore.getBucketMetadata(bucketName) == null) {
+            bucketStore.createBucket(bucketName);
         }
 
         Path bucketDirectory = Paths.get(storagePath, bucketName);
