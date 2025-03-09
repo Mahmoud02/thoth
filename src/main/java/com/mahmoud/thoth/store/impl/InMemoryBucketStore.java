@@ -42,6 +42,14 @@ public class InMemoryBucketStore implements BucketStore {
 
     @Override
     public void updateBucket(String bucketName, UpdateBucketRequestDTO updateBucketDTO) {
+        if (!bucketsMetadata.containsKey(bucketName)) {
+            throw new ResourceNotFoundException("Bucket not found: " + bucketName);
+        }
+
+        if (bucketsMetadata.containsKey(updateBucketDTO.getName())) {
+            throw new ResourceConflictException("Bucket already exists: " + updateBucketDTO.getName());  
+        }
+
         BucketMetadata bucketMetadata = bucketsMetadata.remove(bucketName);
         if (bucketMetadata != null) {
             bucketsMetadata.put(updateBucketDTO.getName(), bucketMetadata);
