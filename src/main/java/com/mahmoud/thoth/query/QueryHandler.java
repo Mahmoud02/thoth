@@ -36,7 +36,7 @@ public class QueryHandler {
             String bucketName = conditions.get("bucket");
             String objectName = conditions.get("name");
             storageService.uploadObject(bucketName, objectName, file.getInputStream());
-            metadataService.addObjectMetadata(bucketName, objectName, file.getSize());
+            metadataService.addObjectMetadata(bucketName, objectName, file.getSize(), file.getContentType());
             return "Object uploaded";
         } else if ("DOWNLOAD_OBJECT".equals(action) && "OBJECT".equals(resource)) {
             String bucketName = conditions.get("bucket");
@@ -48,10 +48,7 @@ public class QueryHandler {
         } else if ("GET_BUCKET_SIZE".equals(action) && "BUCKET".equals(resource)) {
             String bucketName = conditions.get("name");
             return bucketStore.getBucketSize(bucketName);
-        } else if ("GET_METADATA".equals(action) && "OBJECT".equals(resource)) {
-            String bucketName = conditions.get("bucket");
-            String objectName = conditions.get("name");
-            return metadataService.getObjectMetadata(bucketName, objectName);
+        
         } else if ("LIST_BUCKETS".equals(action) && "BUCKET".equals(resource)) {
             return bucketStore.getBuckets();
         } else if ("LIST_OBJECTS".equals(action) && "BUCKET".equals(resource)) {
