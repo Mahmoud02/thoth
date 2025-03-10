@@ -2,7 +2,11 @@ package com.mahmoud.thoth.store.impl;
 
 import com.mahmoud.thoth.dto.UpdateBucketRequestDTO;
 import com.mahmoud.thoth.model.BucketMetadata;
+import com.mahmoud.thoth.service.StorageService;
 import com.mahmoud.thoth.store.BucketStore;
+
+import lombok.RequiredArgsConstructor;
+
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
@@ -12,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class InMemoryBucketStore implements BucketStore {
 
     private final Map<String, BucketMetadata> bucketsMetadata = new HashMap<>();

@@ -5,6 +5,9 @@ import com.mahmoud.thoth.mapper.ObjectMetadataMapper;
 import com.mahmoud.thoth.store.BucketStore;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -24,6 +27,7 @@ public class FileSystemStorageService implements StorageService {
     private final String storagePath = "thoth-storage"; 
     private final BucketStore bucketStore;
     private final ObjectMetadataMapper objectMetadataMapper;
+    private static final Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);
 
     @PostConstruct
     public void init() {
@@ -60,12 +64,22 @@ public class FileSystemStorageService implements StorageService {
     @Override
     public List<ObjectMetadataDTO> listObjects(String bucketName) throws IOException {
         Path bucketDirectory = Paths.get(storagePath, bucketName);
-        if (Files.exists(bucketDirectory)) {
+        if (Files.isDirectory(bucketDirectory)) {
             return Files.list(bucketDirectory)
                         .map(path -> objectMetadataMapper.toObjectMetadataDTO(bucketName, path))
                         .collect(Collectors.toList());
         } else {
             throw new IOException("Bucket not found");
+        }
+    }
+
+    @Override
+    public void createBucket(String bucketName){
+        try {
+            Path bucketDirectory = Paths.get(storagePath, bucketName);
+            Files.createDirectories(bucketDirectory);        
+        } catch (IOException e) {
+            logger.error("Error creating bucket directory", e);
         }
     }
 }

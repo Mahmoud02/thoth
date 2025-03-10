@@ -5,6 +5,7 @@ import com.mahmoud.thoth.dto.CreateBucketRequestDTO;
 import com.mahmoud.thoth.dto.UpdateBucketRequestDTO;
 import com.mahmoud.thoth.mapper.BucketMapper;
 import com.mahmoud.thoth.service.MetadataService;
+import com.mahmoud.thoth.service.StorageService;
 import com.mahmoud.thoth.store.BucketStore;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ public class BucketControllerV1 {
     private static final Logger logger = LoggerFactory.getLogger(BucketControllerV1.class);
 
     private final BucketStore bucketStore;
+    private final StorageService storageService;
     private final MetadataService metadataService;
     private final BucketMapper bucketMapper;
 
@@ -34,6 +36,7 @@ public class BucketControllerV1 {
     public ResponseEntity<BucketDTO> createBucket(@RequestBody @Valid CreateBucketRequestDTO createBucketRequestDTO) {
         logger.info("Creating bucket: {}", createBucketRequestDTO.getName());
         this.bucketStore.createBucket(createBucketRequestDTO.getName());
+        storageService.createBucket(createBucketRequestDTO.getName());
         BucketDTO bucketDTO = bucketMapper.toBucketDTO(createBucketRequestDTO.getName(), bucketStore.getBucketMetadata(createBucketRequestDTO.getName()));
         return ResponseEntity.status(HttpStatus.CREATED).body(bucketDTO);
     }
