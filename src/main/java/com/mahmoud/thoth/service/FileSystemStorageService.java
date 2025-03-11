@@ -1,6 +1,7 @@
 package com.mahmoud.thoth.service;
 
 import com.mahmoud.thoth.dto.ObjectMetadataDTO;
+import com.mahmoud.thoth.function.BucketFunctionException;
 import com.mahmoud.thoth.mapper.ObjectMetadataMapper;
 import com.mahmoud.thoth.store.BucketStore;
 import jakarta.annotation.PostConstruct;
@@ -14,6 +15,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ByteArrayInputStream;
+import java.io.BufferedInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,6 +30,7 @@ public class FileSystemStorageService implements StorageService {
     private final String storagePath = "thoth-storage"; 
     private final BucketStore bucketStore;
     private final ObjectMetadataMapper objectMetadataMapper;
+    private final BucketFunctionService bucketFunctionService;
     private static final Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);
 
     @PostConstruct
@@ -39,13 +43,26 @@ public class FileSystemStorageService implements StorageService {
         if (bucketStore.getBucketMetadata(bucketName) == null) {
             bucketStore.createBucket(bucketName);
         }
+        
+        // Read the entire input stream to be able to reuse it
+        byte[] content = inputStream.readAllBytes();
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(new ByteArrayInputStream(content));
+        bufferedInputStream.mark(Integer.MAX_VALUE);
+        
+        // Execute all bucket functions before saving
+        try {
+            bucketFunctionService.executeBucketFunctions(bucketName, objectName, bufferedInputStream);
+        } catch (BucketFunctionException e) {
+            logger.error("Bucket function validation failed for {}/{}: {}", bucketName, objectName, e.getMessage());
+            throw e;
+        }
 
         Path bucketDirectory = Paths.get(storagePath, bucketName);
         Files.createDirectories(bucketDirectory);
         Path objectPath = bucketDirectory.resolve(objectName);
 
         try (FileOutputStream outputStream = new FileOutputStream(objectPath.toFile())) {
-            inputStream.transferTo(outputStream);
+            outputStream.write(content);
         }
     }
 
