@@ -3,6 +3,7 @@ package com.mahmoud.thoth.function.impl;
 import com.mahmoud.thoth.function.BucketFunction;
 import com.mahmoud.thoth.function.BucketFunctionException;
 import com.mahmoud.thoth.function.config.BucketFunctionConfig;
+import com.mahmoud.thoth.function.enums.FunctionType;
 
 import org.springframework.stereotype.Component;
 import java.io.InputStream;
@@ -12,7 +13,7 @@ import java.util.Set;
 @Component
 public class FileExtensionValidatorFunction implements BucketFunction {
     
-    private static final String TYPE = "extension-validator";
+    private static final String TYPE = FunctionType.EXTENSION_VALIDATOR_TYPE;
     
     @Override
     public String getType() {

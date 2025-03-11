@@ -3,6 +3,7 @@ package com.mahmoud.thoth.function.impl;
 import com.mahmoud.thoth.function.BucketFunction;
 import com.mahmoud.thoth.function.BucketFunctionException;
 import com.mahmoud.thoth.function.config.BucketFunctionConfig;
+import com.mahmoud.thoth.function.enums.FunctionType;
 
 import org.springframework.stereotype.Component;
 import java.io.IOException;
@@ -11,7 +12,7 @@ import java.io.InputStream;
 @Component
 public class FileSizeLimitFunction implements BucketFunction {
     
-    private static final String TYPE = "size-limit";
+    private static final String TYPE = FunctionType.SIZE_LIMIT_TYPE;
     
     @Override
     public String getType() {

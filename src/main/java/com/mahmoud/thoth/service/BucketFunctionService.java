@@ -1,16 +1,17 @@
 package com.mahmoud.thoth.service;
 
+import com.mahmoud.thoth.dto.FunctionConfig;
 import com.mahmoud.thoth.function.BucketFunction;
 import com.mahmoud.thoth.function.BucketFunctionException;
 import com.mahmoud.thoth.function.BucketFunctionRegistry;
 import com.mahmoud.thoth.function.config.BucketFunctionConfig;
+import com.mahmoud.thoth.function.enums.FunctionType;
 import com.mahmoud.thoth.store.BucketStore;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,44 +20,30 @@ public class BucketFunctionService {
     private final BucketStore bucketStore;
     private final BucketFunctionRegistry functionRegistry;
     
-    public void updateFunctionConfig(String bucketName, String type, Object value) {
+    public void updateFunctionConfig(String bucketName, String type, FunctionConfig functionConfig) {
         BucketFunctionConfig config = bucketStore.getBucketFunctionConfig(bucketName);
         if (config == null) {
             config = new BucketFunctionConfig();
         }
         
-        switch (type) {
-            case "size-limit":
-                config.setMaxSizeBytes((Long) value);
-                break;
-            case "extension-validator":
-                config.setAllowedExtensions((List<String>) value);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown function type: " + type);
-        }
+        // Let the function config apply itself to the bucket function config
+        functionConfig.applyTo(config);
         
         bucketStore.updateBucketFunctionConfig(bucketName, config);
     }
     
-    public void removeFunctionConfig(String bucketName, String type) {
+    public void removeFunctionConfig(String bucketName, FunctionType type) {
         BucketFunctionConfig config = bucketStore.getBucketFunctionConfig(bucketName);
         if (config == null) {
             return;
         }
         
-        switch (type) {
-            case "size-limit":
-                config.setMaxSizeBytes(null);
-                break;
-            case "extension-validator":
-                config.setAllowedExtensions(null);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown function type: " + type);
-        }
+        // Create an empty function config of the right type and use it to remove configuration
+        FunctionConfig functionConfig = FunctionConfig.forType(type);
+        functionConfig.removeFrom(config);
         
-        if (config.getMaxSizeBytes() == null && (config.getAllowedExtensions() == null || config.getAllowedExtensions().isEmpty())) {
+        // Check if the configuration is now empty
+        if (FunctionConfig.isEmpty(config)) {
             bucketStore.removeBucketFunctionConfig(bucketName);
         } else {
             bucketStore.updateBucketFunctionConfig(bucketName, config);

@@ -1,5 +1,7 @@
 package com.mahmoud.thoth.controller.v1;
 
+import com.mahmoud.thoth.dto.BucketFunctionRequest;
+import com.mahmoud.thoth.function.enums.FunctionType;
 import com.mahmoud.thoth.service.BucketFunctionService;
 
 import lombok.RequiredArgsConstructor;
@@ -7,55 +9,43 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/thoth/buckets/{bucketName}/functions")
+@RequestMapping("/v1/thoth/buckets/functions")
 @Validated
 public class BucketFunctionControllerV1 {
 
     private final BucketFunctionService bucketFunctionService;
-    
-    @PostMapping("/size-limit")
-    public ResponseEntity<Map<String, Object>> addFileSizeLimit(
-            @PathVariable @NotBlank String bucketName, 
-            @RequestParam @NotNull Long maxSizeBytes) {
+
+    @PostMapping
+    public ResponseEntity<Map<String, Object>> addFunction(
+            @RequestBody @Valid BucketFunctionRequest request) {
         
-        bucketFunctionService.updateFunctionConfig(bucketName, "size-limit", maxSizeBytes);
-        
+        FunctionType type = request.getConfig().getType();
+        bucketFunctionService.updateFunctionConfig(
+            request.getBucketName(), 
+            type.name(), 
+            request.getConfig()
+        );
+
         Map<String, Object> response = new HashMap<>();
-        response.put("type", "size-limit");
-        response.put("bucketName", bucketName);
-        response.put("maxSizeBytes", maxSizeBytes);
-        
+        response.put("type", type.name());
+        response.put("bucketName", request.getBucketName());
+        response.put("configValue", request.getConfig());
+
         return ResponseEntity.ok(response);
     }
-    
-    @PostMapping("/extension-validator")
-    public ResponseEntity<Map<String, Object>> addExtensionValidator(
-            @PathVariable @NotBlank String bucketName, 
-            @RequestParam @NotNull String[] allowedExtensions) {
-        
-        bucketFunctionService.updateFunctionConfig(bucketName, "extension-validator", Arrays.asList(allowedExtensions));
-        
-        Map<String, Object> response = new HashMap<>();
-        response.put("type", "extension-validator");
-        response.put("bucketName", bucketName);
-        response.put("allowedExtensions", allowedExtensions);
-        
-        return ResponseEntity.ok(response);
-    }
-    
-    @DeleteMapping("/{type}")
+
+    @DeleteMapping("/{bucketName}/{type}")
     public ResponseEntity<Void> removeFunction(
             @PathVariable @NotBlank String bucketName,
-            @PathVariable @NotBlank String type) {
-        
+            @PathVariable FunctionType type) {  // Now receives FunctionType directly
+
         bucketFunctionService.removeFunctionConfig(bucketName, type);
         return ResponseEntity.noContent().build();
     }
