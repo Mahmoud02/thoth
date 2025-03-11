@@ -2,7 +2,9 @@ package com.mahmoud.thoth.function.impl;
 
 import com.mahmoud.thoth.function.BucketFunction;
 import com.mahmoud.thoth.function.BucketFunctionException;
-import com.mahmoud.thoth.function.config.BucketFunctionConfig;
+import com.mahmoud.thoth.function.config.BucketFunctionsConfig;
+import com.mahmoud.thoth.function.config.FunctionConfig;
+import com.mahmoud.thoth.function.config.SizeLimitConfig;
 import com.mahmoud.thoth.function.enums.FunctionType;
 
 import org.springframework.stereotype.Component;
@@ -20,7 +22,7 @@ public class FileSizeLimitFunction implements BucketFunction {
     }
     
     @Override
-    public void validate(String bucketName, String objectName, InputStream inputStream, BucketFunctionConfig config) 
+    public void validate(String bucketName, String objectName, InputStream inputStream, BucketFunctionsConfig config) 
             throws BucketFunctionException {
         
         if (config.getMaxSizeBytes() == null) {
@@ -53,5 +55,18 @@ public class FileSizeLimitFunction implements BucketFunction {
         } catch (IOException e) {
             throw new BucketFunctionException("Error reading input stream: " + e.getMessage(), e);
         }
+    }
+   
+    
+
+    @Override
+    public void removeFrom(BucketFunctionsConfig config) {
+        config.setMaxSizeBytes(null);
+    }
+
+    @Override
+    public void applyTo(BucketFunctionsConfig config, FunctionConfig functionConfig) {
+        SizeLimitConfig sizeLimitConfig = (SizeLimitConfig) functionConfig;
+        config.setMaxSizeBytes(sizeLimitConfig.getMaxSizeBytes());
     }
 }

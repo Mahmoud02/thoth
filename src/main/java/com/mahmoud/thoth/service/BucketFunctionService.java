@@ -1,11 +1,11 @@
 package com.mahmoud.thoth.service;
 
-import com.mahmoud.thoth.dto.FunctionConfig;
 import com.mahmoud.thoth.function.BucketFunction;
 import com.mahmoud.thoth.function.BucketFunctionException;
-import com.mahmoud.thoth.function.BucketFunctionRegistry;
-import com.mahmoud.thoth.function.config.BucketFunctionConfig;
+import com.mahmoud.thoth.function.config.BucketFunctionsConfig;
+import com.mahmoud.thoth.function.config.FunctionConfig;
 import com.mahmoud.thoth.function.enums.FunctionType;
+import com.mahmoud.thoth.function.factory.BucketFunctionFactory;
 import com.mahmoud.thoth.store.BucketStore;
 
 import lombok.RequiredArgsConstructor;
@@ -18,32 +18,33 @@ import java.io.InputStream;
 public class BucketFunctionService {
     
     private final BucketStore bucketStore;
-    private final BucketFunctionRegistry functionRegistry;
+    private final BucketFunctionFactory functionFactory;
     
     public void updateFunctionConfig(String bucketName, String type, FunctionConfig functionConfig) {
-        BucketFunctionConfig config = bucketStore.getBucketFunctionConfig(bucketName);
+        BucketFunctionsConfig config = bucketStore.getBucketFunctionConfig(bucketName);
         if (config == null) {
-            config = new BucketFunctionConfig();
+            config = new BucketFunctionsConfig();
         }
         
-        // Let the function config apply itself to the bucket function config
-        functionConfig.applyTo(config);
+        // Get function and apply config
+        BucketFunction function = functionFactory.getFunction(type);
+        function.applyTo(config, functionConfig);
         
         bucketStore.updateBucketFunctionConfig(bucketName, config);
     }
     
     public void removeFunctionConfig(String bucketName, FunctionType type) {
-        BucketFunctionConfig config = bucketStore.getBucketFunctionConfig(bucketName);
+        BucketFunctionsConfig config = bucketStore.getBucketFunctionConfig(bucketName);
         if (config == null) {
             return;
         }
         
-        // Create an empty function config of the right type and use it to remove configuration
-        FunctionConfig functionConfig = FunctionConfig.forType(type);
-        functionConfig.removeFrom(config);
+        // Get function and remove config
+        BucketFunction function = functionFactory.getFunction(type);
+        function.removeFrom(config);
         
         // Check if the configuration is now empty
-        if (FunctionConfig.isEmpty(config)) {
+        if (functionFactory.isFunctionConfigEmpty(config)) {
             bucketStore.removeBucketFunctionConfig(bucketName);
         } else {
             bucketStore.updateBucketFunctionConfig(bucketName, config);
@@ -53,13 +54,13 @@ public class BucketFunctionService {
     public void executeBucketFunctions(String bucketName, String objectName, InputStream inputStream) 
             throws BucketFunctionException {
         
-        BucketFunctionConfig config = bucketStore.getBucketFunctionConfig(bucketName);
+        BucketFunctionsConfig config = bucketStore.getBucketFunctionConfig(bucketName);
         if (config == null) {
             return;
         }
         
         if (config.getMaxSizeBytes() != null) {
-            BucketFunction function = functionRegistry.getFunction("size-limit");
+            BucketFunction function = functionFactory.getFunction("size-limit");
             if (function != null) {
                 markInputStream(inputStream);
                 function.validate(bucketName, objectName, inputStream, config);
@@ -68,7 +69,7 @@ public class BucketFunctionService {
         }
         
         if (config.getAllowedExtensions() != null && !config.getAllowedExtensions().isEmpty()) {
-            BucketFunction function = functionRegistry.getFunction("extension-validator");
+            BucketFunction function = functionFactory.getFunction("extension-validator");
             if (function != null) {
                 markInputStream(inputStream);
                 function.validate(bucketName, objectName, inputStream, config);

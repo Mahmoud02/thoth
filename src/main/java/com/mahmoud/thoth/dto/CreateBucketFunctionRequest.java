@@ -1,9 +1,11 @@
 package com.mahmoud.thoth.dto;
 
+import com.mahmoud.thoth.function.config.FunctionConfig;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class BucketFunctionRequest {
+public class CreateBucketFunctionRequest {
 
     @NotBlank
     private String bucketName;

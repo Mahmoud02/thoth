@@ -1,6 +1,6 @@
 package com.mahmoud.thoth.controller.v1;
 
-import com.mahmoud.thoth.dto.BucketFunctionRequest;
+import com.mahmoud.thoth.dto.CreateBucketFunctionRequest;
 import com.mahmoud.thoth.function.enums.FunctionType;
 import com.mahmoud.thoth.service.BucketFunctionService;
 
@@ -24,7 +24,7 @@ public class BucketFunctionControllerV1 {
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> addFunction(
-            @RequestBody @Valid BucketFunctionRequest request) {
+            @RequestBody @Valid CreateBucketFunctionRequest request) {
         
         FunctionType type = request.getConfig().getType();
         bucketFunctionService.updateFunctionConfig(

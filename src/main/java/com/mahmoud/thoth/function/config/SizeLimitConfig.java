@@ -1,7 +1,6 @@
-package com.mahmoud.thoth.dto;
+package com.mahmoud.thoth.function.config;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.mahmoud.thoth.function.config.BucketFunctionConfig;
 import com.mahmoud.thoth.function.enums.FunctionType;
 
 import jakarta.validation.constraints.NotNull;
@@ -19,16 +18,6 @@ public class SizeLimitConfig implements FunctionConfig {
         return FunctionType.SIZE_LIMIT;
     }
     
-    @Override
-    public void applyTo(BucketFunctionConfig config) {
-        config.setMaxSizeBytes(maxSizeBytes);
-    }
-
-    @Override
-    public void removeFrom(BucketFunctionConfig config) {
-        config.setMaxSizeBytes(null);
-    }
-
     public Long getMaxSizeBytes() {
         return maxSizeBytes;
     }

@@ -1,7 +1,7 @@
 package com.mahmoud.thoth.store.impl;
 
-import com.mahmoud.thoth.dto.UpdateBucketRequestDTO;
-import com.mahmoud.thoth.function.config.BucketFunctionConfig;
+import com.mahmoud.thoth.dto.UpdateBucketRequest;
+import com.mahmoud.thoth.function.config.BucketFunctionsConfig;
 import com.mahmoud.thoth.model.BucketMetadata;
 import com.mahmoud.thoth.store.BucketStore;
 
@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class InMemoryBucketStore implements BucketStore {
 
     private final Map<String, BucketMetadata> bucketsMetadata = new HashMap<>();
-    private final Map<String, BucketFunctionConfig> bucketFunctionConfigs = new ConcurrentHashMap<>();
+    private final Map<String, BucketFunctionsConfig> bucketFunctionConfigs = new ConcurrentHashMap<>();
 
     @Override
     public void createBucket(String bucketName) {
@@ -29,7 +29,7 @@ public class InMemoryBucketStore implements BucketStore {
             throw new ResourceConflictException("Bucket already exists: " + bucketName);
         }
         bucketsMetadata.put(bucketName, new BucketMetadata(LocalDateTime.now(), LocalDateTime.now()));
-        bucketFunctionConfigs.put(bucketName, new BucketFunctionConfig());
+        bucketFunctionConfigs.put(bucketName, new BucketFunctionsConfig());
     }
 
     @Override
@@ -49,7 +49,7 @@ public class InMemoryBucketStore implements BucketStore {
     }
 
     @Override
-    public void updateBucket(String bucketName, UpdateBucketRequestDTO updateBucketDTO) {
+    public void updateBucket(String bucketName, UpdateBucketRequest updateBucketDTO) {
         if (!bucketsMetadata.containsKey(bucketName)) {
             throw new ResourceNotFoundException("Bucket not found: " + bucketName);
         }
@@ -63,7 +63,7 @@ public class InMemoryBucketStore implements BucketStore {
             bucketsMetadata.put(updateBucketDTO.getName(), bucketMetadata);
             
             // Transfer any bucket function config to the new bucket name
-            BucketFunctionConfig config = bucketFunctionConfigs.remove(bucketName);
+            BucketFunctionsConfig config = bucketFunctionConfigs.remove(bucketName);
             if (config != null) {
                 bucketFunctionConfigs.put(updateBucketDTO.getName(), config);
             }
@@ -80,7 +80,7 @@ public class InMemoryBucketStore implements BucketStore {
     }
     
     @Override
-    public void updateBucketFunctionConfig(String bucketName, BucketFunctionConfig config) {
+    public void updateBucketFunctionConfig(String bucketName, BucketFunctionsConfig config) {
         if (!bucketsMetadata.containsKey(bucketName)) {
             throw new ResourceNotFoundException("Bucket not found: " + bucketName);
         }
@@ -102,7 +102,7 @@ public class InMemoryBucketStore implements BucketStore {
     }
     
     @Override
-    public BucketFunctionConfig getBucketFunctionConfig(String bucketName) {
+    public BucketFunctionsConfig getBucketFunctionConfig(String bucketName) {
         if (!bucketsMetadata.containsKey(bucketName)) {
             throw new ResourceNotFoundException("Bucket not found: " + bucketName);
         }

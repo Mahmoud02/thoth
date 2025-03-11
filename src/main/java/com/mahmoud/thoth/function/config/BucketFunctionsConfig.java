@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BucketFunctionConfig {
+public class BucketFunctionsConfig {
     private Long maxSizeBytes;
     private List<String> allowedExtensions;
 }

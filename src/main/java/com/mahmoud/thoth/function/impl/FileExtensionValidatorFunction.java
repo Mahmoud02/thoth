@@ -2,8 +2,11 @@ package com.mahmoud.thoth.function.impl;
 
 import com.mahmoud.thoth.function.BucketFunction;
 import com.mahmoud.thoth.function.BucketFunctionException;
-import com.mahmoud.thoth.function.config.BucketFunctionConfig;
+import com.mahmoud.thoth.function.config.BucketFunctionsConfig;
+import com.mahmoud.thoth.function.config.ExtensionValidatorConfig;
+import com.mahmoud.thoth.function.config.FunctionConfig;
 import com.mahmoud.thoth.function.enums.FunctionType;
+
 
 import org.springframework.stereotype.Component;
 import java.io.InputStream;
@@ -21,7 +24,7 @@ public class FileExtensionValidatorFunction implements BucketFunction {
     }
     
     @Override
-    public void validate(String bucketName, String objectName, InputStream inputStream, BucketFunctionConfig config) 
+    public void validate(String bucketName, String objectName, InputStream inputStream, BucketFunctionsConfig config) 
             throws BucketFunctionException {
         
         if (config.getAllowedExtensions() == null || config.getAllowedExtensions().isEmpty()) {
@@ -45,5 +48,16 @@ public class FileExtensionValidatorFunction implements BucketFunction {
                 extension, String.join(", ", allowedExtensions))
             );
         }
+    }
+    @Override
+    public void removeFrom(BucketFunctionsConfig config) {
+        config.setAllowedExtensions(null);
+    }
+
+    @Override
+    public void applyTo(BucketFunctionsConfig config, FunctionConfig functionConfig) {
+        ExtensionValidatorConfig extensionValidatorConfig = (ExtensionValidatorConfig) functionConfig;
+        config.setAllowedExtensions(extensionValidatorConfig.getAllowedExtensions());
+
     }
 }

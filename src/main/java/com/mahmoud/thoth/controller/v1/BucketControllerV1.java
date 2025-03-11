@@ -1,8 +1,8 @@
 package com.mahmoud.thoth.controller.v1;
 
 import com.mahmoud.thoth.dto.BucketDTO;
-import com.mahmoud.thoth.dto.CreateBucketRequestDTO;
-import com.mahmoud.thoth.dto.UpdateBucketRequestDTO;
+import com.mahmoud.thoth.dto.CreateBucketRequest;
+import com.mahmoud.thoth.dto.UpdateBucketRequest;
 import com.mahmoud.thoth.mapper.BucketMapper;
 import com.mahmoud.thoth.service.MetadataService;
 import com.mahmoud.thoth.service.StorageService;
@@ -33,7 +33,7 @@ public class BucketControllerV1 {
     private final BucketMapper bucketMapper;
 
     @PostMapping
-    public ResponseEntity<BucketDTO> createBucket(@RequestBody @Valid CreateBucketRequestDTO createBucketRequestDTO) {
+    public ResponseEntity<BucketDTO> createBucket(@RequestBody @Valid CreateBucketRequest createBucketRequestDTO) {
         logger.info("Creating bucket: {}", createBucketRequestDTO.getName());
         this.bucketStore.createBucket(createBucketRequestDTO.getName());
         storageService.createBucket(createBucketRequestDTO.getName());
@@ -42,7 +42,7 @@ public class BucketControllerV1 {
     }
 
     @PutMapping("/{bucketName}")
-    public ResponseEntity<BucketDTO> updateBucket(@PathVariable @NotBlank String bucketName, @RequestBody @Valid UpdateBucketRequestDTO updateBucketRequestDTO) {
+    public ResponseEntity<BucketDTO> updateBucket(@PathVariable @NotBlank String bucketName, @RequestBody @Valid UpdateBucketRequest updateBucketRequestDTO) {
         logger.info("Updating bucket: {} to {}", bucketName, updateBucketRequestDTO.getName());
         this.bucketStore.updateBucket(bucketName, updateBucketRequestDTO);
         this.metadataService.updateObjectMetadata(bucketName, updateBucketRequestDTO.getName());

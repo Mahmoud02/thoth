@@ -1,7 +1,6 @@
-package com.mahmoud.thoth.dto;
+package com.mahmoud.thoth.function.config;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.mahmoud.thoth.function.config.BucketFunctionConfig;
 import com.mahmoud.thoth.function.enums.FunctionType;
 
 import jakarta.validation.constraints.NotEmpty;
@@ -18,16 +17,6 @@ public class ExtensionValidatorConfig implements FunctionConfig {
         return FunctionType.EXTENSION_VALIDATOR;
     }
     
-    @Override
-    public void applyTo(BucketFunctionConfig config) {
-        config.setAllowedExtensions(allowedExtensions);
-    }
-
-    @Override
-    public void removeFrom(BucketFunctionConfig config) {
-        config.setAllowedExtensions(null);
-    }
-
     public List<String> getAllowedExtensions() {
         return allowedExtensions;
     }
