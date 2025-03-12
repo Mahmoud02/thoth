@@ -6,7 +6,9 @@ import com.mahmoud.thoth.function.enums.FunctionType;
 import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 
-@JsonTypeName(FunctionType.EXTENSION_VALIDATOR_TYPE)
+import static com.mahmoud.thoth.function.values.FunctionID.EXTENSION_VALIDATOR_FUNCTION_ID;
+
+@JsonTypeName(EXTENSION_VALIDATOR_FUNCTION_ID)
 public class ExtensionValidatorConfig implements FunctionConfig {
 
     @NotEmpty

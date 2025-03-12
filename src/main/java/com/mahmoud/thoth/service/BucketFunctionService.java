@@ -74,7 +74,7 @@ public class BucketFunctionService {
         }
         
         if (config.getMaxSizeBytes() != null) {
-            BucketFunction function = functionFactory.getFunction("size-limit");
+            BucketFunction function = functionFactory.getFunction(FunctionType.SIZE_LIMIT);
             if (function != null) {
                 markInputStream(inputStream);
                 function.validate(bucketName, objectName, inputStream, config);
@@ -83,7 +83,7 @@ public class BucketFunctionService {
         }
         
         if (config.getAllowedExtensions() != null && !config.getAllowedExtensions().isEmpty()) {
-            BucketFunction function = functionFactory.getFunction("extension-validator");
+            BucketFunction function = functionFactory.getFunction(FunctionType.EXTENSION_VALIDATOR);
             if (function != null) {
                 markInputStream(inputStream);
                 function.validate(bucketName, objectName, inputStream, config);

@@ -1,19 +1,19 @@
 package com.mahmoud.thoth.function.enums;
+import static com.mahmoud.thoth.function.values.FunctionID.SIZE_LIMIT_FUNCTION_ID;
+import static com.mahmoud.thoth.function.values.FunctionID.EXTENSION_VALIDATOR_FUNCTION_ID;
 
 public enum FunctionType {
-    SIZE_LIMIT("SIZE_LIMIT"),
-    EXTENSION_VALIDATOR("EXTENSION_VALIDATOR");
+
+    SIZE_LIMIT(SIZE_LIMIT_FUNCTION_ID),
+    EXTENSION_VALIDATOR(EXTENSION_VALIDATOR_FUNCTION_ID);
+
+    private final String FunctionID;
     
-    public static final String SIZE_LIMIT_TYPE = "SIZE_LIMIT";
-    public static final String EXTENSION_VALIDATOR_TYPE = "EXTENSION_VALIDATOR";
-    
-    private final String typeName;
-    
-    FunctionType(String typeName) {
-        this.typeName = typeName;
+    FunctionType(String FunctionID) {
+        this.FunctionID = FunctionID;
     }
     
     public String getTypeName() {
-        return typeName;
+        return FunctionID;
     }
 }

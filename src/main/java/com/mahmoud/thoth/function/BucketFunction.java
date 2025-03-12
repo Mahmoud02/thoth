@@ -2,15 +2,13 @@ package com.mahmoud.thoth.function;
 
 import com.mahmoud.thoth.function.config.BucketFunctionsConfig;
 import com.mahmoud.thoth.function.config.FunctionConfig;
+import com.mahmoud.thoth.function.enums.FunctionType;
 
 import java.io.InputStream;
 
-/**
- * Interface for stateless bucket functions that validate objects before storage
- */
 public interface BucketFunction {
     
-    String getType();
+    FunctionType getType();
     
     void validate(String bucketName, String objectName, InputStream inputStream, BucketFunctionsConfig config) 
             throws BucketFunctionException;

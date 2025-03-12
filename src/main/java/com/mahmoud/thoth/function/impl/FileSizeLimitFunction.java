@@ -14,10 +14,10 @@ import java.io.InputStream;
 @Component
 public class FileSizeLimitFunction implements BucketFunction {
     
-    private static final String TYPE = FunctionType.SIZE_LIMIT_TYPE;
+    private static final FunctionType TYPE = FunctionType.SIZE_LIMIT;
     
     @Override
-    public String getType() {
+    public FunctionType getType() {
         return TYPE;
     }
     

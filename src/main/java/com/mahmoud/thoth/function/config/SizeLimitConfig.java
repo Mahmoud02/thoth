@@ -5,8 +5,9 @@ import com.mahmoud.thoth.function.enums.FunctionType;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import static com.mahmoud.thoth.function.values.FunctionID.EXTENSION_VALIDATOR_FUNCTION_ID;
 
-@JsonTypeName(FunctionType.SIZE_LIMIT_TYPE)
+@JsonTypeName(EXTENSION_VALIDATOR_FUNCTION_ID)
 public class SizeLimitConfig implements FunctionConfig {
 
     @NotNull

@@ -16,10 +16,10 @@ import java.util.Set;
 @Component
 public class FileExtensionValidatorFunction implements BucketFunction {
     
-    private static final String TYPE = FunctionType.EXTENSION_VALIDATOR_TYPE;
+    private static final FunctionType TYPE = FunctionType.EXTENSION_VALIDATOR;
     
     @Override
-    public String getType() {
+    public FunctionType getType() {
         return TYPE;
     }
     
