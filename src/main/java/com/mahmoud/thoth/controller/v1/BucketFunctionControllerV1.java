@@ -1,7 +1,7 @@
 package com.mahmoud.thoth.controller.v1;
 
-import com.mahmoud.thoth.doc.BucketFunctionOperations.AddBucketFunctionOp;
-import com.mahmoud.thoth.doc.BucketFunctionOperations.RemoveBucketFunctionOp;
+import com.mahmoud.thoth.doc.BucketFunctionApiDocs.AddBucketFunctionOp;
+import com.mahmoud.thoth.doc.BucketFunctionApiDocs.RemoveBucketFunctionOp;
 import com.mahmoud.thoth.dto.CreateBucketFunctionRequest;
 import com.mahmoud.thoth.function.enums.FunctionType;
 import com.mahmoud.thoth.service.BucketFunctionService;
@@ -29,21 +29,18 @@ public class BucketFunctionControllerV1 {
 
     @PostMapping
     @AddBucketFunctionOp
-    public ResponseEntity<Map<String, Object>> addFunction(
+    public ResponseEntity<Map<String, Object>> addFunctions(
             @RequestBody @Valid CreateBucketFunctionRequest request) {
-        
-        // Your implementation remains the same
-        FunctionType type = request.getConfig().getType();
-        bucketFunctionService.updateFunctionConfig(
-            request.getBucketName(), 
-            type.name(), 
-            request.getConfig()
+
+        bucketFunctionService.updateFunctionConfigs(
+            request.getBucketName(),
+            request.getConfigs()
         );
 
         Map<String, Object> response = new HashMap<>();
-        response.put("type", type.name());
         response.put("bucketName", request.getBucketName());
-        response.put("configValue", request.getConfig());
+        response.put("functionsAdded", request.getConfigs().size());
+        response.put("configValues", request.getConfigs());
 
         return ResponseEntity.ok(response);
     }

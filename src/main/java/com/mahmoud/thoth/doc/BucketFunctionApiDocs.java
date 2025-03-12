@@ -12,40 +12,48 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-public class BucketFunctionOperations {
+public class BucketFunctionApiDocs {
 
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
     @Operation(
-        summary = "Add a function to a bucket",
-        description = "Assigns a function (like size limit or extension validation) to a specified bucket",
+        summary = "Add functions to a bucket",
+        description = "Assigns multiple functions (like size limit or extension validation) to a specified bucket",
         requestBody = @RequestBody(
             content = @Content(
                 mediaType = "application/json",
                 examples = {
                     @ExampleObject(
-                        name = "Size Limit Example",
-                        summary = "Adding a 10MB size limit to a bucket",
+                        name = "Multiple Functions Example",
+                        summary = "Adding size limit and extension validation to a bucket",
                         value = """
                         {
                           "bucketName": "my-documents",
-                          "config": {
-                            "type": "SIZE_LIMIT",
-                            "maxSizeBytes": 10485760
-                          }
+                          "configs": [
+                            {
+                              "type": "SIZE_LIMIT",
+                              "maxSizeBytes": 10485760
+                            },
+                            {
+                              "type": "EXTENSION_VALIDATOR",
+                              "allowedExtensions": ["jpg", "png", "gif"]
+                            }
+                          ]
                         }
                         """
                     ),
                     @ExampleObject(
-                        name = "Extension Validator Example",
-                        summary = "Restricting bucket to only accept specific file types",
+                        name = "Single Function Example",
+                        summary = "Adding just a size limit to a bucket",
                         value = """
                         {
-                          "bucketName": "images-only",
-                          "config": {
-                            "type": "EXTENSION_VALIDATOR",
-                            "allowedExtensions": ["jpg", "png", "gif"]
-                          }
+                          "bucketName": "my-documents",
+                          "configs": [
+                            {
+                              "type": "SIZE_LIMIT",
+                              "maxSizeBytes": 10485760
+                            }
+                          ]
                         }
                         """
                     )
@@ -55,7 +63,7 @@ public class BucketFunctionOperations {
         responses = {
             @ApiResponse(
                 responseCode = "200",
-                description = "Function successfully added to bucket"
+                description = "Functions successfully added to bucket"
             ),
             @ApiResponse(
                 responseCode = "400",

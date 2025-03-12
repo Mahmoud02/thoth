@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,15 +21,28 @@ public class BucketFunctionService {
     private final BucketStore bucketStore;
     private final BucketFunctionFactory functionFactory;
     
-    public void updateFunctionConfig(String bucketName, String type, FunctionConfig functionConfig) {
+    public void updateFunctionConfig(String bucketName,  FunctionConfig functionConfig) {
         BucketFunctionsConfig config = bucketStore.getBucketFunctionConfig(bucketName);
         if (config == null) {
             config = new BucketFunctionsConfig();
         }
         
-        // Get function and apply config
-        BucketFunction function = functionFactory.getFunction(type);
+        BucketFunction function = functionFactory.getFunction(functionConfig.getType());
         function.applyTo(config, functionConfig);
+        
+        bucketStore.updateBucketFunctionConfig(bucketName, config);
+    }
+    
+    public void updateFunctionConfigs(String bucketName, List<FunctionConfig> functionConfigs) {
+        BucketFunctionsConfig config = bucketStore.getBucketFunctionConfig(bucketName);
+        if (config == null) {
+            config = new BucketFunctionsConfig();
+        }
+        
+        for (FunctionConfig functionConfig : functionConfigs) {
+            BucketFunction function = functionFactory.getFunction(functionConfig.getType());
+            function.applyTo(config, functionConfig);
+        }
         
         bucketStore.updateBucketFunctionConfig(bucketName, config);
     }

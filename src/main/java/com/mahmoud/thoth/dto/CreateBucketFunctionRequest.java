@@ -1,31 +1,17 @@
 package com.mahmoud.thoth.dto;
 
 import com.mahmoud.thoth.function.config.FunctionConfig;
-
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.Data;
 
+import java.util.List;
+
+@Data
 public class CreateBucketFunctionRequest {
-
     @NotBlank
     private String bucketName;
     
-    @NotNull
-    private FunctionConfig config;
-
-    public String getBucketName() {
-        return bucketName;
-    }
-
-    public void setBucketName(String bucketName) {
-        this.bucketName = bucketName;
-    }
-
-    public FunctionConfig getConfig() {
-        return config;
-    }
-
-    public void setConfig(FunctionConfig config) {
-        this.config = config;
-    }
+    @NotEmpty
+    private List<FunctionConfig> configs;
 }
