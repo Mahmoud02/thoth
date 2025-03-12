@@ -1,7 +1,9 @@
 package com.mahmoud.thoth.store.impl;
 
 import com.mahmoud.thoth.dto.UpdateBucketRequest;
+import com.mahmoud.thoth.function.config.BucketFunctionDefinition;
 import com.mahmoud.thoth.function.config.BucketFunctionsConfig;
+import com.mahmoud.thoth.function.enums.FunctionType;
 import com.mahmoud.thoth.model.BucketMetadata;
 import com.mahmoud.thoth.store.BucketStore;
 
@@ -85,7 +87,7 @@ public class InMemoryBucketStore implements BucketStore {
             throw new ResourceNotFoundException("Bucket not found: " + bucketName);
         }
         
-        if (config.getMaxSizeBytes() == null && (config.getAllowedExtensions() == null || config.getAllowedExtensions().isEmpty())) {
+        if (config.getDefinitions().isEmpty()) {
             bucketFunctionConfigs.remove(bucketName);
         } else {
             bucketFunctionConfigs.put(bucketName, config);
@@ -108,5 +110,53 @@ public class InMemoryBucketStore implements BucketStore {
         }
         
         return bucketFunctionConfigs.get(bucketName);
+    }
+
+    @Override
+    public void addFunctionDefinition(String bucketName, BucketFunctionDefinition definition) {
+        if (!bucketsMetadata.containsKey(bucketName)) {
+            throw new ResourceNotFoundException("Bucket not found: " + bucketName);
+        }
+
+        BucketFunctionsConfig config = bucketFunctionConfigs.computeIfAbsent(
+            bucketName, 
+            k -> new BucketFunctionsConfig()
+        );
+
+        config.getDefinitions().removeIf(def -> def.getType() == definition.getType());
+        config.getDefinitions().add(definition);
+    }
+
+    @Override
+    public void removeFunctionDefinition(String bucketName, FunctionType functionType) {
+        if (!bucketsMetadata.containsKey(bucketName)) {
+            throw new ResourceNotFoundException("Bucket not found: " + bucketName);
+        }
+
+        BucketFunctionsConfig config = bucketFunctionConfigs.get(bucketName);
+        if (config != null) {
+            config.getDefinitions().removeIf(def -> def.getType() == functionType);
+            
+            if (config.getDefinitions().isEmpty()) {
+                bucketFunctionConfigs.remove(bucketName);
+            }
+        }
+    }
+
+    @Override
+    public BucketFunctionDefinition getFunctionDefinition(String bucketName, FunctionType functionType) {
+        if (!bucketsMetadata.containsKey(bucketName)) {
+            throw new ResourceNotFoundException("Bucket not found: " + bucketName);
+        }
+
+        BucketFunctionsConfig config = bucketFunctionConfigs.get(bucketName);
+        if (config != null) {
+            return config.getDefinitions()
+                .stream()
+                .filter(def -> def.getType() == functionType)
+                .findFirst()
+                .orElse(null);
+        }
+        return null;
     }
 }

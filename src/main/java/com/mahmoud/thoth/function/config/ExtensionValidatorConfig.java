@@ -13,6 +13,8 @@ public class ExtensionValidatorConfig implements FunctionConfig {
 
     @NotEmpty
     private List<String> allowedExtensions;
+    @NotEmpty
+    private int executionOrder;
 
     @Override
     public FunctionType getType() {
@@ -25,5 +27,10 @@ public class ExtensionValidatorConfig implements FunctionConfig {
 
     public void setAllowedExtensions(List<String> allowedExtensions) {
         this.allowedExtensions = allowedExtensions;
+    }
+
+    @Override
+    public int getExecutionOrder() {
+        return executionOrder;
     }
 }

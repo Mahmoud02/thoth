@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.mahmoud.thoth.function.enums.FunctionType;
 import static com.mahmoud.thoth.function.values.FunctionID.EXTENSION_VALIDATOR_FUNCTION_ID;
 import static com.mahmoud.thoth.function.values.FunctionID.SIZE_LIMIT_FUNCTION_ID;
+
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = SizeLimitConfig.class, name = SIZE_LIMIT_FUNCTION_ID),
@@ -12,4 +13,9 @@ import static com.mahmoud.thoth.function.values.FunctionID.SIZE_LIMIT_FUNCTION_I
 })
 public interface FunctionConfig {
     FunctionType getType();
+    
+    default int getExecutionOrder() {
+        return 0;
+    }
+    
 }

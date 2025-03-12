@@ -2,15 +2,12 @@ package com.mahmoud.thoth.service;
 
 import com.mahmoud.thoth.function.BucketFunction;
 import com.mahmoud.thoth.function.BucketFunctionException;
-import com.mahmoud.thoth.function.config.BucketFunctionsConfig;
-import com.mahmoud.thoth.function.config.FunctionConfig;
+import com.mahmoud.thoth.function.config.*;
 import com.mahmoud.thoth.function.enums.FunctionType;
 import com.mahmoud.thoth.function.factory.BucketFunctionFactory;
 import com.mahmoud.thoth.store.BucketStore;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.io.InputStream;
 import java.util.List;
 
@@ -21,16 +18,19 @@ public class BucketFunctionService {
     private final BucketStore bucketStore;
     private final BucketFunctionFactory functionFactory;
     
-    public void updateFunctionConfig(String bucketName,  FunctionConfig functionConfig) {
+    public void updateFunctionConfig(String bucketName, FunctionConfig functionConfig, int executionOrder) {
         BucketFunctionsConfig config = bucketStore.getBucketFunctionConfig(bucketName);
         if (config == null) {
             config = new BucketFunctionsConfig();
         }
         
-        BucketFunction function = functionFactory.getFunction(functionConfig.getType());
-        function.applyTo(config, functionConfig);
-        
-        bucketStore.updateBucketFunctionConfig(bucketName, config);
+        BucketFunctionDefinition definition = BucketFunctionDefinition.builder()
+            .type(functionConfig.getType())
+            .config(functionConfig)
+            .executionOrder(executionOrder)
+            .build();
+
+        bucketStore.addFunctionDefinition(bucketName, definition);
     }
     
     public void updateFunctionConfigs(String bucketName, List<FunctionConfig> functionConfigs) {
@@ -38,31 +38,24 @@ public class BucketFunctionService {
         if (config == null) {
             config = new BucketFunctionsConfig();
         }
+
+        config.getDefinitions().clear();
         
-        for (FunctionConfig functionConfig : functionConfigs) {
-            BucketFunction function = functionFactory.getFunction(functionConfig.getType());
-            function.applyTo(config, functionConfig);
+        for (int i = 0; i < functionConfigs.size(); i++) {
+            FunctionConfig functionConfig = functionConfigs.get(i);
+            BucketFunctionDefinition definition = BucketFunctionDefinition.builder()
+                .type(functionConfig.getType())
+                .config(functionConfig)
+                .executionOrder(i)
+                .build();
+            config.getDefinitions().add(definition);
         }
         
         bucketStore.updateBucketFunctionConfig(bucketName, config);
     }
     
     public void removeFunctionConfig(String bucketName, FunctionType type) {
-        BucketFunctionsConfig config = bucketStore.getBucketFunctionConfig(bucketName);
-        if (config == null) {
-            return;
-        }
-        
-        // Get function and remove config
-        BucketFunction function = functionFactory.getFunction(type);
-        function.removeFrom(config);
-        
-        // Check if the configuration is now empty
-        if (functionFactory.isFunctionConfigEmpty(config)) {
-            bucketStore.removeBucketFunctionConfig(bucketName);
-        } else {
-            bucketStore.updateBucketFunctionConfig(bucketName, config);
-        }
+        bucketStore.removeFunctionDefinition(bucketName, type);
     }
     
     public void executeBucketFunctions(String bucketName, String objectName, InputStream inputStream) 
@@ -73,20 +66,12 @@ public class BucketFunctionService {
             return;
         }
         
-        if (config.getMaxSizeBytes() != null) {
-            BucketFunction function = functionFactory.getFunction(FunctionType.SIZE_LIMIT);
-            if (function != null) {
+        for (BucketFunctionDefinition definition : config.getDefinitionsInOrder()) {
+            try {
                 markInputStream(inputStream);
-                function.validate(bucketName, objectName, inputStream, config);
-                resetInputStream(inputStream);
-            }
-        }
-        
-        if (config.getAllowedExtensions() != null && !config.getAllowedExtensions().isEmpty()) {
-            BucketFunction function = functionFactory.getFunction(FunctionType.EXTENSION_VALIDATOR);
-            if (function != null) {
-                markInputStream(inputStream);
-                function.validate(bucketName, objectName, inputStream, config);
+                BucketFunction function = functionFactory.getFunction(definition.getType());
+                function.validate(bucketName, objectName, inputStream, definition.getConfig());
+            } finally {
                 resetInputStream(inputStream);
             }
         }

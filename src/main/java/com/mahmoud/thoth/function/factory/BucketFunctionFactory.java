@@ -1,7 +1,6 @@
 package com.mahmoud.thoth.function.factory;
 
 import com.mahmoud.thoth.function.BucketFunction;
-import com.mahmoud.thoth.function.config.BucketFunctionsConfig;
 import com.mahmoud.thoth.function.enums.FunctionType;
 
 import org.springframework.stereotype.Component;
@@ -33,7 +32,4 @@ public class BucketFunctionFactory {
         return function;
     }
     
-    public boolean isFunctionConfigEmpty(BucketFunctionsConfig config) {
-        return BucketFunction.isEmpty(config);
-    }
 }

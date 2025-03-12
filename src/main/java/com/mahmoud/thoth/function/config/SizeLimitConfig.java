@@ -14,6 +14,9 @@ public class SizeLimitConfig implements FunctionConfig {
     @Positive
     private Long maxSizeBytes;
 
+    @NotNull
+    private int order;
+
     @Override
     public FunctionType getType() {
         return FunctionType.SIZE_LIMIT;
@@ -25,5 +28,10 @@ public class SizeLimitConfig implements FunctionConfig {
 
     public void setMaxSizeBytes(Long maxSizeBytes) {
         this.maxSizeBytes = maxSizeBytes;
+    }
+
+    @Override
+    public int getExecutionOrder() {
+        return order;
     }
 }

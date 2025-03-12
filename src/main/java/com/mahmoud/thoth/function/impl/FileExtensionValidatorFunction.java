@@ -2,11 +2,11 @@ package com.mahmoud.thoth.function.impl;
 
 import com.mahmoud.thoth.function.BucketFunction;
 import com.mahmoud.thoth.function.BucketFunctionException;
-import com.mahmoud.thoth.function.config.BucketFunctionsConfig;
 import com.mahmoud.thoth.function.config.ExtensionValidatorConfig;
 import com.mahmoud.thoth.function.config.FunctionConfig;
 import com.mahmoud.thoth.function.enums.FunctionType;
 
+import lombok.var;
 
 import org.springframework.stereotype.Component;
 import java.io.InputStream;
@@ -24,15 +24,17 @@ public class FileExtensionValidatorFunction implements BucketFunction {
     }
     
     @Override
-    public void validate(String bucketName, String objectName, InputStream inputStream, BucketFunctionsConfig config) 
+    public void validate(String bucketName, String objectName, InputStream inputStream, FunctionConfig config) 
             throws BucketFunctionException {
         
-        if (config.getAllowedExtensions() == null || config.getAllowedExtensions().isEmpty()) {
+        var extensionValidatorConfig = (ExtensionValidatorConfig) config;
+
+        if (extensionValidatorConfig.getAllowedExtensions() == null || extensionValidatorConfig.getAllowedExtensions().isEmpty()) {
             throw new BucketFunctionException("Missing configuration: allowedExtensions");
         }
         
         Set<String> allowedExtensions = new HashSet<>();
-        for (String ext : config.getAllowedExtensions()) {
+        for (String ext : extensionValidatorConfig.getAllowedExtensions()) {
             allowedExtensions.add(ext.toLowerCase());
         }
         
@@ -48,16 +50,5 @@ public class FileExtensionValidatorFunction implements BucketFunction {
                 extension, String.join(", ", allowedExtensions))
             );
         }
-    }
-    @Override
-    public void removeFrom(BucketFunctionsConfig config) {
-        config.setAllowedExtensions(null);
-    }
-
-    @Override
-    public void applyTo(BucketFunctionsConfig config, FunctionConfig functionConfig) {
-        ExtensionValidatorConfig extensionValidatorConfig = (ExtensionValidatorConfig) functionConfig;
-        config.setAllowedExtensions(extensionValidatorConfig.getAllowedExtensions());
-
     }
 }
