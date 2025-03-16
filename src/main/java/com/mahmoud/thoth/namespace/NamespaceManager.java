@@ -1,8 +1,8 @@
 package com.mahmoud.thoth.namespace;
 
-import com.mahmoud.thoth.model.Namespace;
-
 import java.util.Map;
+
+import com.mahmoud.thoth.namespace.model.Namespace;
 
 public interface NamespaceManager {
     void createNamespace(String namespaceName);

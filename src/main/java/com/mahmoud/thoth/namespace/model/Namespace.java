@@ -1,13 +1,13 @@
-package com.mahmoud.thoth.model;
+package com.mahmoud.thoth.namespace.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Schema {
+public class Namespace {
     private String name;
     private List<String> buckets;
 
-    public Schema(String name) {
+    public Namespace(String name) {
         this.name = name;
         this.buckets = new ArrayList<>();
     }
