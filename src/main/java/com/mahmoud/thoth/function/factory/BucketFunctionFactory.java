@@ -4,7 +4,6 @@ import com.mahmoud.thoth.function.BucketFunction;
 import com.mahmoud.thoth.function.enums.FunctionType;
 
 import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +15,6 @@ public class BucketFunctionFactory {
     
     private final Map<FunctionType, BucketFunction> functionsByType = new HashMap<>();
     
-    @Autowired
     public BucketFunctionFactory(List<BucketFunction> functions) {
         for (BucketFunction function : functions) {
             functionsByType.put(function.getType(), function);

@@ -6,6 +6,8 @@ import com.mahmoud.thoth.function.config.BucketFunctionsConfig;
 import com.mahmoud.thoth.function.enums.FunctionType;
 import com.mahmoud.thoth.model.BucketMetadata;
 import com.mahmoud.thoth.store.BucketStore;
+import com.mahmoud.thoth.store.namespace.NamespaceManager;
+import com.mahmoud.thoth.store.namespace.impl.InMemoryNamespaceManager;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,14 +26,21 @@ public class InMemoryBucketStore implements BucketStore {
 
     private final Map<String, BucketMetadata> bucketsMetadata = new HashMap<>();
     private final Map<String, BucketFunctionsConfig> bucketFunctionConfigs = new ConcurrentHashMap<>();
+    private final NamespaceManager namespaceManager = new InMemoryNamespaceManager();
 
     @Override
     public void createBucket(String bucketName) {
+        createBucket(bucketName, InMemoryNamespaceManager.DEFAULT_NAMESPACE_NAME);
+    }
+
+    public void createBucket(String bucketName, String namespaceName) {
         if (bucketsMetadata.containsKey(bucketName)) {
             throw new ResourceConflictException("Bucket already exists: " + bucketName);
         }
         bucketsMetadata.put(bucketName, new BucketMetadata(LocalDateTime.now(), LocalDateTime.now()));
         bucketFunctionConfigs.put(bucketName, new BucketFunctionsConfig());
+
+        namespaceManager.addBucketToNamespace(namespaceName, bucketName);
     }
 
     @Override
@@ -79,6 +88,8 @@ public class InMemoryBucketStore implements BucketStore {
         }
         bucketsMetadata.remove(bucketName);
         bucketFunctionConfigs.remove(bucketName);
+
+        namespaceManager.getNamespaces().values().forEach(namespace -> namespace.removeBucket(bucketName));
     }
     
     @Override
