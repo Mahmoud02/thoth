@@ -4,16 +4,18 @@ import com.mahmoud.thoth.namespace.NamespaceManager;
 import com.mahmoud.thoth.namespace.model.Namespace;
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-
-import org.springframework.stereotype.Component;
+import java.util.Set;
 
 @Component
 public class InMemoryNamespaceManager implements NamespaceManager {
-    private final Map<String, Namespace> namespaces = new HashMap<>();
+
     public static final String DEFAULT_NAMESPACE_NAME = "default";
+    private final Map<String, Namespace> namespaces = new HashMap<>();
 
     public InMemoryNamespaceManager() {
         namespaces.put(DEFAULT_NAMESPACE_NAME, new Namespace(DEFAULT_NAMESPACE_NAME));
@@ -65,5 +67,14 @@ public class InMemoryNamespaceManager implements NamespaceManager {
     @Override
     public Map<String, Namespace> getNamespaces() {
         return namespaces;
+    }
+
+    @Override
+    public Set<String> getBucketsByNamespace(String namespaceName) {
+        Namespace namespace = namespaces.get(namespaceName);
+        if (namespace == null) {
+            throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
+        }
+        return new HashSet<>(namespace.getBuckets());
     }
 }

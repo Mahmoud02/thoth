@@ -18,7 +18,9 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -26,7 +28,7 @@ public class InMemoryBucketStore implements BucketStore {
 
     private final Map<String, BucketMetadata> bucketsMetadata = new HashMap<>();
     private final Map<String, BucketFunctionsConfig> bucketFunctionConfigs = new ConcurrentHashMap<>();
-    private final NamespaceManager namespaceManager ;
+    private final NamespaceManager namespaceManager;
 
     @Override
     public void createBucket(String bucketName) {
@@ -67,7 +69,10 @@ public class InMemoryBucketStore implements BucketStore {
 
     @Override
     public Map<String, BucketMetadata> getBucketsByNamespace(String namespaceName) {
-        return namespaceManager.getBucketsByNamespace(namespaceName);
+        Set<String> bucketNames = namespaceManager.getBucketsByNamespace(namespaceName);
+        return bucketNames.stream()
+                .filter(bucketsMetadata::containsKey)
+                .collect(Collectors.toMap(bucketName -> bucketName, bucketsMetadata::get));
     }
 
     @Override

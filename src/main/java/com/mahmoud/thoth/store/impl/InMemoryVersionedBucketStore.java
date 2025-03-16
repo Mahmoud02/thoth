@@ -1,12 +1,8 @@
 package com.mahmoud.thoth.store.impl;
 
 import com.mahmoud.thoth.dto.UpdateBucketRequest;
-import com.mahmoud.thoth.model.BucketMetadata;
 import com.mahmoud.thoth.model.VersionedBucket;
 import com.mahmoud.thoth.store.VersionedBucketStore;
-
-import lombok.RequiredArgsConstructor;
-
 import com.mahmoud.thoth.namespace.NamespaceManager;
 import com.mahmoud.thoth.namespace.impl.InMemoryNamespaceManager;
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
@@ -18,11 +14,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
 public class InMemoryVersionedBucketStore implements VersionedBucketStore {
 
     private final Map<String, VersionedBucket> versionedBuckets = new HashMap<>();
-    private final NamespaceManager namespaceManager ;
+    private final NamespaceManager namespaceManager = new InMemoryNamespaceManager();
 
     @Override
     public void createVersionedBucket(String bucketName) {
@@ -81,16 +76,15 @@ public class InMemoryVersionedBucketStore implements VersionedBucketStore {
     public Map<String, VersionedBucket> getVersionedBuckets() {
         return versionedBuckets;
     }
-    
+
     @Override
     public Map<String, VersionedBucket> getVersionedBucketsByNamespace(String namespaceName) {
         if (!namespaceManager.getNamespaces().containsKey(namespaceName)) {
             throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
         }
 
-        return namespaceManager.getNamespaces().get(namespaceName).getBuckets().stream()
+        return namespaceManager.getBucketsByNamespace(namespaceName).stream()
                 .filter(versionedBuckets::containsKey)
                 .collect(Collectors.toMap(bucketName -> bucketName, versionedBuckets::get));
     }
-
 }
