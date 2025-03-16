@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mahmoud.thoth.dto.CreateNamespaceRequest;
+import com.mahmoud.thoth.dto.UpdateNamespaceRequest;
 import com.mahmoud.thoth.namespace.NamespaceManager;
 import com.mahmoud.thoth.namespace.impl.InMemoryNamespaceManager;
 import com.mahmoud.thoth.namespace.model.Namespace;
@@ -35,21 +37,21 @@ public class NamespaceControllerV1 {
     private final NamespaceManager namespaceManager;
 
     @PostMapping
-    public ResponseEntity<Namespace> createNamespace(@RequestBody @Valid @NotBlank String namespaceName) {
-        logger.info("Creating namespace: {}", namespaceName);
-        namespaceManager.createNamespace(namespaceName);
-        Namespace namespace = namespaceManager.getNamespace(namespaceName);
+    public ResponseEntity<Namespace> createNamespace(@RequestBody @Valid CreateNamespaceRequest request) {
+        logger.info("Creating namespace: {}", request.getNamespaceName());
+        namespaceManager.createNamespace(request.getNamespaceName());
+        Namespace namespace = namespaceManager.getNamespace(request.getNamespaceName());
         return ResponseEntity.status(HttpStatus.CREATED).body(namespace);
     }
 
     @PutMapping("/{namespaceName}")
-    public ResponseEntity<Namespace> updateNamespace(@PathVariable @NotBlank String namespaceName, @RequestBody @Valid @NotBlank String newNamespaceName) {
+    public ResponseEntity<Namespace> updateNamespace(@PathVariable @NotBlank String namespaceName, @RequestBody @Valid UpdateNamespaceRequest request) {
         if (InMemoryNamespaceManager.DEFAULT_NAMESPACE_NAME.equals(namespaceName)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
-        logger.info("Updating namespace: {} to {}", namespaceName, newNamespaceName);
-        namespaceManager.updateNamespace(namespaceName, newNamespaceName);
-        Namespace updatedNamespace = namespaceManager.getNamespace(newNamespaceName);
+        logger.info("Updating namespace: {} to {}", namespaceName, request.getNewNamespaceName());
+        namespaceManager.updateNamespace(namespaceName, request.getNewNamespaceName());
+        Namespace updatedNamespace = namespaceManager.getNamespace(request.getNewNamespaceName());
         return ResponseEntity.ok(updatedNamespace);
     }
 
