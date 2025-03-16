@@ -7,4 +7,6 @@ import lombok.Data;
 public class CreateBucketRequest {
     @NotBlank(message = "Bucket name must not be blank")
     private String name;
+
+    private String namespace;
 }

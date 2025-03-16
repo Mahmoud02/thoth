@@ -10,6 +10,7 @@ import java.util.Map;
 
 public interface BucketStore {
     void createBucket(String bucketName);
+    void createBucket(String bucketName, String namespaceName);
     BucketMetadata getBucketMetadata(String bucketName);
     long getBucketSize(String bucketName);
     Map<String, BucketMetadata> getBuckets();

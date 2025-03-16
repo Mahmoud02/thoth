@@ -1,5 +1,21 @@
 package com.mahmoud.thoth.controller.v1;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.mahmoud.thoth.dto.BucketDTO;
 import com.mahmoud.thoth.dto.CreateBucketRequest;
 import com.mahmoud.thoth.dto.UpdateBucketRequest;
@@ -7,17 +23,10 @@ import com.mahmoud.thoth.mapper.BucketMapper;
 import com.mahmoud.thoth.service.MetadataService;
 import com.mahmoud.thoth.service.StorageService;
 import com.mahmoud.thoth.store.BucketStore;
-import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,7 +44,7 @@ public class BucketControllerV1 {
     @PostMapping
     public ResponseEntity<BucketDTO> createBucket(@RequestBody @Valid CreateBucketRequest createBucketRequestDTO) {
         logger.info("Creating bucket: {}", createBucketRequestDTO.getName());
-        this.bucketStore.createBucket(createBucketRequestDTO.getName());
+        this.bucketStore.createBucket(createBucketRequestDTO.getName(), createBucketRequestDTO.getNamespace());
         storageService.createBucket(createBucketRequestDTO.getName());
         BucketDTO bucketDTO = bucketMapper.toBucketDTO(createBucketRequestDTO.getName(), bucketStore.getBucketMetadata(createBucketRequestDTO.getName()));
         return ResponseEntity.status(HttpStatus.CREATED).body(bucketDTO);

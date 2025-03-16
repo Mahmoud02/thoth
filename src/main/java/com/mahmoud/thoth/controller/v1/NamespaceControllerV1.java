@@ -1,0 +1,62 @@
+package com.mahmoud.thoth.controller.v1;
+
+import com.mahmoud.thoth.model.Namespace;
+import com.mahmoud.thoth.store.namespace.NamespaceManager;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/v1/thoth/namespaces")
+@Validated
+public class NamespaceControllerV1 {
+
+    private static final Logger logger = LoggerFactory.getLogger(NamespaceControllerV1.class);
+
+    private final NamespaceManager namespaceManager;
+
+    @PostMapping
+    public ResponseEntity<Namespace> createNamespace(@RequestBody @Valid @NotBlank String namespaceName) {
+        logger.info("Creating namespace: {}", namespaceName);
+        namespaceManager.createNamespace(namespaceName);
+        Namespace namespace = namespaceManager.getNamespace(namespaceName);
+        return ResponseEntity.status(HttpStatus.CREATED).body(namespace);
+    }
+
+    @PutMapping("/{namespaceName}")
+    public ResponseEntity<Namespace> updateNamespace(@PathVariable @NotBlank String namespaceName, @RequestBody @Valid @NotBlank String newNamespaceName) {
+        logger.info("Updating namespace: {} to {}", namespaceName, newNamespaceName);
+        namespaceManager.deleteNamespace(namespaceName);
+        namespaceManager.createNamespace(newNamespaceName);
+        Namespace updatedNamespace = namespaceManager.getNamespace(newNamespaceName);
+        return ResponseEntity.ok(updatedNamespace);
+    }
+
+    @DeleteMapping("/{namespaceName}")
+    public ResponseEntity<Void> deleteNamespace(@PathVariable @NotBlank String namespaceName) {
+        logger.info("Deleting namespace: {}", namespaceName);
+        namespaceManager.deleteNamespace(namespaceName);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{namespaceName}")
+    public ResponseEntity<Namespace> getNamespace(@PathVariable @NotBlank String namespaceName) {
+        Namespace namespace = namespaceManager.getNamespace(namespaceName);
+        return ResponseEntity.ok(namespace);
+    }
+
+    @GetMapping
+    public ResponseEntity<Map<String, Namespace>> listNamespaces() {
+        return ResponseEntity.ok(namespaceManager.getNamespaces());
+    }
+}

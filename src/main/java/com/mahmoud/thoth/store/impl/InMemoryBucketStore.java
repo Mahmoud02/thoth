@@ -37,6 +37,11 @@ public class InMemoryBucketStore implements BucketStore {
         if (bucketsMetadata.containsKey(bucketName)) {
             throw new ResourceConflictException("Bucket already exists: " + bucketName);
         }
+        if (namespaceName == null || namespaceName.isEmpty()) {
+            namespaceName = InMemoryNamespaceManager.DEFAULT_NAMESPACE_NAME;
+        } else if (!namespaceManager.getNamespaces().containsKey(namespaceName)) {
+            throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
+        }
         bucketsMetadata.put(bucketName, new BucketMetadata(LocalDateTime.now(), LocalDateTime.now()));
         bucketFunctionConfigs.put(bucketName, new BucketFunctionsConfig());
 
