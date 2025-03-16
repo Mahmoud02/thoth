@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mahmoud.thoth.dto.BucketDTO;
@@ -35,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 public class BucketControllerV1 {
 
     private static final Logger logger = LoggerFactory.getLogger(BucketControllerV1.class);
+    private static final String DEFAULT_NAMESPACE = "default";
 
     private final BucketStore bucketStore;
     private final StorageService storageService;
@@ -44,7 +46,8 @@ public class BucketControllerV1 {
     @PostMapping
     public ResponseEntity<BucketDTO> createBucket(@RequestBody @Valid CreateBucketRequest createBucketRequestDTO) {
         logger.info("Creating bucket: {}", createBucketRequestDTO.getName());
-        this.bucketStore.createBucket(createBucketRequestDTO.getName(), createBucketRequestDTO.getNamespace());
+        String namespace = createBucketRequestDTO.getNamespace() != null ? createBucketRequestDTO.getNamespace() : DEFAULT_NAMESPACE;
+        this.bucketStore.createBucket(createBucketRequestDTO.getName(), namespace);
         storageService.createBucket(createBucketRequestDTO.getName());
         BucketDTO bucketDTO = bucketMapper.toBucketDTO(createBucketRequestDTO.getName(), bucketStore.getBucketMetadata(createBucketRequestDTO.getName()));
         return ResponseEntity.status(HttpStatus.CREATED).body(bucketDTO);
@@ -73,7 +76,7 @@ public class BucketControllerV1 {
     }
 
     @GetMapping
-    public ResponseEntity<List<BucketDTO>> listBuckets() {
-        return ResponseEntity.ok(bucketMapper.toBucketDTOList(bucketStore.getBuckets()));
+    public ResponseEntity<List<BucketDTO>> listBuckets(@RequestParam(required = false, defaultValue = DEFAULT_NAMESPACE) String namespace) {
+        return ResponseEntity.ok(bucketMapper.toBucketDTOList(bucketStore.getBucketsByNamespace(namespace)));
     }
 }

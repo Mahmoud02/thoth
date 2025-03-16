@@ -26,6 +26,7 @@ import java.util.List;
 public class VersionedBucketControllerV1 {
 
     private static final Logger logger = LoggerFactory.getLogger(VersionedBucketControllerV1.class);
+    private static final String DEFAULT_NAMESPACE = "default";
 
     private final VersionedBucketStore versionedBucketStore;
     private final StorageService storageService;
@@ -35,7 +36,8 @@ public class VersionedBucketControllerV1 {
     @PostMapping
     public ResponseEntity<BucketDTO> createVersionedBucket(@RequestBody @Valid CreateBucketRequest createBucketRequestDTO) {
         logger.info("Creating versioned bucket: {}", createBucketRequestDTO.getName());
-        this.versionedBucketStore.createVersionedBucket(createBucketRequestDTO.getName());
+        String namespace = createBucketRequestDTO.getNamespace() != null ? createBucketRequestDTO.getNamespace() : DEFAULT_NAMESPACE;
+        this.versionedBucketStore.createVersionedBucket(createBucketRequestDTO.getName(), namespace);
         storageService.createVersionedBucket(createBucketRequestDTO.getName());
         BucketDTO bucketDTO = bucketMapper.toVersionedBucketDTO(createBucketRequestDTO.getName(), versionedBucketStore.getVersionedBucketMetadata(createBucketRequestDTO.getName()));
         return ResponseEntity.status(HttpStatus.CREATED).body(bucketDTO);
@@ -64,7 +66,7 @@ public class VersionedBucketControllerV1 {
     }
 
     @GetMapping
-    public ResponseEntity<List<BucketDTO>> listVersionedBuckets() {
-        return ResponseEntity.ok(bucketMapper.toVersionedBucketDTOList(versionedBucketStore.getVersionedBuckets()));
+    public ResponseEntity<List<BucketDTO>> listVersionedBuckets(@RequestParam(required = false, defaultValue = DEFAULT_NAMESPACE) String namespace) {
+        return ResponseEntity.ok(bucketMapper.toVersionedBucketDTOList(versionedBucketStore.getVersionedBucketsByNamespace(namespace)));
     }
 }

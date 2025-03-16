@@ -1,8 +1,12 @@
 package com.mahmoud.thoth.store.impl;
 
 import com.mahmoud.thoth.dto.UpdateBucketRequest;
+import com.mahmoud.thoth.model.BucketMetadata;
 import com.mahmoud.thoth.model.VersionedBucket;
 import com.mahmoud.thoth.store.VersionedBucketStore;
+
+import lombok.RequiredArgsConstructor;
+
 import com.mahmoud.thoth.namespace.NamespaceManager;
 import com.mahmoud.thoth.namespace.impl.InMemoryNamespaceManager;
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
@@ -11,18 +15,21 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class InMemoryVersionedBucketStore implements VersionedBucketStore {
 
     private final Map<String, VersionedBucket> versionedBuckets = new HashMap<>();
-    private final NamespaceManager namespaceManager = new InMemoryNamespaceManager();
+    private final NamespaceManager namespaceManager ;
 
     @Override
     public void createVersionedBucket(String bucketName) {
         createVersionedBucket(bucketName, InMemoryNamespaceManager.DEFAULT_NAMESPACE_NAME);
     }
 
+    @Override
     public void createVersionedBucket(String bucketName, String namespaceName) {
         if (versionedBuckets.containsKey(bucketName)) {
             throw new ResourceConflictException("Versioned bucket already exists: " + bucketName);
@@ -74,4 +81,16 @@ public class InMemoryVersionedBucketStore implements VersionedBucketStore {
     public Map<String, VersionedBucket> getVersionedBuckets() {
         return versionedBuckets;
     }
+    
+    @Override
+    public Map<String, VersionedBucket> getVersionedBucketsByNamespace(String namespaceName) {
+        if (!namespaceManager.getNamespaces().containsKey(namespaceName)) {
+            throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
+        }
+
+        return namespaceManager.getNamespaces().get(namespaceName).getBuckets().stream()
+                .filter(versionedBuckets::containsKey)
+                .collect(Collectors.toMap(bucketName -> bucketName, versionedBuckets::get));
+    }
+
 }

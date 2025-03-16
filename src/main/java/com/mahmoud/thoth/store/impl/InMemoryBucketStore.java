@@ -26,13 +26,14 @@ public class InMemoryBucketStore implements BucketStore {
 
     private final Map<String, BucketMetadata> bucketsMetadata = new HashMap<>();
     private final Map<String, BucketFunctionsConfig> bucketFunctionConfigs = new ConcurrentHashMap<>();
-    private final NamespaceManager namespaceManager;
+    private final NamespaceManager namespaceManager ;
 
     @Override
     public void createBucket(String bucketName) {
         createBucket(bucketName, InMemoryNamespaceManager.DEFAULT_NAMESPACE_NAME);
     }
 
+    @Override
     public void createBucket(String bucketName, String namespaceName) {
         if (bucketsMetadata.containsKey(bucketName)) {
             throw new ResourceConflictException("Bucket already exists: " + bucketName);
@@ -62,6 +63,11 @@ public class InMemoryBucketStore implements BucketStore {
     @Override
     public Map<String, BucketMetadata> getBuckets() {
         return bucketsMetadata;
+    }
+
+    @Override
+    public Map<String, BucketMetadata> getBucketsByNamespace(String namespaceName) {
+        return namespaceManager.getBucketsByNamespace(namespaceName);
     }
 
     @Override

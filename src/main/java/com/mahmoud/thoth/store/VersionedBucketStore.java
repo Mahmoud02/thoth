@@ -12,4 +12,5 @@ public interface VersionedBucketStore {
     void updateVersionedBucket(String bucketName, UpdateBucketRequest updateBucketDTO);
     void deleteVersionedBucket(String bucketName);
     Map<String, VersionedBucket> getVersionedBuckets();
+    Map<String, VersionedBucket> getVersionedBucketsByNamespace(String namespaceName);
 }

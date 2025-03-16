@@ -14,6 +14,7 @@ public interface BucketStore {
     BucketMetadata getBucketMetadata(String bucketName);
     long getBucketSize(String bucketName);
     Map<String, BucketMetadata> getBuckets();
+    Map<String, BucketMetadata> getBucketsByNamespace(String namespaceName);
     void updateBucket(String bucketName, UpdateBucketRequest updateBucketDTO);
     void deleteBucket(String bucketName);
     
