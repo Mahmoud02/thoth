@@ -26,7 +26,7 @@ public class InMemoryBucketStore implements BucketStore {
 
     private final Map<String, BucketMetadata> bucketsMetadata = new HashMap<>();
     private final Map<String, BucketFunctionsConfig> bucketFunctionConfigs = new ConcurrentHashMap<>();
-    private final NamespaceManager namespaceManager = new InMemoryNamespaceManager();
+    private final NamespaceManager namespaceManager;
 
     @Override
     public void createBucket(String bucketName) {

@@ -8,6 +8,9 @@ import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class InMemoryNamespaceManager implements NamespaceManager {
     private final Map<String, Namespace> namespaces = new HashMap<>();
     public static final String DEFAULT_NAMESPACE_NAME = "default";

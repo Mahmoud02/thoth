@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FileSystemStorageService implements StorageService {
 
-    private final String storagePath = "thoth-storage"; 
+    private static final String STORAGE_PATH = "thoth-storage";
     private final BucketStore bucketStore;
     private final VersionedBucketStore versionedBucketStore;
     private final ObjectMetadataMapper objectMetadataMapper;
@@ -38,62 +38,33 @@ public class FileSystemStorageService implements StorageService {
 
     @PostConstruct
     public void init() {
-        new File(storagePath).mkdirs();
+        new File(STORAGE_PATH).mkdirs();
     }
-    
+
     @Override
     public void uploadObject(String bucketName, String objectName, InputStream inputStream) throws IOException {
         if (bucketStore.getBucketMetadata(bucketName) == null) {
             bucketStore.createBucket(bucketName);
         }
-        
-        // Read the entire input stream to be able to reuse it
-        byte[] content = inputStream.readAllBytes();
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(new ByteArrayInputStream(content));
-        bufferedInputStream.mark(Integer.MAX_VALUE);
-        
-        // Execute all bucket functions before saving
-        try {
-            bucketFunctionService.executeBucketFunctions(bucketName, objectName, bufferedInputStream);
-        } catch (BucketFunctionException e) {
-            logger.error("Bucket function validation failed for {}/{}: {}", bucketName, objectName, e.getMessage());
-            throw e;
-        }
 
-        Path bucketDirectory = Paths.get(storagePath, bucketName);
-        Files.createDirectories(bucketDirectory);
-        Path objectPath = bucketDirectory.resolve(objectName);
+        byte[] content = readInputStream(inputStream);
+        executeBucketFunctions(bucketName, objectName, content);
 
-        try (FileOutputStream outputStream = new FileOutputStream(objectPath.toFile())) {
-            outputStream.write(content);
-        }
+        Path objectPath = createObjectPath(bucketName, objectName);
+        writeFile(objectPath, content);
     }
 
+    @Override
     public void uploadObjectWithVersion(String bucketName, String objectName, String version, InputStream inputStream) throws IOException {
         if (versionedBucketStore.getVersionedBucketMetadata(bucketName) == null) {
             versionedBucketStore.createVersionedBucket(bucketName);
         }
 
-        // Read the entire input stream to be able to reuse it
-        byte[] content = inputStream.readAllBytes();
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(new ByteArrayInputStream(content));
-        bufferedInputStream.mark(Integer.MAX_VALUE);
+        byte[] content = readInputStream(inputStream);
+        executeBucketFunctions(bucketName, objectName, content);
 
-        // Execute all bucket functions before saving
-        try {
-            bucketFunctionService.executeBucketFunctions(bucketName, objectName, bufferedInputStream);
-        } catch (BucketFunctionException e) {
-            logger.error("Bucket function validation failed for {}/{}: {}", bucketName, objectName, e.getMessage());
-            throw e;
-        }
-
-        Path bucketDirectory = Paths.get(storagePath, bucketName, version);
-        Files.createDirectories(bucketDirectory);
-        Path objectPath = bucketDirectory.resolve(objectName);
-
-        try (FileOutputStream outputStream = new FileOutputStream(objectPath.toFile())) {
-            outputStream.write(content);
-        }
+        Path objectPath = createObjectPath(bucketName, version, objectName);
+        writeFile(objectPath, content);
 
         VersionedBucket versionedBucket = versionedBucketStore.getVersionedBucketMetadata(bucketName);
         versionedBucket.addObject(objectName, version);
@@ -101,24 +72,26 @@ public class FileSystemStorageService implements StorageService {
 
     @Override
     public byte[] downloadObject(String bucketName, String objectName) throws IOException {
-        Path objectPath = Paths.get(storagePath, bucketName, objectName);
-        return Files.readAllBytes(objectPath);
+        Path objectPath = createObjectPath(bucketName, objectName);
+        return readFile(objectPath);
     }
 
+    @Override
     public byte[] downloadObjectWithVersion(String bucketName, String objectName, String version) throws IOException {
-        Path objectPath = Paths.get(storagePath, bucketName, version, objectName);
-        return Files.readAllBytes(objectPath);
+        Path objectPath = createObjectPath(bucketName, version, objectName);
+        return readFile(objectPath);
     }
 
     @Override
     public void deleteObject(String bucketName, String objectName) throws IOException {
-        Path objectPath = Paths.get(storagePath, bucketName, objectName);
-        Files.deleteIfExists(objectPath);
+        Path objectPath = createObjectPath(bucketName, objectName);
+        deleteFile(objectPath);
     }
 
+    @Override
     public void deleteObjectWithVersion(String bucketName, String objectName, String version) throws IOException {
-        Path objectPath = Paths.get(storagePath, bucketName, version, objectName);
-        Files.deleteIfExists(objectPath);
+        Path objectPath = createObjectPath(bucketName, version, objectName);
+        deleteFile(objectPath);
 
         VersionedBucket versionedBucket = versionedBucketStore.getVersionedBucketMetadata(bucketName);
         versionedBucket.removeObject(objectName, version);
@@ -126,7 +99,7 @@ public class FileSystemStorageService implements StorageService {
 
     @Override
     public List<ObjectMetadataDTO> listObjects(String bucketName) throws IOException {
-        Path bucketDirectory = Paths.get(storagePath, bucketName);
+        Path bucketDirectory = createBucketPath(bucketName);
         if (Files.isDirectory(bucketDirectory)) {
             return Files.list(bucketDirectory)
                         .map(path -> objectMetadataMapper.toObjectMetadataDTO(bucketName, path))
@@ -136,8 +109,9 @@ public class FileSystemStorageService implements StorageService {
         }
     }
 
+    @Override
     public List<ObjectMetadataDTO> listObjectsWithVersions(String bucketName) throws IOException {
-        Path bucketDirectory = Paths.get(storagePath, bucketName);
+        Path bucketDirectory = createBucketPath(bucketName);
         if (Files.isDirectory(bucketDirectory)) {
             return Files.walk(bucketDirectory)
                         .filter(Files::isRegularFile)
@@ -149,21 +123,64 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public void createBucket(String bucketName){
+    public void createBucket(String bucketName) {
         try {
-            Path bucketDirectory = Paths.get(storagePath, bucketName);
-            Files.createDirectories(bucketDirectory);        
+            Path bucketDirectory = createBucketPath(bucketName);
+            Files.createDirectories(bucketDirectory);
         } catch (IOException e) {
             logger.error("Error creating bucket directory", e);
         }
     }
 
-    public void createVersionedBucket(String bucketName){
+    @Override
+    public void createVersionedBucket(String bucketName) {
         try {
-            Path bucketDirectory = Paths.get(storagePath, bucketName);
-            Files.createDirectories(bucketDirectory);        
+            Path bucketDirectory = createBucketPath(bucketName);
+            Files.createDirectories(bucketDirectory);
         } catch (IOException e) {
             logger.error("Error creating versioned bucket directory", e);
         }
+    }
+
+    private byte[] readInputStream(InputStream inputStream) throws IOException {
+        return inputStream.readAllBytes();
+    }
+
+    private void executeBucketFunctions(String bucketName, String objectName, byte[] content) throws IOException {
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(new ByteArrayInputStream(content));
+        bufferedInputStream.mark(Integer.MAX_VALUE);
+
+        try {
+            bucketFunctionService.executeBucketFunctions(bucketName, objectName, bufferedInputStream);
+        } catch (BucketFunctionException e) {
+            logger.error("Bucket function validation failed for {}/{}: {}", bucketName, objectName, e.getMessage());
+            throw e;
+        }
+    }
+
+    private Path createBucketPath(String bucketName) {
+        return Paths.get(STORAGE_PATH, bucketName);
+    }
+
+    private Path createObjectPath(String bucketName, String objectName) {
+        return createBucketPath(bucketName).resolve(objectName);
+    }
+
+    private Path createObjectPath(String bucketName, String version, String objectName) {
+        return createBucketPath(bucketName).resolve(version).resolve(objectName);
+    }
+
+    private void writeFile(Path path, byte[] content) throws IOException {
+        try (FileOutputStream outputStream = new FileOutputStream(path.toFile())) {
+            outputStream.write(content);
+        }
+    }
+
+    private byte[] readFile(Path path) throws IOException {
+        return Files.readAllBytes(path);
+    }
+
+    private void deleteFile(Path path) throws IOException {
+        Files.deleteIfExists(path);
     }
 }
