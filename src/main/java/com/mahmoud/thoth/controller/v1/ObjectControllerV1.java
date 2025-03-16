@@ -25,11 +25,28 @@ public class ObjectControllerV1 {
         return ResponseEntity.ok(objectMetadata);
     }
 
+    @PostMapping(value = "/{bucketName}/versioned-objects", consumes = "multipart/form-data")
+    public ResponseEntity<ObjectMetadataDTO> uploadVersionedObject(
+            @PathVariable String bucketName, 
+            @Valid @ModelAttribute UploadObjectRequest uploadObjectRequest) throws IOException {
+        ObjectMetadataDTO objectMetadata = objectService.uploadVersionedObject(bucketName, uploadObjectRequest);
+        return ResponseEntity.ok(objectMetadata);
+    }
+
     @GetMapping("/{bucketName}/objects/{objectName}")
     public ResponseEntity<byte[]> downloadObject(
             @PathVariable String bucketName, 
             @PathVariable String objectName) throws IOException {
         byte[] data = objectService.downloadObject(bucketName, objectName);
+        return ResponseEntity.ok(data);
+    }
+
+    @GetMapping("/{bucketName}/versioned-objects/{objectName}/{version}")
+    public ResponseEntity<byte[]> downloadObjectWithVersion(
+            @PathVariable String bucketName, 
+            @PathVariable String objectName,
+            @PathVariable String version) throws IOException {
+        byte[] data = objectService.downloadObjectWithVersion(bucketName, objectName, version);
         return ResponseEntity.ok(data);
     }
 
@@ -41,10 +58,26 @@ public class ObjectControllerV1 {
         return ResponseEntity.ok("Object deleted");
     }
 
+    @DeleteMapping("/{bucketName}/versioned-objects/{objectName}/{version}")
+    public ResponseEntity<String> deleteObjectWithVersion(
+            @PathVariable String bucketName, 
+            @PathVariable String objectName,
+            @PathVariable String version) throws IOException {
+        objectService.deleteObjectWithVersion(bucketName, objectName, version);
+        return ResponseEntity.ok("Object deleted");
+    }
+
     @GetMapping("/{bucketName}/objects")
     public ResponseEntity<List<ObjectMetadataDTO>> listObjects(
             @PathVariable String bucketName) throws IOException {
         List<ObjectMetadataDTO> objects = objectService.listObjects(bucketName);
+        return ResponseEntity.ok(objects);
+    }
+
+    @GetMapping("/{bucketName}/versioned-objects")
+    public ResponseEntity<List<ObjectMetadataDTO>> listObjectsWithVersions(
+            @PathVariable String bucketName) throws IOException {
+        List<ObjectMetadataDTO> objects = objectService.listObjectsWithVersions(bucketName);
         return ResponseEntity.ok(objects);
     }
 }
