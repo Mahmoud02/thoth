@@ -1,9 +1,9 @@
-package com.mahmoud.thoth.store.namespace.impl;
+package com.mahmoud.thoth.namespace.impl;
 
 import com.mahmoud.thoth.model.Namespace;
+import com.mahmoud.thoth.namespace.NamespaceManager;
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
-import com.mahmoud.thoth.store.namespace.NamespaceManager;
 
 import java.util.HashMap;
 import java.util.Map;

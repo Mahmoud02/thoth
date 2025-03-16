@@ -5,9 +5,9 @@ import com.mahmoud.thoth.function.config.BucketFunctionDefinition;
 import com.mahmoud.thoth.function.config.BucketFunctionsConfig;
 import com.mahmoud.thoth.function.enums.FunctionType;
 import com.mahmoud.thoth.model.BucketMetadata;
+import com.mahmoud.thoth.namespace.NamespaceManager;
+import com.mahmoud.thoth.namespace.impl.InMemoryNamespaceManager;
 import com.mahmoud.thoth.store.BucketStore;
-import com.mahmoud.thoth.store.namespace.NamespaceManager;
-import com.mahmoud.thoth.store.namespace.impl.InMemoryNamespaceManager;
 
 import lombok.RequiredArgsConstructor;
 

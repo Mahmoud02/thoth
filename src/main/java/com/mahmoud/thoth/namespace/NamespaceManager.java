@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.store.namespace;
+package com.mahmoud.thoth.namespace;
 
 import com.mahmoud.thoth.model.Namespace;
 
