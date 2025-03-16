@@ -3,6 +3,8 @@ package com.mahmoud.thoth.store.impl;
 import com.mahmoud.thoth.dto.UpdateBucketRequest;
 import com.mahmoud.thoth.model.VersionedBucket;
 import com.mahmoud.thoth.store.VersionedBucketStore;
+import com.mahmoud.thoth.namespace.NamespaceManager;
+import com.mahmoud.thoth.namespace.impl.InMemoryNamespaceManager;
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
@@ -14,13 +16,24 @@ import java.util.Map;
 public class InMemoryVersionedBucketStore implements VersionedBucketStore {
 
     private final Map<String, VersionedBucket> versionedBuckets = new HashMap<>();
+    private final NamespaceManager namespaceManager = new InMemoryNamespaceManager();
 
     @Override
     public void createVersionedBucket(String bucketName) {
+        createVersionedBucket(bucketName, InMemoryNamespaceManager.DEFAULT_NAMESPACE_NAME);
+    }
+
+    public void createVersionedBucket(String bucketName, String namespaceName) {
         if (versionedBuckets.containsKey(bucketName)) {
             throw new ResourceConflictException("Versioned bucket already exists: " + bucketName);
         }
+        if (namespaceName == null || namespaceName.isEmpty()) {
+            namespaceName = InMemoryNamespaceManager.DEFAULT_NAMESPACE_NAME;
+        } else if (!namespaceManager.getNamespaces().containsKey(namespaceName)) {
+            throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
+        }
         versionedBuckets.put(bucketName, new VersionedBucket(bucketName));
+        namespaceManager.addBucketToNamespace(namespaceName, bucketName);
     }
 
     @Override
@@ -54,6 +67,7 @@ public class InMemoryVersionedBucketStore implements VersionedBucketStore {
             throw new ResourceNotFoundException("Versioned bucket not found: " + bucketName);
         }
         versionedBuckets.remove(bucketName);
+        namespaceManager.getNamespaces().values().forEach(namespace -> namespace.removeBucket(bucketName));
     }
 
     @Override
