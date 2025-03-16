@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,6 +32,9 @@ public class InMemoryNamespaceManager implements NamespaceManager {
 
     @Override
     public void deleteNamespace(String namespaceName) {
+        if (DEFAULT_NAMESPACE_NAME.equals(namespaceName)) {
+            throw new IllegalArgumentException("Cannot delete the default namespace");
+        }
         if (!namespaces.containsKey(namespaceName)) {
             throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
         }
@@ -63,10 +67,13 @@ public class InMemoryNamespaceManager implements NamespaceManager {
         }
         return namespace;
     }
-
     @Override
     public Map<String, Namespace> getNamespaces() {
         return namespaces;
+    }
+    @Override
+    public List<Namespace> getListNamespaces() {
+        return namespaces.entrySet().stream().map(Map.Entry::getValue).toList();
     }
 
     @Override
@@ -76,5 +83,14 @@ public class InMemoryNamespaceManager implements NamespaceManager {
             throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
         }
         return new HashSet<>(namespace.getBuckets());
+    }
+
+    @Override
+    public void updateNamespace(String namespaceName, String newNamespaceName) {
+        if (DEFAULT_NAMESPACE_NAME.equals(namespaceName)) {
+            throw new IllegalArgumentException("Cannot update the default namespace");
+        }
+        deleteNamespace(namespaceName);
+        createNamespace(newNamespaceName);
     }
 }

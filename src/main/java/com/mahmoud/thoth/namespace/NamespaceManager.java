@@ -1,5 +1,6 @@
 package com.mahmoud.thoth.namespace;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,5 +13,7 @@ public interface NamespaceManager {
     void removeBucketFromNamespace(String namespaceName, String bucketName);
     Namespace getNamespace(String namespaceName);
     Map<String, Namespace> getNamespaces();
-    Set<String> getBucketsByNamespace(String namespaceName); // New method
+    List<Namespace> getListNamespaces();
+    Set<String> getBucketsByNamespace(String namespaceName);
+    void updateNamespace(String namespaceName, String newNamespaceName);
 }

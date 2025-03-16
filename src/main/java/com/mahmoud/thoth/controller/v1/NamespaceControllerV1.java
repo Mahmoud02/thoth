@@ -1,6 +1,6 @@
 package com.mahmoud.thoth.controller.v1;
 
-import java.util.Map;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mahmoud.thoth.namespace.NamespaceManager;
+import com.mahmoud.thoth.namespace.impl.InMemoryNamespaceManager;
 import com.mahmoud.thoth.namespace.model.Namespace;
 
 import jakarta.validation.Valid;
@@ -43,15 +44,20 @@ public class NamespaceControllerV1 {
 
     @PutMapping("/{namespaceName}")
     public ResponseEntity<Namespace> updateNamespace(@PathVariable @NotBlank String namespaceName, @RequestBody @Valid @NotBlank String newNamespaceName) {
+        if (InMemoryNamespaceManager.DEFAULT_NAMESPACE_NAME.equals(namespaceName)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
         logger.info("Updating namespace: {} to {}", namespaceName, newNamespaceName);
-        namespaceManager.deleteNamespace(namespaceName);
-        namespaceManager.createNamespace(newNamespaceName);
+        namespaceManager.updateNamespace(namespaceName, newNamespaceName);
         Namespace updatedNamespace = namespaceManager.getNamespace(newNamespaceName);
         return ResponseEntity.ok(updatedNamespace);
     }
 
     @DeleteMapping("/{namespaceName}")
     public ResponseEntity<Void> deleteNamespace(@PathVariable @NotBlank String namespaceName) {
+        if (InMemoryNamespaceManager.DEFAULT_NAMESPACE_NAME.equals(namespaceName)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         logger.info("Deleting namespace: {}", namespaceName);
         namespaceManager.deleteNamespace(namespaceName);
         return ResponseEntity.noContent().build();
@@ -64,7 +70,7 @@ public class NamespaceControllerV1 {
     }
 
     @GetMapping
-    public ResponseEntity<Map<String, Namespace>> listNamespaces() {
-        return ResponseEntity.ok(namespaceManager.getNamespaces());
+    public ResponseEntity<List<Namespace>> listNamespaces() {
+        return ResponseEntity.ok(namespaceManager.getListNamespaces());
     }
 }
