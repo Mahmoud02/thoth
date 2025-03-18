@@ -1,7 +1,7 @@
-package com.mahmoud.thoth.domain.port;
+package com.mahmoud.thoth.domain.port.out;
 
 import com.mahmoud.thoth.domain.model.BucketMetadata;
-import com.mahmoud.thoth.dto.UpdateBucketRequest;
+import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
 import com.mahmoud.thoth.function.config.BucketFunctionsConfig;
 import com.mahmoud.thoth.function.config.BucketFunctionDefinition;
 import com.mahmoud.thoth.function.enums.FunctionType;
@@ -25,4 +25,8 @@ public interface BucketRepository {
     void addFunctionDefinition(String bucketName, BucketFunctionDefinition definition);
     void removeFunctionDefinition(String bucketName, FunctionType functionType);
     BucketFunctionDefinition getFunctionDefinition(String bucketName, FunctionType functionType);
+
+    boolean containsKey(String bucketName);
+    BucketMetadata remove(String bucketName);
+    void save(BucketMetadata bucketMetadata);
 }

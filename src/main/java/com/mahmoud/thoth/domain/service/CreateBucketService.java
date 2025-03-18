@@ -1,8 +1,8 @@
 package com.mahmoud.thoth.domain.service;
 
 import com.mahmoud.thoth.domain.model.BucketMetadata;
-import com.mahmoud.thoth.domain.port.BucketRepository;
 import com.mahmoud.thoth.domain.port.in.CreateBucketRequest;
+import com.mahmoud.thoth.domain.port.out.BucketRepository;
 import com.mahmoud.thoth.namespace.NamespaceManager;
 import com.mahmoud.thoth.namespace.impl.InMemoryNamespaceManager;
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
@@ -10,7 +10,6 @@ import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +31,8 @@ public class CreateBucketService {
             throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
         }
 
-        bucketRepository.save(bucketName, new BucketMetadata(LocalDateTime.now(), LocalDateTime.now()));
+        BucketMetadata bucketMetadata = new BucketMetadata(bucketName, namespaceName);
+        bucketRepository.save(bucketMetadata);
         namespaceManager.addBucketToNamespace(namespaceName, bucketName);
     }
 }

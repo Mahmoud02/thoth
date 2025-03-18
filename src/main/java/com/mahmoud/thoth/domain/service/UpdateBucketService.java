@@ -1,8 +1,8 @@
 package com.mahmoud.thoth.domain.service;
 
 import com.mahmoud.thoth.domain.model.BucketMetadata;
-import com.mahmoud.thoth.domain.port.BucketRepository;
 import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
+import com.mahmoud.thoth.domain.port.out.BucketRepository;
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class UpdateBucketService {
 
         BucketMetadata bucketMetadata = bucketRepository.remove(bucketName);
         if (bucketMetadata != null) {
-            bucketRepository.save(request.getName(), bucketMetadata);
+            bucketRepository.save(bucketMetadata);
         }
     }
 }

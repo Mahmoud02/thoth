@@ -1,6 +1,6 @@
 package com.mahmoud.thoth.domain.service;
 
-import com.mahmoud.thoth.domain.port.BucketRepository;
+import com.mahmoud.thoth.domain.port.out.BucketRepository;
 import com.mahmoud.thoth.namespace.NamespaceManager;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class DeleteBucketService {
         if (!bucketRepository.containsKey(bucketName)) {
             throw new ResourceNotFoundException("Bucket not found: " + bucketName);
         }
-        bucketRepository.delete(bucketName);
+        bucketRepository.deleteBucket(bucketName);
         namespaceManager.getNamespaces().values().forEach(namespace -> namespace.removeBucket(bucketName));
     }
 }
