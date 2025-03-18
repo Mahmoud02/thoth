@@ -3,10 +3,11 @@ package com.mahmoud.thoth.controller.v1;
 import com.mahmoud.thoth.domain.port.in.CreateBucketRequest;
 import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
 import com.mahmoud.thoth.dto.BucketDTO;
+import com.mahmoud.thoth.domain.service.CreateBucketService;
+import com.mahmoud.thoth.domain.service.UpdateBucketService;
+import com.mahmoud.thoth.domain.service.DeleteBucketService;
 import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
 import com.mahmoud.thoth.mapper.BucketMapper;
-import com.mahmoud.thoth.service.MetadataService;
-import com.mahmoud.thoth.service.StorageService;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -29,35 +30,30 @@ public class VersionedBucketControllerV1 {
     private static final Logger logger = LoggerFactory.getLogger(VersionedBucketControllerV1.class);
     private static final String DEFAULT_NAMESPACE = "default";
 
+    private final CreateBucketService createBucketService;
+    private final UpdateBucketService updateBucketService;
+    private final DeleteBucketService deleteBucketService;
     private final VersionedBucketStore versionedBucketStore;
-    private final StorageService storageService;
-    private final MetadataService metadataService;
     private final BucketMapper bucketMapper;
 
     @PostMapping
     public ResponseEntity<BucketDTO> createVersionedBucket(@RequestBody @Valid CreateBucketRequest createBucketRequestDTO) {
         logger.info("Creating versioned bucket: {}", createBucketRequestDTO.getName());
-        String namespace = createBucketRequestDTO.getNamespaceName() != null ? createBucketRequestDTO.getNamespaceName() : DEFAULT_NAMESPACE;
-        this.versionedBucketStore.createVersionedBucket(createBucketRequestDTO.getName(), namespace);
-        storageService.createVersionedBucket(createBucketRequestDTO.getName());
-        BucketDTO bucketDTO = bucketMapper.toVersionedBucketDTO(createBucketRequestDTO.getName(), versionedBucketStore.getVersionedBucketMetadata(createBucketRequestDTO.getName()));
+        BucketDTO bucketDTO = createBucketService.createVersionedBucket(createBucketRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(bucketDTO);
     }
 
     @PutMapping("/{bucketName}")
     public ResponseEntity<BucketDTO> updateVersionedBucket(@PathVariable @NotBlank String bucketName, @RequestBody @Valid UpdateBucketRequest updateBucketRequestDTO) {
         logger.info("Updating versioned bucket: {} to {}", bucketName, updateBucketRequestDTO.getName());
-        this.versionedBucketStore.updateVersionedBucket(bucketName, updateBucketRequestDTO);
-        this.metadataService.updateObjectMetadata(bucketName, updateBucketRequestDTO.getName());
-        BucketDTO updatedBucketDTO = bucketMapper.toVersionedBucketDTO(updateBucketRequestDTO.getName(), versionedBucketStore.getVersionedBucketMetadata(updateBucketRequestDTO.getName()));
+        BucketDTO updatedBucketDTO = updateBucketService.updateVersionedBucket(bucketName, updateBucketRequestDTO);
         return ResponseEntity.ok(updatedBucketDTO);
     }
 
     @DeleteMapping("/{bucketName}")
     public ResponseEntity<Void> deleteVersionedBucket(@PathVariable @NotBlank String bucketName) {
         logger.info("Deleting versioned bucket: {}", bucketName);
-        this.versionedBucketStore.deleteVersionedBucket(bucketName);
-        this.metadataService.deleteObjectMetadata(bucketName);
+        deleteBucketService.deleteVersionedBucket(bucketName);
         return ResponseEntity.noContent().build();
     }
 

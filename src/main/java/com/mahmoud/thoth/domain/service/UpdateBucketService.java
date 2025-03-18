@@ -3,8 +3,12 @@ package com.mahmoud.thoth.domain.service;
 import com.mahmoud.thoth.domain.model.BucketMetadata;
 import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
 import com.mahmoud.thoth.domain.port.out.BucketRepository;
+import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
+import com.mahmoud.thoth.dto.BucketDTO;
+import com.mahmoud.thoth.mapper.BucketMapper;
+import com.mahmoud.thoth.service.MetadataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +17,11 @@ import org.springframework.stereotype.Service;
 public class UpdateBucketService {
 
     private final BucketRepository bucketRepository;
+    private final VersionedBucketStore versionedBucketStore;
+    private final MetadataService metadataService;
+    private final BucketMapper bucketMapper;
 
-    public void execute(String bucketName, UpdateBucketRequest request) {
+    public BucketDTO updateRegularBucket(String bucketName, UpdateBucketRequest request) {
         if (!bucketRepository.containsKey(bucketName)) {
             throw new ResourceNotFoundException("Bucket not found: " + bucketName);
         }
@@ -27,5 +34,13 @@ public class UpdateBucketService {
         if (bucketMetadata != null) {
             bucketRepository.save(bucketMetadata);
         }
+        metadataService.updateObjectMetadata(bucketName, request.getName());
+        return bucketMapper.toBucketDTO(request.getName(), bucketRepository.getBucketMetadata(request.getName()));
+    }
+
+    public BucketDTO updateVersionedBucket(String bucketName, UpdateBucketRequest request) {
+        versionedBucketStore.updateVersionedBucket(bucketName, request);
+        metadataService.updateObjectMetadata(bucketName, request.getName());
+        return bucketMapper.toVersionedBucketDTO(request.getName(), versionedBucketStore.getVersionedBucketMetadata(request.getName()));
     }
 }

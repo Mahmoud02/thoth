@@ -3,13 +3,16 @@ package com.mahmoud.thoth.domain.service;
 import com.mahmoud.thoth.domain.model.BucketMetadata;
 import com.mahmoud.thoth.domain.port.in.CreateBucketRequest;
 import com.mahmoud.thoth.domain.port.out.BucketRepository;
+import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
 import com.mahmoud.thoth.namespace.NamespaceManager;
 import com.mahmoud.thoth.namespace.impl.InMemoryNamespaceManager;
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
+import com.mahmoud.thoth.dto.BucketDTO;
+import com.mahmoud.thoth.mapper.BucketMapper;
+import com.mahmoud.thoth.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 
 @Service
 @RequiredArgsConstructor
@@ -17,8 +20,11 @@ public class CreateBucketService {
 
     private final BucketRepository bucketRepository;
     private final NamespaceManager namespaceManager;
+    private final VersionedBucketStore versionedBucketStore;
+    private final StorageService storageService;
+    private final BucketMapper bucketMapper;
 
-    public void execute(CreateBucketRequest request) {
+    public BucketDTO createRegularBucket(CreateBucketRequest request) {
         String bucketName = request.getName();
         String namespaceName = request.getNamespaceName();
 
@@ -34,5 +40,15 @@ public class CreateBucketService {
         BucketMetadata bucketMetadata = new BucketMetadata(bucketName, namespaceName);
         bucketRepository.save(bucketMetadata);
         namespaceManager.addBucketToNamespace(namespaceName, bucketName);
+        storageService.createBucket(bucketName);
+        return bucketMapper.toBucketDTO(bucketName, bucketRepository.getBucketMetadata(bucketName));
+    }
+
+    public BucketDTO createVersionedBucket(CreateBucketRequest request) {
+        String bucketName = request.getName();
+        String namespace = request.getNamespaceName() != null ? request.getNamespaceName() : InMemoryNamespaceManager.DEFAULT_NAMESPACE_NAME;
+        versionedBucketStore.createVersionedBucket(bucketName, namespace);
+        storageService.createVersionedBucket(bucketName);
+        return bucketMapper.toVersionedBucketDTO(bucketName, versionedBucketStore.getVersionedBucketMetadata(bucketName));
     }
 }
