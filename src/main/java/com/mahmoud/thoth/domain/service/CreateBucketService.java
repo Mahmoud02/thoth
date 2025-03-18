@@ -5,12 +5,13 @@ import com.mahmoud.thoth.domain.model.Namespace;
 import com.mahmoud.thoth.domain.port.in.CreateBucketRequest;
 import com.mahmoud.thoth.domain.port.out.BucketRepository;
 import com.mahmoud.thoth.domain.port.out.NamespaceRepository;
+import com.mahmoud.thoth.infrastructure.StorageService;
 import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 import com.mahmoud.thoth.dto.BucketDTO;
 import com.mahmoud.thoth.mapper.BucketMapper;
-import com.mahmoud.thoth.service.StorageService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

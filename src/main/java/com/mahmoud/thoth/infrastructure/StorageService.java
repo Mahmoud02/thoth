@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.service;
+package com.mahmoud.thoth.infrastructure;
 
 import com.mahmoud.thoth.dto.ObjectMetadataDTO;
 

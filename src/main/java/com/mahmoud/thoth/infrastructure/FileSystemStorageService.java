@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.service;
+package com.mahmoud.thoth.infrastructure;
 
 import com.mahmoud.thoth.domain.model.VersionedBucket;
 import com.mahmoud.thoth.dto.ObjectMetadataDTO;
@@ -6,6 +6,7 @@ import com.mahmoud.thoth.function.BucketFunctionException;
 import com.mahmoud.thoth.infrastructure.store.BucketStore;
 import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
 import com.mahmoud.thoth.mapper.ObjectMetadataMapper;
+import com.mahmoud.thoth.service.BucketFunctionService;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

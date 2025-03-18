@@ -3,6 +3,7 @@ package com.mahmoud.thoth.service;
 import com.mahmoud.thoth.domain.port.out.MetadataRepository;
 import com.mahmoud.thoth.dto.ObjectMetadataDTO;
 import com.mahmoud.thoth.dto.UploadObjectRequest;
+import com.mahmoud.thoth.infrastructure.StorageService;
 import com.mahmoud.thoth.mapper.ObjectMetadataMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
