@@ -18,4 +18,9 @@ public class BucketMetadata {
         this.lastModifiedDate = LocalDateTime.now();
         this.size = 0;
     }
+
+    public BucketMetadata() {
+        this.creationDate = LocalDateTime.now();
+        this.lastModifiedDate = LocalDateTime.now();
+    }
 }

@@ -11,6 +11,7 @@ import com.mahmoud.thoth.infrastructure.store.BucketStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Component
@@ -53,8 +54,7 @@ public class BucketRepositoryAdapter implements BucketRepository {
     public void updateBucket(String bucketName, UpdateBucketRequest updateBucketDTO) {
         BucketMetadata bucketMetadata = bucketStore.getBucketMetadata(bucketName);
         bucketMetadata.setBucketName(updateBucketDTO.getName());
-        bucketMetadata.setLastModifiedDate(updateBucketDTO.getLastModifiedDate());
-        bucketMetadata.setSize(updateBucketDTO.getSize());
+        bucketMetadata.setLastModifiedDate(LocalDateTime.now());
         bucketStore.updateBucket(bucketName, bucketMetadata);
     }
 

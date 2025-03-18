@@ -1,8 +1,9 @@
 package com.mahmoud.thoth.infrastructure.repository;
 
 import com.mahmoud.thoth.domain.port.out.NamespaceRepository;
+import com.mahmoud.thoth.infrastructure.store.NamespaceStore;
 import com.mahmoud.thoth.namespace.model.Namespace;
-import com.mahmoud.thoth.store.NamespaceStore;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

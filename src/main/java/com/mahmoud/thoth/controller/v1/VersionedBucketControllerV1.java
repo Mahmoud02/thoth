@@ -1,8 +1,8 @@
 package com.mahmoud.thoth.controller.v1;
 
+import com.mahmoud.thoth.domain.port.in.CreateBucketRequest;
+import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
 import com.mahmoud.thoth.dto.BucketDTO;
-import com.mahmoud.thoth.dto.CreateBucketRequest;
-import com.mahmoud.thoth.dto.UpdateBucketRequest;
 import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
 import com.mahmoud.thoth.mapper.BucketMapper;
 import com.mahmoud.thoth.service.MetadataService;
@@ -37,7 +37,7 @@ public class VersionedBucketControllerV1 {
     @PostMapping
     public ResponseEntity<BucketDTO> createVersionedBucket(@RequestBody @Valid CreateBucketRequest createBucketRequestDTO) {
         logger.info("Creating versioned bucket: {}", createBucketRequestDTO.getName());
-        String namespace = createBucketRequestDTO.getNamespace() != null ? createBucketRequestDTO.getNamespace() : DEFAULT_NAMESPACE;
+        String namespace = createBucketRequestDTO.getNamespaceName() != null ? createBucketRequestDTO.getNamespaceName() : DEFAULT_NAMESPACE;
         this.versionedBucketStore.createVersionedBucket(createBucketRequestDTO.getName(), namespace);
         storageService.createVersionedBucket(createBucketRequestDTO.getName());
         BucketDTO bucketDTO = bucketMapper.toVersionedBucketDTO(createBucketRequestDTO.getName(), versionedBucketStore.getVersionedBucketMetadata(createBucketRequestDTO.getName()));

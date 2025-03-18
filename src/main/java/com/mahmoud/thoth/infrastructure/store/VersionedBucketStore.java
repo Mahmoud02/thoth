@@ -1,6 +1,6 @@
 package com.mahmoud.thoth.infrastructure.store;
 
-import com.mahmoud.thoth.dto.UpdateBucketRequest;
+import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
 import com.mahmoud.thoth.model.VersionedBucket;
 
 import java.util.Map;

@@ -1,6 +1,6 @@
 package com.mahmoud.thoth.infrastructure.store.impl;
 
-import com.mahmoud.thoth.dto.UpdateBucketRequest;
+import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
 import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
 import com.mahmoud.thoth.model.VersionedBucket;
 import com.mahmoud.thoth.namespace.NamespaceManager;

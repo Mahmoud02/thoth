@@ -1,11 +1,11 @@
 package com.mahmoud.thoth.infrastructure.store.impl;
 
-import com.mahmoud.thoth.dto.UpdateBucketRequest;
+import com.mahmoud.thoth.domain.model.BucketMetadata;
+import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
 import com.mahmoud.thoth.function.config.BucketFunctionDefinition;
 import com.mahmoud.thoth.function.config.BucketFunctionsConfig;
 import com.mahmoud.thoth.function.enums.FunctionType;
 import com.mahmoud.thoth.infrastructure.store.BucketStore;
-import com.mahmoud.thoth.model.BucketMetadata;
 import com.mahmoud.thoth.namespace.NamespaceManager;
 import com.mahmoud.thoth.namespace.impl.InMemoryNamespaceManager;
 
@@ -15,7 +15,6 @@ import com.mahmoud.thoth.shared.exception.ResourceConflictException;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -30,7 +29,6 @@ public class InMemoryBucketStore implements BucketStore {
     private final Map<String, BucketFunctionsConfig> bucketFunctionConfigs = new ConcurrentHashMap<>();
     private final NamespaceManager namespaceManager;
 
-    @Override
     public void createBucket(String bucketName) {
         createBucket(bucketName, InMemoryNamespaceManager.DEFAULT_NAMESPACE_NAME);
     }
@@ -45,7 +43,7 @@ public class InMemoryBucketStore implements BucketStore {
         } else if (!namespaceManager.getNamespaces().containsKey(namespaceName)) {
             throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
         }
-        bucketsMetadata.put(bucketName, new BucketMetadata(LocalDateTime.now(), LocalDateTime.now()));
+        bucketsMetadata.put(bucketName, new BucketMetadata());
         bucketFunctionConfigs.put(bucketName, new BucketFunctionsConfig());
 
         namespaceManager.addBucketToNamespace(namespaceName, bucketName);
@@ -185,5 +183,30 @@ public class InMemoryBucketStore implements BucketStore {
                 .orElse(null);
         }
         return null;
+    }
+
+    @Override
+    public void createBucket(BucketMetadata bucketMetadata) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'createBucket'");
+    }
+
+
+    @Override
+    public void updateBucket(String bucketName, BucketMetadata bucketMetadata) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updateBucket'");
+    }
+
+    @Override
+    public boolean containsKey(String bucketName) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'containsKey'");
+    }
+
+    @Override
+    public BucketMetadata remove(String bucketName) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'remove'");
     }
 }

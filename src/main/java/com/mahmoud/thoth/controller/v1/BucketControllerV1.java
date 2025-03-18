@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mahmoud.thoth.domain.port.in.CreateBucketRequest;
+import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
 import com.mahmoud.thoth.dto.BucketDTO;
-import com.mahmoud.thoth.dto.CreateBucketRequest;
-import com.mahmoud.thoth.dto.UpdateBucketRequest;
 import com.mahmoud.thoth.infrastructure.store.BucketStore;
 import com.mahmoud.thoth.mapper.BucketMapper;
 import com.mahmoud.thoth.service.MetadataService;
@@ -46,7 +46,7 @@ public class BucketControllerV1 {
     @PostMapping
     public ResponseEntity<BucketDTO> createBucket(@RequestBody @Valid CreateBucketRequest createBucketRequestDTO) {
         logger.info("Creating bucket: {}", createBucketRequestDTO.getName());
-        String namespace = createBucketRequestDTO.getNamespace() != null ? createBucketRequestDTO.getNamespace() : DEFAULT_NAMESPACE;
+        String namespace = createBucketRequestDTO.getNamespaceName() != null ? createBucketRequestDTO.getNamespaceName() : DEFAULT_NAMESPACE;
         this.bucketStore.createBucket(createBucketRequestDTO.getName(), namespace);
         storageService.createBucket(createBucketRequestDTO.getName());
         BucketDTO bucketDTO = bucketMapper.toBucketDTO(createBucketRequestDTO.getName(), bucketStore.getBucketMetadata(createBucketRequestDTO.getName()));
