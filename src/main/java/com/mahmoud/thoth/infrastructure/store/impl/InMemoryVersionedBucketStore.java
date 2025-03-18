@@ -1,10 +1,10 @@
 package com.mahmoud.thoth.infrastructure.store.impl;
 
 import com.mahmoud.thoth.domain.model.Namespace;
+import com.mahmoud.thoth.domain.model.VersionedBucket;
 import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
 import com.mahmoud.thoth.domain.port.out.NamespaceRepository;
 import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
-import com.mahmoud.thoth.model.VersionedBucket;
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 
