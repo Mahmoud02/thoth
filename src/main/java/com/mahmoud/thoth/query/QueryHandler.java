@@ -1,7 +1,7 @@
 package com.mahmoud.thoth.query;
 
+import com.mahmoud.thoth.domain.port.out.MetadataRepository;
 import com.mahmoud.thoth.infrastructure.store.BucketStore;
-import com.mahmoud.thoth.service.MetadataService;
 import com.mahmoud.thoth.service.StorageService;
 
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import java.util.Map;
 public class QueryHandler {
 
     private final StorageService storageService;
-    private final MetadataService metadataService;
+    private final MetadataRepository metadataRepository;
     private final BucketStore bucketStore;
 
     
@@ -36,7 +36,7 @@ public class QueryHandler {
             String bucketName = conditions.get("bucket");
             String objectName = conditions.get("name");
             storageService.uploadObject(bucketName, objectName, file.getInputStream());
-            metadataService.addObjectMetadata(bucketName, objectName, file.getSize(), file.getContentType());
+            metadataRepository.addObjectMetadata(bucketName, objectName, file.getSize(), file.getContentType());
             return "Object uploaded";
         } else if ("DOWNLOAD_OBJECT".equals(action) && "OBJECT".equals(resource)) {
             String bucketName = conditions.get("bucket");

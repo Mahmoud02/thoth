@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.model;
+package com.mahmoud.thoth.domain.model;
 
 import java.time.LocalDateTime;
 

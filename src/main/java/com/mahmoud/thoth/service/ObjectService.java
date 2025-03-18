@@ -1,5 +1,6 @@
 package com.mahmoud.thoth.service;
 
+import com.mahmoud.thoth.domain.port.out.MetadataRepository;
 import com.mahmoud.thoth.dto.ObjectMetadataDTO;
 import com.mahmoud.thoth.dto.UploadObjectRequest;
 import com.mahmoud.thoth.mapper.ObjectMetadataMapper;
@@ -17,14 +18,14 @@ import java.util.List;
 public class ObjectService {
 
     private final StorageService storageService;
-    private final MetadataService metadataService;
+    private final MetadataRepository metadataRepository;
     private final ObjectMetadataMapper objectMetadataMapper;
 
     public ObjectMetadataDTO uploadObject(String bucketName, UploadObjectRequest uploadObjectRequest) throws IOException {
         String objectName = uploadObjectRequest.getObjectName();
         MultipartFile file = uploadObjectRequest.getFile();
         storageService.uploadObject(bucketName, objectName, file.getInputStream());
-        metadataService.addObjectMetadata(bucketName, objectName, file.getSize(), file.getContentType());
+        metadataRepository.addObjectMetadata(bucketName, objectName, file.getSize(), file.getContentType());
 
         return objectMetadataMapper.toObjectMetadataDTO(bucketName, objectName, file);
     }
@@ -34,7 +35,7 @@ public class ObjectService {
         MultipartFile file = uploadObjectRequest.getFile();
         String version = generateVersion();
         storageService.uploadObjectWithVersion(bucketName, objectName, version, file.getInputStream());
-        metadataService.addObjectMetadata(bucketName, objectName, file.getSize(), file.getContentType());
+        metadataRepository.addObjectMetadata(bucketName, objectName, file.getSize(), file.getContentType());
 
         return objectMetadataMapper.toObjectMetadataDTO(bucketName, objectName, file);
     }
@@ -54,12 +55,12 @@ public class ObjectService {
 
     public void deleteObject(String bucketName, String objectName) throws IOException {
         storageService.deleteObject(bucketName, objectName);
-        metadataService.removeObjectMetadata(bucketName, objectName);
+        metadataRepository.removeObjectMetadata(bucketName, objectName);
     }
 
     public void deleteObjectWithVersion(String bucketName, String objectName, String version) throws IOException {
         storageService.deleteObjectWithVersion(bucketName, objectName, version);
-        metadataService.removeObjectMetadata(bucketName, objectName);
+        metadataRepository.removeObjectMetadata(bucketName, objectName);
     }
 
     public List<ObjectMetadataDTO> listObjects(String bucketName) throws IOException {

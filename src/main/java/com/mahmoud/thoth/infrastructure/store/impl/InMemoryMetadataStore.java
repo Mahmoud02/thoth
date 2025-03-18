@@ -1,6 +1,8 @@
-package com.mahmoud.thoth.service;
+package com.mahmoud.thoth.infrastructure.store.impl;
 
-import com.mahmoud.thoth.model.ObjectMetadata;
+import com.mahmoud.thoth.domain.model.ObjectMetadata;
+import com.mahmoud.thoth.infrastructure.store.MetadataStore;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -8,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class InMemoryMetadataService implements MetadataService {
+public class InMemoryMetadataStore implements MetadataStore {
 
     private final Map<String, Map<String, ObjectMetadata>> objectsMetadata = new HashMap<>();
 
@@ -36,5 +38,10 @@ public class InMemoryMetadataService implements MetadataService {
     @Override
     public void deleteObjectMetadata(String bucketName) {
         objectsMetadata.remove(bucketName);
+    }
+
+    @Override
+    public Map<String, ObjectMetadata> getObjectMetadata(String bucketName) {
+        return objectsMetadata.get(bucketName);
     }
 }

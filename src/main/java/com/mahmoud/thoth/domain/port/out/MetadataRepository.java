@@ -1,6 +1,6 @@
-package com.mahmoud.thoth.service;
+package com.mahmoud.thoth.domain.port.out;
 
-public interface MetadataService {
+public interface MetadataRepository {
     void addObjectMetadata(String bucketName, String objectName, long size, String contentType);
     void removeObjectMetadata(String bucketName, String objectName);
     void updateObjectMetadata(String oldBucketName, String newBucketName);
