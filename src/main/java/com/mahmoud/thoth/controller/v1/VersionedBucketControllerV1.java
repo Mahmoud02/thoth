@@ -3,10 +3,11 @@ package com.mahmoud.thoth.controller.v1;
 import com.mahmoud.thoth.dto.BucketDTO;
 import com.mahmoud.thoth.dto.CreateBucketRequest;
 import com.mahmoud.thoth.dto.UpdateBucketRequest;
+import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
 import com.mahmoud.thoth.mapper.BucketMapper;
 import com.mahmoud.thoth.service.MetadataService;
 import com.mahmoud.thoth.service.StorageService;
-import com.mahmoud.thoth.store.VersionedBucketStore;
+
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

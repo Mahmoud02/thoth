@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.store;
+package com.mahmoud.thoth.infrastructure.store;
 
 import com.mahmoud.thoth.dto.UpdateBucketRequest;
 import com.mahmoud.thoth.function.config.BucketFunctionsConfig;
@@ -9,7 +9,7 @@ import com.mahmoud.thoth.model.BucketMetadata;
 import java.util.Map;
 
 public interface BucketStore {
-    void createBucket(String bucketName);
+    void createBucket(BucketMetadata bucketMetadata);
     void createBucket(String bucketName, String namespaceName);
     BucketMetadata getBucketMetadata(String bucketName);
     long getBucketSize(String bucketName);

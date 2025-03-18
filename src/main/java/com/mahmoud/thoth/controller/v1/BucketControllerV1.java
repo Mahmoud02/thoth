@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mahmoud.thoth.dto.BucketDTO;
 import com.mahmoud.thoth.dto.CreateBucketRequest;
 import com.mahmoud.thoth.dto.UpdateBucketRequest;
+import com.mahmoud.thoth.infrastructure.store.BucketStore;
 import com.mahmoud.thoth.mapper.BucketMapper;
 import com.mahmoud.thoth.service.MetadataService;
 import com.mahmoud.thoth.service.StorageService;
-import com.mahmoud.thoth.store.BucketStore;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

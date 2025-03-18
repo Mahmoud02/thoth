@@ -1,8 +1,8 @@
 package com.mahmoud.thoth.query;
 
+import com.mahmoud.thoth.infrastructure.store.BucketStore;
 import com.mahmoud.thoth.service.MetadataService;
 import com.mahmoud.thoth.service.StorageService;
-import com.mahmoud.thoth.store.BucketStore;
 
 import lombok.RequiredArgsConstructor;
 

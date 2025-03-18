@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.store;
+package com.mahmoud.thoth.infrastructure.store;
 
 import com.mahmoud.thoth.dto.UpdateBucketRequest;
 import com.mahmoud.thoth.model.VersionedBucket;
