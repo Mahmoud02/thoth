@@ -1,11 +1,11 @@
 package com.mahmoud.thoth.domain.service;
 
 import com.mahmoud.thoth.domain.model.BucketMetadata;
+import com.mahmoud.thoth.domain.model.Namespace;
 import com.mahmoud.thoth.domain.port.in.CreateBucketRequest;
 import com.mahmoud.thoth.domain.port.out.BucketRepository;
+import com.mahmoud.thoth.domain.port.out.NamespaceRepository;
 import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
-import com.mahmoud.thoth.namespace.NamespaceManager;
-import com.mahmoud.thoth.namespace.impl.InMemoryNamespaceManager;
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 import com.mahmoud.thoth.dto.BucketDTO;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 public class CreateBucketService {
 
     private final BucketRepository bucketRepository;
-    private final NamespaceManager namespaceManager;
+    private final NamespaceRepository namespaceRepository;
     private final VersionedBucketStore versionedBucketStore;
     private final StorageService storageService;
     private final BucketMapper bucketMapper;
@@ -32,21 +32,21 @@ public class CreateBucketService {
             throw new ResourceConflictException("Bucket already exists: " + bucketName);
         }
         if (namespaceName == null || namespaceName.isEmpty()) {
-            namespaceName = InMemoryNamespaceManager.DEFAULT_NAMESPACE_NAME;
-        } else if (!namespaceManager.getNamespaces().containsKey(namespaceName)) {
+            namespaceName = Namespace.DEFAULT_NAMESPACE_NAME;
+        } else if (!namespaceRepository.getNamespaces().containsKey(namespaceName)) {
             throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
         }
 
         BucketMetadata bucketMetadata = new BucketMetadata(bucketName, namespaceName);
         bucketRepository.save(bucketMetadata);
-        namespaceManager.addBucketToNamespace(namespaceName, bucketName);
+        namespaceRepository.addBucketToNamespace(namespaceName, bucketName);
         storageService.createBucket(bucketName);
         return bucketMapper.toBucketDTO(bucketName, bucketRepository.getBucketMetadata(bucketName));
     }
 
     public BucketDTO createVersionedBucket(CreateBucketRequest request) {
         String bucketName = request.getName();
-        String namespace = request.getNamespaceName() != null ? request.getNamespaceName() : InMemoryNamespaceManager.DEFAULT_NAMESPACE_NAME;
+        String namespace = request.getNamespaceName() != null ? request.getNamespaceName() : Namespace.DEFAULT_NAMESPACE_NAME;
         versionedBucketStore.createVersionedBucket(bucketName, namespace);
         storageService.createVersionedBucket(bucketName);
         return bucketMapper.toVersionedBucketDTO(bucketName, versionedBucketStore.getVersionedBucketMetadata(bucketName));

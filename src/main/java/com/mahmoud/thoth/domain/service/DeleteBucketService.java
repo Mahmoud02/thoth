@@ -2,8 +2,8 @@ package com.mahmoud.thoth.domain.service;
 
 import com.mahmoud.thoth.domain.port.out.BucketRepository;
 import com.mahmoud.thoth.domain.port.out.MetadataRepository;
+import com.mahmoud.thoth.domain.port.out.NamespaceRepository;
 import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
-import com.mahmoud.thoth.namespace.NamespaceManager;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ public class DeleteBucketService {
 
     private final BucketRepository bucketRepository;
     private final VersionedBucketStore versionedBucketStore;
-    private final NamespaceManager namespaceManager;
+    private final NamespaceRepository namespaceRepository;
     private final MetadataRepository metadataRepository;
 
     public void deleteRegularBucket(String bucketName) {
@@ -22,7 +22,7 @@ public class DeleteBucketService {
             throw new ResourceNotFoundException("Bucket not found: " + bucketName);
         }
         bucketRepository.deleteBucket(bucketName);
-        namespaceManager.getNamespaces().values().forEach(namespace -> namespace.removeBucket(bucketName));
+        namespaceRepository.getNamespaces().values().forEach(namespace -> namespace.removeBucket(bucketName));
         metadataRepository.deleteObjectMetadata(bucketName);
     }
 

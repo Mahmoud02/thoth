@@ -16,11 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mahmoud.thoth.domain.model.Namespace;
+import com.mahmoud.thoth.domain.port.out.NamespaceRepository;
 import com.mahmoud.thoth.dto.CreateNamespaceRequest;
 import com.mahmoud.thoth.dto.UpdateNamespaceRequest;
-import com.mahmoud.thoth.namespace.NamespaceManager;
-import com.mahmoud.thoth.namespace.impl.InMemoryNamespaceManager;
-import com.mahmoud.thoth.namespace.model.Namespace;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -34,7 +33,7 @@ public class NamespaceControllerV1 {
 
     private static final Logger logger = LoggerFactory.getLogger(NamespaceControllerV1.class);
 
-    private final NamespaceManager namespaceManager;
+    private final NamespaceRepository namespaceManager;
 
     @PostMapping
     public ResponseEntity<Namespace> createNamespace(@RequestBody @Valid CreateNamespaceRequest request) {
@@ -46,7 +45,7 @@ public class NamespaceControllerV1 {
 
     @PutMapping("/{namespaceName}")
     public ResponseEntity<Namespace> updateNamespace(@PathVariable @NotBlank String namespaceName, @RequestBody @Valid UpdateNamespaceRequest request) {
-        if (InMemoryNamespaceManager.DEFAULT_NAMESPACE_NAME.equals(namespaceName)) {
+        if (Namespace.DEFAULT_NAMESPACE_NAME.equals(namespaceName)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
         logger.info("Updating namespace: {} to {}", namespaceName, request.getNewNamespaceName());
@@ -57,7 +56,7 @@ public class NamespaceControllerV1 {
 
     @DeleteMapping("/{namespaceName}")
     public ResponseEntity<Void> deleteNamespace(@PathVariable @NotBlank String namespaceName) {
-        if (InMemoryNamespaceManager.DEFAULT_NAMESPACE_NAME.equals(namespaceName)) {
+        if (Namespace.DEFAULT_NAMESPACE_NAME.equals(namespaceName)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         logger.info("Deleting namespace: {}", namespaceName);

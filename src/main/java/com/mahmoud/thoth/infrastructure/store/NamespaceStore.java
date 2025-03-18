@@ -1,10 +1,11 @@
 package com.mahmoud.thoth.infrastructure.store;
 
-import com.mahmoud.thoth.namespace.model.Namespace;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.mahmoud.thoth.domain.model.Namespace;
 
 public interface NamespaceStore {
     void createNamespace(String namespaceName);

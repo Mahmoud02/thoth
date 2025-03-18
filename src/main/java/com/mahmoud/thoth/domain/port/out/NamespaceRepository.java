@@ -1,10 +1,11 @@
 package com.mahmoud.thoth.domain.port.out;
 
-import com.mahmoud.thoth.namespace.model.Namespace;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.mahmoud.thoth.domain.model.Namespace;
 
 public interface NamespaceRepository {
     void createNamespace(String namespaceName);

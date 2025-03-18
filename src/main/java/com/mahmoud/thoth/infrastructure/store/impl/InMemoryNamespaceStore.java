@@ -1,7 +1,7 @@
 package com.mahmoud.thoth.infrastructure.store.impl;
 
+import com.mahmoud.thoth.domain.model.Namespace;
 import com.mahmoud.thoth.infrastructure.store.NamespaceStore;
-import com.mahmoud.thoth.namespace.model.Namespace;
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 

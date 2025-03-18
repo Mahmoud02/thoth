@@ -1,13 +1,13 @@
 package com.mahmoud.thoth.infrastructure.store.impl;
 
 import com.mahmoud.thoth.domain.model.BucketMetadata;
+import com.mahmoud.thoth.domain.model.Namespace;
 import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
+import com.mahmoud.thoth.domain.port.out.NamespaceRepository;
 import com.mahmoud.thoth.function.config.BucketFunctionDefinition;
 import com.mahmoud.thoth.function.config.BucketFunctionsConfig;
 import com.mahmoud.thoth.function.enums.FunctionType;
 import com.mahmoud.thoth.infrastructure.store.BucketStore;
-import com.mahmoud.thoth.namespace.NamespaceManager;
-import com.mahmoud.thoth.namespace.impl.InMemoryNamespaceManager;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,10 +27,10 @@ public class InMemoryBucketStore implements BucketStore {
 
     private final Map<String, BucketMetadata> bucketsMetadata = new HashMap<>();
     private final Map<String, BucketFunctionsConfig> bucketFunctionConfigs = new ConcurrentHashMap<>();
-    private final NamespaceManager namespaceManager;
+    private final NamespaceRepository namespaceRepository;
 
     public void createBucket(String bucketName) {
-        createBucket(bucketName, InMemoryNamespaceManager.DEFAULT_NAMESPACE_NAME);
+        createBucket(bucketName, Namespace.DEFAULT_NAMESPACE_NAME);
     }
 
     @Override
@@ -39,14 +39,14 @@ public class InMemoryBucketStore implements BucketStore {
             throw new ResourceConflictException("Bucket already exists: " + bucketName);
         }
         if (namespaceName == null || namespaceName.isEmpty()) {
-            namespaceName = InMemoryNamespaceManager.DEFAULT_NAMESPACE_NAME;
-        } else if (!namespaceManager.getNamespaces().containsKey(namespaceName)) {
+            namespaceName = Namespace.DEFAULT_NAMESPACE_NAME;
+        } else if (!namespaceRepository.getNamespaces().containsKey(namespaceName)) {
             throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
         }
         bucketsMetadata.put(bucketName, new BucketMetadata());
         bucketFunctionConfigs.put(bucketName, new BucketFunctionsConfig());
 
-        namespaceManager.addBucketToNamespace(namespaceName, bucketName);
+        namespaceRepository.addBucketToNamespace(namespaceName, bucketName);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class InMemoryBucketStore implements BucketStore {
 
     @Override
     public Map<String, BucketMetadata> getBucketsByNamespace(String namespaceName) {
-        Set<String> bucketNames = namespaceManager.getBucketsByNamespace(namespaceName);
+        Set<String> bucketNames = namespaceRepository.getBucketsByNamespace(namespaceName);
         return bucketNames.stream()
                 .filter(bucketsMetadata::containsKey)
                 .collect(Collectors.toMap(bucketName -> bucketName, bucketsMetadata::get));
@@ -103,7 +103,7 @@ public class InMemoryBucketStore implements BucketStore {
         bucketsMetadata.remove(bucketName);
         bucketFunctionConfigs.remove(bucketName);
 
-        namespaceManager.getNamespaces().values().forEach(namespace -> namespace.removeBucket(bucketName));
+        namespaceRepository.getNamespaces().values().forEach(namespace -> namespace.removeBucket(bucketName));
     }
     
     @Override
