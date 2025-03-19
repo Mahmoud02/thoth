@@ -1,10 +1,10 @@
 package com.mahmoud.thoth.infrastructure;
 
-import com.mahmoud.thoth.dto.ObjectMetadataDTO;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+
+import com.mahmoud.thoth.api.dto.ObjectMetadataDTO;
 
 public interface StorageService {
     void uploadObject(String bucketName, String objectName, InputStream inputStream) throws IOException;

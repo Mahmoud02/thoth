@@ -1,5 +1,7 @@
 package com.mahmoud.thoth.domain.service;
 
+import com.mahmoud.thoth.api.dto.BucketDTO;
+import com.mahmoud.thoth.api.mapper.BucketMapper;
 import com.mahmoud.thoth.domain.model.BucketMetadata;
 import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
 import com.mahmoud.thoth.domain.port.out.BucketRepository;
@@ -7,8 +9,7 @@ import com.mahmoud.thoth.domain.port.out.MetadataRepository;
 import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
-import com.mahmoud.thoth.dto.BucketDTO;
-import com.mahmoud.thoth.mapper.BucketMapper;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,13 +1,13 @@
-package com.mahmoud.thoth.controller.v1;
+package com.mahmoud.thoth.api.controller.v1;
 
+import com.mahmoud.thoth.api.dto.BucketDTO;
+import com.mahmoud.thoth.api.mapper.BucketMapper;
 import com.mahmoud.thoth.domain.port.in.CreateBucketRequest;
 import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
-import com.mahmoud.thoth.dto.BucketDTO;
 import com.mahmoud.thoth.domain.service.CreateBucketService;
 import com.mahmoud.thoth.domain.service.UpdateBucketService;
 import com.mahmoud.thoth.domain.service.DeleteBucketService;
 import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
-import com.mahmoud.thoth.mapper.BucketMapper;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

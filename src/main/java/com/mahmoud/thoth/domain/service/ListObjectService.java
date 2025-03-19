@@ -1,6 +1,6 @@
 package com.mahmoud.thoth.domain.service;
 
-import com.mahmoud.thoth.dto.ObjectMetadataDTO;
+import com.mahmoud.thoth.api.dto.ObjectMetadataDTO;
 import com.mahmoud.thoth.infrastructure.StorageService;
 
 import lombok.RequiredArgsConstructor;

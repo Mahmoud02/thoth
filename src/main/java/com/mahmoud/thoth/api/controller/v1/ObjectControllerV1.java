@@ -1,9 +1,9 @@
-package com.mahmoud.thoth.controller.v1;
+package com.mahmoud.thoth.api.controller.v1;
 
-import com.mahmoud.thoth.dto.ObjectMetadataDTO;
-import com.mahmoud.thoth.dto.UploadObjectRequest;
 import com.mahmoud.thoth.domain.service.UploadObjectService;
 import com.mahmoud.thoth.domain.service.DownloadObjectService;
+import com.mahmoud.thoth.api.dto.ObjectMetadataDTO;
+import com.mahmoud.thoth.api.dto.UploadObjectRequest;
 import com.mahmoud.thoth.domain.service.DeleteObjectService;
 import com.mahmoud.thoth.domain.service.ListObjectService;
 import lombok.RequiredArgsConstructor;

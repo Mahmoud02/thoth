@@ -1,8 +1,9 @@
-package com.mahmoud.thoth.mapper;
+package com.mahmoud.thoth.api.mapper;
 
-import com.mahmoud.thoth.dto.ObjectMetadataDTO;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.mahmoud.thoth.api.dto.ObjectMetadataDTO;
 
 import java.io.IOException;
 import java.nio.file.Files;

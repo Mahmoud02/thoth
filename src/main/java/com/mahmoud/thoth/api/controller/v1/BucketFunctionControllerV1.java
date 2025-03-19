@@ -1,10 +1,10 @@
-package com.mahmoud.thoth.controller.v1;
+package com.mahmoud.thoth.api.controller.v1;
 
-import com.mahmoud.thoth.doc.BucketFunctionApiDocs.AddBucketFunctionOp;
-import com.mahmoud.thoth.doc.BucketFunctionApiDocs.RemoveBucketFunctionOp;
-import com.mahmoud.thoth.dto.CreateBucketFunctionRequest;
 import com.mahmoud.thoth.function.enums.FunctionType;
 import com.mahmoud.thoth.domain.service.UpdateFunctionConfigService;
+import com.mahmoud.thoth.api.doc.BucketFunctionApiDocs.AddBucketFunctionOp;
+import com.mahmoud.thoth.api.doc.BucketFunctionApiDocs.RemoveBucketFunctionOp;
+import com.mahmoud.thoth.api.dto.CreateBucketFunctionRequest;
 import com.mahmoud.thoth.domain.service.RemoveFunctionConfigService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;

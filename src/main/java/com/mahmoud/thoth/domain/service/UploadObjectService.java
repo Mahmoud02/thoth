@@ -1,10 +1,11 @@
 package com.mahmoud.thoth.domain.service;
 
+import com.mahmoud.thoth.api.dto.ObjectMetadataDTO;
+import com.mahmoud.thoth.api.dto.UploadObjectRequest;
+import com.mahmoud.thoth.api.mapper.ObjectMetadataMapper;
 import com.mahmoud.thoth.domain.port.out.MetadataRepository;
-import com.mahmoud.thoth.dto.ObjectMetadataDTO;
-import com.mahmoud.thoth.dto.UploadObjectRequest;
 import com.mahmoud.thoth.infrastructure.StorageService;
-import com.mahmoud.thoth.mapper.ObjectMetadataMapper;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

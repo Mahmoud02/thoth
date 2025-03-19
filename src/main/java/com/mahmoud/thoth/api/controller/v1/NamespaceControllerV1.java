@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.controller.v1;
+package com.mahmoud.thoth.api.controller.v1;
 
 import java.util.List;
 
@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mahmoud.thoth.api.dto.CreateNamespaceRequest;
+import com.mahmoud.thoth.api.dto.UpdateNamespaceRequest;
 import com.mahmoud.thoth.domain.model.Namespace;
 import com.mahmoud.thoth.domain.port.out.NamespaceRepository;
-import com.mahmoud.thoth.dto.CreateNamespaceRequest;
-import com.mahmoud.thoth.dto.UpdateNamespaceRequest;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

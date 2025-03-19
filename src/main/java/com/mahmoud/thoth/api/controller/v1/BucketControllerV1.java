@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.controller.v1;
+package com.mahmoud.thoth.api.controller.v1;
 
 import java.util.List;
 
@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mahmoud.thoth.api.dto.BucketDTO;
+import com.mahmoud.thoth.api.mapper.BucketMapper;
 import com.mahmoud.thoth.domain.port.in.CreateBucketRequest;
 import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
 import com.mahmoud.thoth.domain.port.out.BucketRepository;
-import com.mahmoud.thoth.dto.BucketDTO;
 import com.mahmoud.thoth.domain.service.CreateBucketService;
 import com.mahmoud.thoth.domain.service.UpdateBucketService;
 import com.mahmoud.thoth.domain.service.DeleteBucketService;
-import com.mahmoud.thoth.mapper.BucketMapper;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

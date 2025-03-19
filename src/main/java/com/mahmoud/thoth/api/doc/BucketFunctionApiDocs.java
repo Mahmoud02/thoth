@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.doc;
+package com.mahmoud.thoth.api.doc;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

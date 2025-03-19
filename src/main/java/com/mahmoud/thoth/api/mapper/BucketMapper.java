@@ -1,8 +1,8 @@
-package com.mahmoud.thoth.mapper;
+package com.mahmoud.thoth.api.mapper;
 
+import com.mahmoud.thoth.api.dto.BucketDTO;
 import com.mahmoud.thoth.domain.model.BucketMetadata;
 import com.mahmoud.thoth.domain.model.VersionedBucket;
-import com.mahmoud.thoth.dto.BucketDTO;
 
 import org.springframework.stereotype.Component;
 import java.util.List;

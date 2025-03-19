@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.dto;
+package com.mahmoud.thoth.api.dto;
 
 import com.mahmoud.thoth.function.config.FunctionConfig;
 import jakarta.validation.constraints.NotBlank;

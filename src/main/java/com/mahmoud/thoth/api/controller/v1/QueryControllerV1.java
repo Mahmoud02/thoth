@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.controller.v1;
+package com.mahmoud.thoth.api.controller.v1;
 
 import com.mahmoud.thoth.query.QueryHandler;
 import com.mahmoud.thoth.query.QueryParser;
