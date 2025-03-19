@@ -4,7 +4,8 @@ import com.mahmoud.thoth.doc.BucketFunctionApiDocs.AddBucketFunctionOp;
 import com.mahmoud.thoth.doc.BucketFunctionApiDocs.RemoveBucketFunctionOp;
 import com.mahmoud.thoth.dto.CreateBucketFunctionRequest;
 import com.mahmoud.thoth.function.enums.FunctionType;
-import com.mahmoud.thoth.service.BucketFunctionService;
+import com.mahmoud.thoth.domain.service.UpdateFunctionConfigService;
+import com.mahmoud.thoth.domain.service.RemoveFunctionConfigService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -25,14 +26,15 @@ import java.util.Map;
 @Tag(name = "Bucket Functions", description = "APIs to manage function assignments to buckets")
 public class BucketFunctionControllerV1 {
 
-    private final BucketFunctionService bucketFunctionService;
+    private final UpdateFunctionConfigService updateFunctionConfigService;
+    private final RemoveFunctionConfigService removeFunctionConfigService;
 
     @PostMapping
     @AddBucketFunctionOp
     public ResponseEntity<Map<String, Object>> addFunctions(
             @RequestBody @Valid CreateBucketFunctionRequest request) {
 
-        bucketFunctionService.updateFunctionConfigs(
+        updateFunctionConfigService.updateFunctionConfigs(
             request.getBucketName(),
             request.getConfigs()
         );
@@ -51,7 +53,7 @@ public class BucketFunctionControllerV1 {
             @PathVariable @NotBlank String bucketName,
             @PathVariable FunctionType type) {
 
-        bucketFunctionService.removeFunctionConfig(bucketName, type);
+        removeFunctionConfigService.removeFunctionConfig(bucketName, type);
         return ResponseEntity.noContent().build();
     }
 }

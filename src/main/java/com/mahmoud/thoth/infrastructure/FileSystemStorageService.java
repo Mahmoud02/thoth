@@ -1,12 +1,12 @@
 package com.mahmoud.thoth.infrastructure;
 
 import com.mahmoud.thoth.domain.model.VersionedBucket;
+import com.mahmoud.thoth.domain.service.ExecuteBucketFunctionsService;
 import com.mahmoud.thoth.dto.ObjectMetadataDTO;
 import com.mahmoud.thoth.function.BucketFunctionException;
 import com.mahmoud.thoth.infrastructure.store.BucketStore;
 import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
 import com.mahmoud.thoth.mapper.ObjectMetadataMapper;
-import com.mahmoud.thoth.service.BucketFunctionService;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ public class FileSystemStorageService implements StorageService {
     private final BucketStore bucketStore;
     private final VersionedBucketStore versionedBucketStore;
     private final ObjectMetadataMapper objectMetadataMapper;
-    private final BucketFunctionService bucketFunctionService;
+    private final ExecuteBucketFunctionsService executeBucketFunctionsService;
     private static final Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);
 
     @PostConstruct
@@ -153,7 +153,7 @@ public class FileSystemStorageService implements StorageService {
         bufferedInputStream.mark(Integer.MAX_VALUE);
 
         try {
-            bucketFunctionService.executeBucketFunctions(bucketName, objectName, bufferedInputStream);
+            executeBucketFunctionsService.executeBucketFunctions(bucketName, objectName, bufferedInputStream);
         } catch (BucketFunctionException e) {
             logger.error("Bucket function validation failed for {}/{}: {}", bucketName, objectName, e.getMessage());
             throw e;
