@@ -3,8 +3,6 @@ package com.mahmoud.thoth.infrastructure;
 import com.mahmoud.thoth.api.dto.ObjectMetadataDTO;
 import com.mahmoud.thoth.api.mapper.ObjectMetadataMapper;
 import com.mahmoud.thoth.domain.model.VersionedBucket;
-import com.mahmoud.thoth.domain.service.ExecuteBucketFunctionsService;
-import com.mahmoud.thoth.function.BucketFunctionException;
 import com.mahmoud.thoth.infrastructure.store.BucketStore;
 import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
 
@@ -19,8 +17,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.BufferedInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,7 +31,6 @@ public class FileSystemStorageService implements StorageService {
     private final BucketStore bucketStore;
     private final VersionedBucketStore versionedBucketStore;
     private final ObjectMetadataMapper objectMetadataMapper;
-    private final ExecuteBucketFunctionsService executeBucketFunctionsService;
     private static final Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);
 
     @PostConstruct
@@ -50,7 +45,6 @@ public class FileSystemStorageService implements StorageService {
         }
 
         byte[] content = readInputStream(inputStream);
-        executeBucketFunctions(bucketName, objectName, content);
 
         Path objectPath = createObjectPath(bucketName, objectName);
         writeFile(objectPath, content);
@@ -63,7 +57,6 @@ public class FileSystemStorageService implements StorageService {
         }
 
         byte[] content = readInputStream(inputStream);
-        executeBucketFunctions(bucketName, objectName, content);
 
         Path objectPath = createObjectPath(bucketName, version, objectName);
         writeFile(objectPath, content);
@@ -146,18 +139,6 @@ public class FileSystemStorageService implements StorageService {
 
     private byte[] readInputStream(InputStream inputStream) throws IOException {
         return inputStream.readAllBytes();
-    }
-
-    private void executeBucketFunctions(String bucketName, String objectName, byte[] content) throws IOException {
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(new ByteArrayInputStream(content));
-        bufferedInputStream.mark(Integer.MAX_VALUE);
-
-        try {
-            executeBucketFunctionsService.executeBucketFunctions(bucketName, objectName, bufferedInputStream);
-        } catch (BucketFunctionException e) {
-            logger.error("Bucket function validation failed for {}/{}: {}", bucketName, objectName, e.getMessage());
-            throw e;
-        }
     }
 
     private Path createBucketPath(String bucketName) {
