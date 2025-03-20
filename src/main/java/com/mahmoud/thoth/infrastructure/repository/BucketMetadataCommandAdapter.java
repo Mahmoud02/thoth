@@ -2,6 +2,7 @@ package com.mahmoud.thoth.infrastructure.repository;
 
 import com.mahmoud.thoth.domain.model.BucketMetadata;
 import com.mahmoud.thoth.domain.port.out.BucketMetadataCommandRepository;
+import com.mahmoud.thoth.infrastructure.StorageService;
 import com.mahmoud.thoth.infrastructure.store.BucketStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 public class BucketMetadataCommandAdapter implements BucketMetadataCommandRepository {
 
     private final BucketStore bucketStore;
+    private final StorageService storageService;
 
     @Override
     public void updateBucket(String bucketName, BucketMetadata bucketMetadata) {
@@ -30,5 +32,10 @@ public class BucketMetadataCommandAdapter implements BucketMetadataCommandReposi
     @Override
     public void saveBucketMetaData(BucketMetadata bucketMetadata) {
         bucketStore.createBucket(bucketMetadata);
+    }
+
+    @Override
+    public void createBucketFolder(String bucketName) {
+        this.storageService.createBucketFolder(bucketName);
     }
 }

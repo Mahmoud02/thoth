@@ -7,4 +7,5 @@ public interface BucketMetadataCommandRepository {
     void deleteBucket(String bucketName);
     BucketMetadata remove(String bucketName);
     void saveBucketMetaData(BucketMetadata bucketMetadata);
+    void createBucketFolder(String bucketName);
 }

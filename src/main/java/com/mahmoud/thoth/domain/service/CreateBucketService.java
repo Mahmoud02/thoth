@@ -42,7 +42,7 @@ public class CreateBucketService {
 
         BucketMetadata bucketMetadata = new BucketMetadata(bucketName, namespaceName);
         bucketMetadataCommandRepository.saveBucketMetaData(bucketMetadata);
-        storageService.createBucketFolder(bucketName);
+        bucketMetadataCommandRepository.createBucketFolder(bucketName);
         return bucketMapper.toBucketDTO(bucketName, bucketRepository.getBucketMetadata(bucketName));
     }
 
