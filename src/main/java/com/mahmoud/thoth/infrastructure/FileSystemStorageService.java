@@ -118,7 +118,7 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public void createBucket(String bucketName) {
+    public void createBucketFolder(String bucketName) {
         try {
             Path bucketDirectory = createBucketPath(bucketName);
             Files.createDirectories(bucketDirectory);

@@ -11,7 +11,7 @@ public interface StorageService {
     byte[] downloadObject(String bucketName, String objectName) throws IOException;
     void deleteObject(String bucketName, String objectName) throws IOException;
     List<ObjectMetadataDTO> listObjects(String bucketName) throws IOException;
-    void createBucket(String bucketName);
+    void createBucketFolder(String bucketName);
 
     // Methods for versioned buckets
     void uploadObjectWithVersion(String bucketName, String objectName, String version, InputStream inputStream) throws IOException;

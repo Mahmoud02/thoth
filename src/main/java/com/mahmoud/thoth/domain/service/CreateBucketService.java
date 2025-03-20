@@ -5,6 +5,7 @@ import com.mahmoud.thoth.api.mapper.BucketMapper;
 import com.mahmoud.thoth.domain.model.BucketMetadata;
 import com.mahmoud.thoth.domain.model.Namespace;
 import com.mahmoud.thoth.domain.port.in.CreateBucketRequest;
+import com.mahmoud.thoth.domain.port.out.BucketMetadataCommandRepository;
 import com.mahmoud.thoth.domain.port.out.BucketRepository;
 import com.mahmoud.thoth.domain.port.out.NamespaceRepository;
 import com.mahmoud.thoth.infrastructure.StorageService;
@@ -24,6 +25,7 @@ public class CreateBucketService {
     private final VersionedBucketStore versionedBucketStore;
     private final StorageService storageService;
     private final BucketMapper bucketMapper;
+    private final BucketMetadataCommandRepository bucketMetadataCommandRepository;
 
     public BucketDTO createRegularBucket(CreateBucketRequest request) {
         String bucketName = request.getName();
@@ -39,9 +41,8 @@ public class CreateBucketService {
         }
 
         BucketMetadata bucketMetadata = new BucketMetadata(bucketName, namespaceName);
-        bucketRepository.save(bucketMetadata);
-        namespaceRepository.addBucketToNamespace(namespaceName, bucketName);
-        storageService.createBucket(bucketName);
+        bucketMetadataCommandRepository.saveBucketMetaData(bucketMetadata);
+        storageService.createBucketFolder(bucketName);
         return bucketMapper.toBucketDTO(bucketName, bucketRepository.getBucketMetadata(bucketName));
     }
 

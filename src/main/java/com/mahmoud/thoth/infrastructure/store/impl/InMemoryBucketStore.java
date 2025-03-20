@@ -38,14 +38,7 @@ public class InMemoryBucketStore implements BucketStore {
 
     @Override
     public void createBucket(String bucketName, String namespaceName) {
-        if (cache.getIfPresent(bucketName) != null || persistenceService.bucketFileExists(bucketName)) {
-            throw new ResourceConflictException("Bucket already exists: " + bucketName);
-        }
-        if (namespaceName == null || namespaceName.isEmpty()) {
-            namespaceName = Namespace.DEFAULT_NAMESPACE_NAME;
-        } else if (!namespaceRepository.getNamespaces().containsKey(namespaceName)) {
-            throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
-        }
+       
         BucketMetadata metadata = new BucketMetadata();
         cache.put(bucketName, metadata);
         persistenceService.saveBucketToFile(bucketName, metadata);
@@ -192,8 +185,8 @@ public class InMemoryBucketStore implements BucketStore {
 
     @Override
     public void createBucket(BucketMetadata bucketMetadata) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createBucket'");
+        cache.put(bucketMetadata.getBucketName(), bucketMetadata);
+        persistenceService.saveBucketToFile(bucketMetadata.getNamespaceName(), bucketMetadata);
     }
 
 
@@ -205,8 +198,10 @@ public class InMemoryBucketStore implements BucketStore {
 
     @Override
     public boolean containsKey(String bucketName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'containsKey'");
+        if (cache.getIfPresent(bucketName) != null || persistenceService.bucketFileExists(bucketName)) {
+            return true;
+        }
+        return false;
     }
 
     @Override

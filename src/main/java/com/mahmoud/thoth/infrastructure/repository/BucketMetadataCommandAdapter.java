@@ -13,11 +13,6 @@ public class BucketMetadataCommandAdapter implements BucketMetadataCommandReposi
     private final BucketStore bucketStore;
 
     @Override
-    public void createBucket(String bucketName, String namespaceName) {
-        bucketStore.createBucket(new BucketMetadata(bucketName, namespaceName));
-    }
-
-    @Override
     public void updateBucket(String bucketName, BucketMetadata bucketMetadata) {
         bucketStore.updateBucket(bucketName, bucketMetadata);
     }
@@ -33,7 +28,7 @@ public class BucketMetadataCommandAdapter implements BucketMetadataCommandReposi
     }
 
     @Override
-    public void save(BucketMetadata bucketMetadata) {
+    public void saveBucketMetaData(BucketMetadata bucketMetadata) {
         bucketStore.createBucket(bucketMetadata);
     }
 }
