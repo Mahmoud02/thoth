@@ -8,10 +8,8 @@ import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Component
 public class InMemoryNamespaceStore implements NamespaceStore {
@@ -43,24 +41,6 @@ public class InMemoryNamespaceStore implements NamespaceStore {
     }
 
     @Override
-    public void addBucketToNamespace(String namespaceName, String bucketName) {
-        Namespace namespace = namespaces.get(namespaceName);
-        if (namespace == null) {
-            throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
-        }
-        namespace.addBucket(bucketName);
-    }
-
-    @Override
-    public void removeBucketFromNamespace(String namespaceName, String bucketName) {
-        Namespace namespace = namespaces.get(namespaceName);
-        if (namespace == null) {
-            throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
-        }
-        namespace.removeBucket(bucketName);
-    }
-
-    @Override
     public Namespace getNamespace(String namespaceName) {
         Namespace namespace = namespaces.get(namespaceName);
         if (namespace == null) {
@@ -70,30 +50,16 @@ public class InMemoryNamespaceStore implements NamespaceStore {
     }
 
     @Override
-    public Map<String, Namespace> getNamespaces() {
-        return namespaces;
-    }
-
-    @Override
     public List<Namespace> getListNamespaces() {
         return namespaces.entrySet().stream().map(Map.Entry::getValue).toList();
     }
 
-    @Override
-    public Set<String> getBucketsByNamespace(String namespaceName) {
-        Namespace namespace = namespaces.get(namespaceName);
-        if (namespace == null) {
-            throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
-        }
-        return new HashSet<>(namespace.getBuckets());
-    }
 
     @Override
-    public void updateNamespace(String namespaceName, String newNamespaceName) {
-        if (DEFAULT_NAMESPACE_NAME.equals(namespaceName)) {
-            throw new IllegalArgumentException("Cannot update the default namespace");
+    public boolean containsKey(String namespaceName) {
+        if (namespaces.containsKey(namespaceName)) {
+            return true;
         }
-        deleteNamespace(namespaceName);
-        createNamespace(newNamespaceName);
+        return false;
     }
 }

@@ -5,7 +5,6 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.mahmoud.thoth.domain.model.BucketMetadata;
 import com.mahmoud.thoth.domain.model.Namespace;
 import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
-import com.mahmoud.thoth.domain.port.out.NamespaceRepository;
 import com.mahmoud.thoth.function.config.BucketFunctionDefinition;
 import com.mahmoud.thoth.function.config.BucketFunctionsConfig;
 import com.mahmoud.thoth.function.enums.FunctionType;
@@ -29,7 +28,6 @@ public class InMemoryBucketStore implements BucketStore {
             .build();
 
     private final Map<String, BucketFunctionsConfig> bucketFunctionConfigs = new ConcurrentHashMap<>();
-    private final NamespaceRepository namespaceRepository;
     private final BucketPersistenceService persistenceService;
 
     public void createBucket(String bucketName) {
@@ -42,7 +40,6 @@ public class InMemoryBucketStore implements BucketStore {
         BucketMetadata metadata = new BucketMetadata();
         cache.put(bucketName, metadata);
         persistenceService.saveBucketToFile(bucketName, metadata);
-        namespaceRepository.addBucketToNamespace(namespaceName, bucketName);
     }
 
     @Override
@@ -63,7 +60,7 @@ public class InMemoryBucketStore implements BucketStore {
 
     @Override
     public Map<String, BucketMetadata> getBucketsByNamespace(String namespaceName) {
-        Set<String> bucketNames = namespaceRepository.getBucketsByNamespace(namespaceName);
+        Set<String> bucketNames = null;
         return bucketNames.stream()
                 .map(this::getBucketMetadata)
                 .collect(Collectors.toMap(BucketMetadata::getBucketName, bucket -> bucket));
@@ -101,7 +98,6 @@ public class InMemoryBucketStore implements BucketStore {
         cache.invalidate(bucketName);
         bucketFunctionConfigs.remove(bucketName);
         persistenceService.deleteBucketFile(bucketName);
-        namespaceRepository.getNamespaces().values().forEach(namespace -> namespace.removeBucket(bucketName));
     }
     
     @Override

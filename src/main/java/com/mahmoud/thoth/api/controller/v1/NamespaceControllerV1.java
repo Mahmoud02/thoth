@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mahmoud.thoth.api.dto.CreateNamespaceRequest;
 import com.mahmoud.thoth.api.dto.UpdateNamespaceRequest;
 import com.mahmoud.thoth.domain.model.Namespace;
-import com.mahmoud.thoth.domain.port.out.NamespaceRepository;
+import com.mahmoud.thoth.domain.port.in.CreateNamespaceRequest;
+import com.mahmoud.thoth.domain.service.CreateNamespaceService;
+import com.mahmoud.thoth.domain.service.DeleteNamespaceService;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -31,16 +32,18 @@ import lombok.RequiredArgsConstructor;
 @Validated
 public class NamespaceControllerV1 {
 
+
     private static final Logger logger = LoggerFactory.getLogger(NamespaceControllerV1.class);
 
-    private final NamespaceRepository namespaceManager;
+    private final CreateNamespaceService createNamespaceService;
+    private final DeleteNamespaceService deleteNamespaceService;
+
 
     @PostMapping
     public ResponseEntity<Namespace> createNamespace(@RequestBody @Valid CreateNamespaceRequest request) {
         logger.info("Creating namespace: {}", request.getNamespaceName());
-        namespaceManager.createNamespace(request.getNamespaceName());
-        Namespace namespace = namespaceManager.getNamespace(request.getNamespaceName());
-        return ResponseEntity.status(HttpStatus.CREATED).body(namespace);
+        createNamespaceService.execute(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 
     @PutMapping("/{namespaceName}")
@@ -49,29 +52,23 @@ public class NamespaceControllerV1 {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
         logger.info("Updating namespace: {} to {}", namespaceName, request.getNewNamespaceName());
-        namespaceManager.updateNamespace(namespaceName, request.getNewNamespaceName());
-        Namespace updatedNamespace = namespaceManager.getNamespace(request.getNewNamespaceName());
-        return ResponseEntity.ok(updatedNamespace);
+        return ResponseEntity.ok(null);
     }
 
     @DeleteMapping("/{namespaceName}")
     public ResponseEntity<Void> deleteNamespace(@PathVariable @NotBlank String namespaceName) {
-        if (Namespace.DEFAULT_NAMESPACE_NAME.equals(namespaceName)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
         logger.info("Deleting namespace: {}", namespaceName);
-        namespaceManager.deleteNamespace(namespaceName);
+        deleteNamespaceService.execute(namespaceName);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{namespaceName}")
     public ResponseEntity<Namespace> getNamespace(@PathVariable @NotBlank String namespaceName) {
-        Namespace namespace = namespaceManager.getNamespace(namespaceName);
-        return ResponseEntity.ok(namespace);
+        return ResponseEntity.ok(null);
     }
 
     @GetMapping
     public ResponseEntity<List<Namespace>> listNamespaces() {
-        return ResponseEntity.ok(namespaceManager.getListNamespaces());
+        return ResponseEntity.ok(null);
     }
 }

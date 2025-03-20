@@ -166,4 +166,14 @@ public class FileSystemStorageService implements StorageService {
     private void deleteFile(Path path) throws IOException {
         Files.deleteIfExists(path);
     }
+
+    @Override
+    public void createNamespaceFolder(String namespaceName) {
+        try {
+            Path namespaceDirectory = Paths.get(STORAGE_PATH, namespaceName);
+            Files.createDirectories(namespaceDirectory);
+        } catch (IOException e) {
+            logger.error("Error creating namespace directory", e);
+        }
+    }
 }

@@ -12,7 +12,7 @@ public class DeleteNamespaceService {
     private final NamespaceRepository namespaceRepository;
 
     public void execute(String namespaceName) {
-        if (!namespaceRepository.getNamespaces().containsKey(namespaceName)) {
+        if (!namespaceRepository.containsKey(namespaceName)) {
             throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
         }
         namespaceRepository.deleteNamespace(namespaceName);

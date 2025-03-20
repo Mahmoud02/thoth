@@ -19,4 +19,5 @@ public interface StorageService {
     void deleteObjectWithVersion(String bucketName, String objectName, String version) throws IOException;
     List<ObjectMetadataDTO> listObjectsWithVersions(String bucketName) throws IOException;
     void createVersionedBucket(String bucketName);
+    void createNamespaceFolder(String namespaceName);
 }

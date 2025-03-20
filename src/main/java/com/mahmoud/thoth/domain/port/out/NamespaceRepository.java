@@ -2,19 +2,14 @@ package com.mahmoud.thoth.domain.port.out;
 
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import com.mahmoud.thoth.domain.model.Namespace;
 
 public interface NamespaceRepository {
-    void createNamespace(String namespaceName);
+    void saveNameSpaceMetaData(String namespaceName);
+    void createNameSpaceFolder(String namespaceName);
     void deleteNamespace(String namespaceName);
-    void addBucketToNamespace(String namespaceName, String bucketName);
-    void removeBucketFromNamespace(String namespaceName, String bucketName);
     Namespace getNamespace(String namespaceName);
-    Map<String, Namespace> getNamespaces();
     List<Namespace> getListNamespaces();
-    Set<String> getBucketsByNamespace(String namespaceName);
-    void updateNamespace(String namespaceName, String newNamespaceName);
+    boolean containsKey(String namespaceName);
 }

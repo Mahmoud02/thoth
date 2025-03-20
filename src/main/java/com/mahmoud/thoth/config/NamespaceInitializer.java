@@ -14,8 +14,12 @@ public class NamespaceInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (!namespaceRepository.getNamespaces().containsKey(Namespace.DEFAULT_NAMESPACE_NAME)) {
-            namespaceRepository.createNamespace(Namespace.DEFAULT_NAMESPACE_NAME);
+        var namespaces = namespaceRepository.getListNamespaces();
+        var isDefaultNamespaceExist = namespaces.stream().anyMatch(namespace -> Namespace.DEFAULT_NAMESPACE_NAME.equals(namespace.getName()));
+        if (!isDefaultNamespaceExist) {
+            namespaceRepository.saveNameSpaceMetaData(Namespace.DEFAULT_NAMESPACE_NAME);
+            namespaceRepository.createNameSpaceFolder(Namespace.DEFAULT_NAMESPACE_NAME);
         }
+
     }
 }

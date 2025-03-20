@@ -14,9 +14,10 @@ public class CreateNamespaceService {
 
     public void execute(CreateNamespaceRequest request) {
         String namespaceName = request.getNamespaceName();
-        if (namespaceRepository.getNamespaces().containsKey(namespaceName)) {
+        if (namespaceRepository.containsKey(namespaceName)) {
             throw new ResourceConflictException("Namespace already exists: " + namespaceName);
         }
-        namespaceRepository.createNamespace(namespaceName);
+        namespaceRepository.saveNameSpaceMetaData(namespaceName);
+        namespaceRepository.createNameSpaceFolder(namespaceName);
     }
 }

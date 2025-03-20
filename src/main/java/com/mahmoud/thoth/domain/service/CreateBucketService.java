@@ -36,7 +36,7 @@ public class CreateBucketService {
         }
         if (namespaceName == null || namespaceName.isEmpty()) {
             namespaceName = Namespace.DEFAULT_NAMESPACE_NAME;
-        } else if (!namespaceRepository.getNamespaces().containsKey(namespaceName)) {
+        } else if (!namespaceRepository.containsKey(namespaceName)) {
             throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
         }
 
