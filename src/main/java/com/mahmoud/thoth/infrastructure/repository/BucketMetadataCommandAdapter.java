@@ -15,23 +15,18 @@ public class BucketMetadataCommandAdapter implements BucketMetadataCommandReposi
     private final StorageService storageService;
 
     @Override
-    public void updateBucket(String bucketName, BucketMetadata bucketMetadata) {
-        bucketStore.updateBucket(bucketName, bucketMetadata);
+    public void updateBucketName(Long buketIdentifier, String newBuketName) {
+        bucketStore.updateBucketName(buketIdentifier, newBuketName);
     }
 
     @Override
-    public void deleteBucket(String bucketName) {
-        bucketStore.deleteBucket(bucketName);
+    public void deleteBucket(Long buketIdentifier) {
+        bucketStore.deleteBucket(buketIdentifier);
     }
 
     @Override
-    public BucketMetadata remove(String bucketName) {
-        return bucketStore.remove(bucketName);
-    }
-
-    @Override
-    public void saveBucketMetaData(BucketMetadata bucketMetadata) {
-        bucketStore.createBucket(bucketMetadata);
+    public void saveBucket(BucketMetadata bucketMetadata) {
+        bucketStore.saveBuket(bucketMetadata);
     }
 
     @Override

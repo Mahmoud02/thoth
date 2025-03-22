@@ -15,16 +15,14 @@ public class BucketFunctionDefinitionAdapter implements BucketFunctionDefinition
 
     @Override
     public void addFunctionDefinition(String bucketName, BucketFunctionDefinition definition) {
-        bucketStore.addFunctionDefinition(bucketName, definition);
     }
 
     @Override
     public void removeFunctionDefinition(String bucketName, FunctionType functionType) {
-        bucketStore.removeFunctionDefinition(bucketName, functionType);
     }
 
     @Override
     public BucketFunctionDefinition getFunctionDefinition(String bucketName, FunctionType functionType) {
-        return bucketStore.getFunctionDefinition(bucketName, functionType);
+        return null;
     }
 }

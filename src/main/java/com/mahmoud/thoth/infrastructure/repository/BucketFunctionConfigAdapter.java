@@ -14,16 +14,14 @@ public class BucketFunctionConfigAdapter implements BucketFunctionConfigReposito
 
     @Override
     public void updateBucketFunctionConfig(String bucketName, BucketFunctionsConfig config) {
-        bucketStore.updateBucketFunctionConfig(bucketName, config);
     }
 
     @Override
     public void removeBucketFunctionConfig(String bucketName) {
-        bucketStore.removeBucketFunctionConfig(bucketName);
     }
 
     @Override
     public BucketFunctionsConfig getBucketFunctionConfig(String bucketName) {
-        return bucketStore.getBucketFunctionConfig(bucketName);
+        return null;
     }
 }
