@@ -2,9 +2,9 @@ package com.mahmoud.thoth.infrastructure.store.impl;
 
 import com.mahmoud.thoth.domain.model.BucketMetadata;
 import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
-import com.mahmoud.thoth.infrastructure.store.BucketRepository;
 import com.mahmoud.thoth.infrastructure.store.BucketStore;
-import com.mahmoud.thoth.infrastructure.store.entity.BucketEntity;
+import com.mahmoud.thoth.infrastructure.store.impl.sqlite.entity.BucketEntity;
+import com.mahmoud.thoth.infrastructure.store.impl.sqlite.repository.BucketRepository;
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Component;

@@ -1,8 +1,8 @@
-package com.mahmoud.thoth.infrastructure.store;
+package com.mahmoud.thoth.infrastructure.store.impl.sqlite.repository;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.mahmoud.thoth.infrastructure.store.entity.BucketEntity;
+import com.mahmoud.thoth.infrastructure.store.impl.sqlite.entity.BucketEntity;
 
 import java.util.List;
 

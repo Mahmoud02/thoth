@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.infrastructure.store.entity;
+package com.mahmoud.thoth.infrastructure.store.impl.sqlite.entity;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;

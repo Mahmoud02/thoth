@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.infrastructure.store.entity;
+package com.mahmoud.thoth.infrastructure.store.impl.sqlite.entity;
 
 import java.time.LocalDateTime;
 
