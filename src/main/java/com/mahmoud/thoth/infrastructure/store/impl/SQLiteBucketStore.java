@@ -1,16 +1,13 @@
 package com.mahmoud.thoth.infrastructure.store.impl;
 
 import com.mahmoud.thoth.domain.model.BucketMetadata;
-import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
 import com.mahmoud.thoth.infrastructure.store.BucketStore;
 import com.mahmoud.thoth.infrastructure.store.impl.sqlite.entity.BucketEntity;
 import com.mahmoud.thoth.infrastructure.store.impl.sqlite.repository.BucketRepository;
-import com.mahmoud.thoth.shared.exception.ResourceConflictException;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -22,88 +19,57 @@ public class SQLiteBucketStore implements BucketStore {
         this.bucketRepository = bucketRepository;
     }
 
-    private BucketMetadata toBucketMetadata(BucketEntity entity) {
-        return new BucketMetadata(
-                entity.getName(),
-                entity.getNamespaceId().toString()
-        );
-    }
-
-    private BucketEntity toBucketEntity(BucketMetadata metadata) {
-        return new BucketEntity(
-                metadata.getBucketName(),
-                Long.parseLong(metadata.getNamespaceName())
-        );
-    }
-
     @Override
-    public void createBucket(String bucketName) {
-        createBucket(new BucketMetadata(bucketName, "default"));
-    }
-
-    @Override
-    public void createBucket(BucketMetadata bucketMetadata) {
-        if (bucketRepository.existsById(bucketMetadata.getBucketName())) {
-            throw new ResourceConflictException("Bucket already exists: " + bucketMetadata.getBucketName());
-        }
+    public void saveBuket(BucketMetadata bucketMetadata) {
         bucketRepository.save(toBucketEntity(bucketMetadata));
     }
 
     @Override
-    public void createBucket(String bucketName, String namespaceName) {
-        createBucket(new BucketMetadata(bucketName, namespaceName));
-    }
-
-    @Override
-    public BucketMetadata getBucketMetadata(String bucketName) {
-        return bucketRepository.findById(bucketName)
+    public BucketMetadata getBucket(Long bucketIdentifier) {
+        return bucketRepository.findById(bucketIdentifier)
                 .map(this::toBucketMetadata)
-                .orElseThrow(() -> new ResourceNotFoundException("Bucket not found: " + bucketName));
+                .orElseThrow(() -> new ResourceNotFoundException("Bucket not found: " + bucketIdentifier));
     }
 
     @Override
-    public long getBucketSize(String bucketName) {
-        // Implement logic to calculate bucket size
-        return 0;
-    }
-
-    @Override
-    public Map<String, BucketMetadata> getBuckets() {
-        return bucketRepository.findAll().stream()
-                .collect(Collectors.toMap(BucketEntity::getName, this::toBucketMetadata));
-    }
-
-    @Override
-    public Map<String, BucketMetadata> getBucketsByNamespace(String namespaceName) {
+    public List<BucketMetadata> getBucketsMetaDataByNamespace(String namespaceName) {
         return bucketRepository.findByNamespaceId(Long.parseLong(namespaceName)).stream()
-                .collect(Collectors.toMap(BucketEntity::getName, this::toBucketMetadata));
+                .map(this::toBucketMetadata)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void updateBucket(String bucketName, UpdateBucketRequest updateBucketDTO) {
-        BucketEntity bucketEntity = bucketRepository.findById(bucketName)
-                .orElseThrow(() -> new ResourceNotFoundException("Bucket not found: " + bucketName));
-        bucketEntity.setName(updateBucketDTO.getName());
+    public boolean isBuketExists(String bucketIdentifier) {
+        return bucketRepository.existsByName(bucketIdentifier);
+    }
+
+    @Override
+    public void updateBucketName(Long bucketIdentifier, String newBucketName) {
+        BucketEntity bucketEntity = bucketRepository.findById(bucketIdentifier)
+                .orElseThrow(() -> new ResourceNotFoundException("Bucket not found: " + bucketIdentifier));
+        bucketEntity.setName(newBucketName);
         bucketRepository.save(bucketEntity);
     }
 
     @Override
-    public void deleteBucket(String bucketName) {
-        if (!bucketRepository.existsById(bucketName)) {
-            throw new ResourceNotFoundException("Bucket not found: " + bucketName);
-        }
-        bucketRepository.deleteById(bucketName);
+    public void deleteBucket(Long bucketIdentifier) {
+        bucketRepository.deleteById(bucketIdentifier);
+    }
+    private BucketMetadata toBucketMetadata(BucketEntity entity) {
+        BucketMetadata metadata = new BucketMetadata();
+        metadata.setBucketName(entity.getName());
+        metadata.setNamespaceName(entity.getNamespaceId().toString());
+        metadata.setCreationDate(entity.getCreationDate());
+        metadata.setLastModifiedDate(entity.getLastModifiedDate());
+        return metadata;
     }
 
-    @Override
-    public boolean containsKey(String bucketName) {
-        return bucketRepository.existsById(bucketName);
-    }
-
-    @Override
-    public BucketMetadata remove(String bucketName) {
-        BucketMetadata bucketMetadata = getBucketMetadata(bucketName);
-        deleteBucket(bucketName);
-        return bucketMetadata;
+    private BucketEntity toBucketEntity(BucketMetadata metadata) {
+        BucketEntity entity = new BucketEntity();
+        entity.setName(metadata.getBucketName());
+        entity.setNamespaceId(Long.parseLong(metadata.getNamespaceName()));
+        entity.setCreationDate(metadata.getCreationDate());
+        entity.setLastModifiedDate(metadata.getLastModifiedDate());
+        return entity;
     }
 }

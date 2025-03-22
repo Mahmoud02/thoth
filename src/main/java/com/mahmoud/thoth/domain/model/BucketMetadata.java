@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class BucketMetadata {
+    private Long buketIdentifier;
     private String bucketName;
     private String namespaceName;
     private LocalDateTime creationDate;

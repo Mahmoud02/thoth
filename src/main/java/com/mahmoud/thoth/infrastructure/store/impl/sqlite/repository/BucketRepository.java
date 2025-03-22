@@ -8,4 +8,7 @@ import java.util.List;
 
 public interface BucketRepository extends CrudRepository<BucketEntity, Long> {
     List<BucketEntity> findByNamespaceId(Long namespaceId);
+    boolean existsById(String bucketName);
+    boolean existsByName(String bucketName);
+    void deleteByName(String bucketName);
 }
