@@ -39,8 +39,8 @@ public class SQLiteBucketStore implements BucketStore {
     }
 
     @Override
-    public boolean isBuketExists(String bucketIdentifier) {
-        return bucketRepository.existsByName(bucketIdentifier);
+    public boolean isBuketExists(Long bucketIdentifier) {
+        return bucketRepository.existsById(bucketIdentifier);
     }
 
     @Override

@@ -12,8 +12,7 @@ public interface BucketStore {
     BucketMetadata getBucket(Long buketIdentifier);
     List<BucketMetadata> getBucketsMetaDataByNamespace(String namespaceName);
 
-    boolean isBuketExists(String buketIdentifier);
-
+    boolean isBuketExists(Long buketIdentifier);
 
     void updateBucketName(Long buketIdentifier, String newBucketName);
     void deleteBucket(Long buketIdentifier);

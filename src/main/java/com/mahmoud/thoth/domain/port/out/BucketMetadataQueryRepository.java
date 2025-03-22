@@ -2,12 +2,11 @@ package com.mahmoud.thoth.domain.port.out;
 
 import com.mahmoud.thoth.domain.model.BucketMetadata;
 
-import java.util.Map;
+import java.util.List;
 
 public interface BucketMetadataQueryRepository {
-    BucketMetadata getBucketMetadata(String bucketName);
+    BucketMetadata getBucketMetadata(Long buketIdentifier);
     long getBucketSize(String bucketName);
-    Map<String, BucketMetadata> getBuckets();
-    Map<String, BucketMetadata> getBucketsByNamespace(String namespaceName);
-    boolean containsKey(String bucketName);
+    List<BucketMetadata> getBucketsByNamespace(String namespaceName);
+    boolean isBuketExists(Long buketIdentifier);
 }

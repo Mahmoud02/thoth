@@ -4,9 +4,10 @@ import com.mahmoud.thoth.domain.model.BucketMetadata;
 import com.mahmoud.thoth.domain.port.out.BucketMetadataQueryRepository;
 import com.mahmoud.thoth.infrastructure.store.BucketStore;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -15,27 +16,21 @@ public class BucketMetadataQueryAdapter implements BucketMetadataQueryRepository
     private final BucketStore bucketStore;
 
     @Override
-    public BucketMetadata getBucketMetadata(String bucketName) {
-        return bucketStore.getBucketMetadata(bucketName);
+    public BucketMetadata getBucketMetadata(Long bucketIdentifier) {
+        return bucketStore.getBucket(bucketIdentifier);
     }
 
     @Override
     public long getBucketSize(String bucketName) {
-        return bucketStore.getBucketSize(bucketName);
+       return 0;
+    }
+    @Override
+    public List<BucketMetadata> getBucketsByNamespace(String namespaceName) {
+        return bucketStore.getBucketsMetaDataByNamespace(namespaceName);
     }
 
     @Override
-    public Map<String, BucketMetadata> getBuckets() {
-        return bucketStore.getBuckets();
-    }
-
-    @Override
-    public Map<String, BucketMetadata> getBucketsByNamespace(String namespaceName) {
-        return bucketStore.getBucketsByNamespace(namespaceName);
-    }
-
-    @Override
-    public boolean containsKey(String bucketName) {
-        return bucketStore.containsKey(bucketName);
+    public boolean isBuketExists(Long bucketIdentifier) {
+        return bucketStore.isBuketExists(bucketIdentifier);
     }
 }
