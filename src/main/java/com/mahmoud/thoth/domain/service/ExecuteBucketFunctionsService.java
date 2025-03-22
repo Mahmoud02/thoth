@@ -21,7 +21,7 @@ public class ExecuteBucketFunctionsService {
     public void executeBucketFunctions(String bucketName, String objectName, InputStream inputStream)
             throws BucketFunctionException {
 
-        BucketFunctionsConfig config = bucketStore.getBucketFunctionConfig(bucketName);
+        BucketFunctionsConfig config =  null;//bucketStore.getBucketFunctionConfig(bucketName);
         if (config == null) {
             return;
         }

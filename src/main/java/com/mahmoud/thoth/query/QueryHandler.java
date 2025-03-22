@@ -22,6 +22,7 @@ public class QueryHandler {
 
     
     public Object handleQuery(Map<String, Object> queryMap, MultipartFile file) throws IOException {
+       /* 
         String action = (String) queryMap.get("action");
         String resource = (String) queryMap.get("resource");
         @SuppressWarnings("unchecked")
@@ -29,7 +30,7 @@ public class QueryHandler {
 
         if ("CREATE_BUCKET".equals(action) && "BUCKET".equals(resource)) {
             String bucketName = conditions.get("name");
-            bucketStore.createBucket(bucketName);
+            bucketStore.saveBuket(null);
             return "Bucket created";
             
         } else if ("UPLOAD_OBJECT".equals(action) && "OBJECT".equals(resource)) {
@@ -55,7 +56,7 @@ public class QueryHandler {
             String bucketName = conditions.get("name");
             return bucketStore.getBucketMetadata(bucketName);
         }
-
+*/
         return "Invalid query";
     }
 }

@@ -40,10 +40,6 @@ public class FileSystemStorageService implements StorageService {
 
     @Override
     public void uploadObject(String bucketName, String objectName, InputStream inputStream) throws IOException {
-        if (bucketStore.getBucketMetadata(bucketName) == null) {
-            bucketStore.createBucket(bucketName);
-        }
-
         byte[] content = readInputStream(inputStream);
 
         Path objectPath = createObjectPath(bucketName, objectName);

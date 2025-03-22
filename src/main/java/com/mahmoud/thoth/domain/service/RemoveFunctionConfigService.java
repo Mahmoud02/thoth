@@ -12,6 +12,6 @@ public class RemoveFunctionConfigService {
     private final BucketStore bucketStore;
 
     public void removeFunctionConfig(String bucketName, FunctionType type) {
-        bucketStore.removeFunctionDefinition(bucketName, type);
+        //bucketStore.removeFunctionDefinition(bucketName, type);
     }
 }

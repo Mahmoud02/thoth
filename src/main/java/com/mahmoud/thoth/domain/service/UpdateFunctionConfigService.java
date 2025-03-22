@@ -16,7 +16,7 @@ public class UpdateFunctionConfigService {
     private final BucketStore bucketStore;
 
     public void updateFunctionConfig(String bucketName, FunctionConfig functionConfig, int executionOrder) {
-        BucketFunctionsConfig config = bucketStore.getBucketFunctionConfig(bucketName);
+        BucketFunctionsConfig config = null ;//bucketStore.getBucketFunctionConfig(bucketName);
         if (config == null) {
             config = new BucketFunctionsConfig();
         }
@@ -27,11 +27,11 @@ public class UpdateFunctionConfigService {
                 .executionOrder(executionOrder)
                 .build();
 
-        bucketStore.addFunctionDefinition(bucketName, definition);
+        //bucketStore.addFunctionDefinition(bucketName, definition);
     }
 
     public void updateFunctionConfigs(String bucketName, List<FunctionConfig> functionConfigs) {
-        BucketFunctionsConfig config = bucketStore.getBucketFunctionConfig(bucketName);
+        BucketFunctionsConfig config = null;//bucketStore.getBucketFunctionConfig(bucketName);
         if (config == null) {
             config = new BucketFunctionsConfig();
         }
@@ -48,6 +48,6 @@ public class UpdateFunctionConfigService {
             config.getDefinitions().add(definition);
         }
 
-        bucketStore.updateBucketFunctionConfig(bucketName, config);
+        //bucketStore.updateBucketFunctionConfig(bucketName, config);
     }
 }
