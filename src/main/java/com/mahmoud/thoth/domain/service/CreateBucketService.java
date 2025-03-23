@@ -6,7 +6,7 @@ import com.mahmoud.thoth.domain.model.BucketMetadata;
 import com.mahmoud.thoth.domain.model.Namespace;
 import com.mahmoud.thoth.domain.port.in.CreateBucketRequest;
 import com.mahmoud.thoth.domain.port.out.BucketMetadataCommandRepository;
-import com.mahmoud.thoth.domain.port.out.BucketRepository;
+import com.mahmoud.thoth.domain.port.out.BucketMetadataQueryRepository;
 import com.mahmoud.thoth.domain.port.out.NamespaceRepository;
 import com.mahmoud.thoth.infrastructure.StorageService;
 import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
@@ -20,18 +20,18 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CreateBucketService {
 
-    private final BucketRepository bucketRepository;
     private final NamespaceRepository namespaceRepository;
     private final VersionedBucketStore versionedBucketStore;
     private final StorageService storageService;
     private final BucketMapper bucketMapper;
     private final BucketMetadataCommandRepository bucketMetadataCommandRepository;
+    private final BucketMetadataQueryRepository bucketMetadataQueryRepository;
 
     public BucketDTO createRegularBucket(CreateBucketRequest request) {
         String bucketName = request.getName();
         String namespaceName = request.getNamespaceName();
 
-        if (bucketRepository.containsKey(bucketName)) {
+        if (bucketMetadataQueryRepository.isBuketExists(bucketName)) {
             throw new ResourceConflictException("Bucket already exists: " + bucketName);
         }
         if (namespaceName == null || namespaceName.isEmpty()) {
@@ -43,7 +43,7 @@ public class CreateBucketService {
         BucketMetadata bucketMetadata = new BucketMetadata(bucketName, namespaceName);
         bucketMetadataCommandRepository.saveBucket(bucketMetadata);
         bucketMetadataCommandRepository.createBucketFolder(bucketName);
-        return bucketMapper.toBucketDTO(bucketName, bucketRepository.getBucketMetadata(bucketName));
+        return bucketMapper.toBucketDTO(bucketName, bucketMetadata);
     }
 
     public BucketDTO createVersionedBucket(CreateBucketRequest request) {

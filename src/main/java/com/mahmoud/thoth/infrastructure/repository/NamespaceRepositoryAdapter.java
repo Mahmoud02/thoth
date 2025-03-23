@@ -3,7 +3,7 @@ package com.mahmoud.thoth.infrastructure.repository;
 import com.mahmoud.thoth.domain.model.Namespace;
 import com.mahmoud.thoth.domain.port.out.NamespaceRepository;
 import com.mahmoud.thoth.infrastructure.StorageService;
-import com.mahmoud.thoth.infrastructure.store.impl.sqlite.repository.NamespaceStore;
+import com.mahmoud.thoth.infrastructure.store.NamespaceStore;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -24,14 +24,14 @@ public class NamespaceRepositoryAdapter implements NamespaceRepository {
 
     @Override
     public void deleteNamespace(String namespaceName) {
-        namespaceStore.deleteNamespace(namespaceName);
+        
     }
 
     
 
     @Override
     public Namespace getNamespace(String namespaceName) {
-        return namespaceStore.getNamespace(namespaceName);
+        return null;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class NamespaceRepositoryAdapter implements NamespaceRepository {
 
     @Override
     public boolean containsKey(String namespaceName) {
-        return namespaceStore.containsKey(namespaceName);
+        return false;
     }
 
     @Override

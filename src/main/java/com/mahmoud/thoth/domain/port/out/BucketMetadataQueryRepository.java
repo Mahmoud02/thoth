@@ -9,4 +9,6 @@ public interface BucketMetadataQueryRepository {
     long getBucketSize(String bucketName);
     List<BucketMetadata> getBucketsByNamespace(String namespaceName);
     boolean isBuketExists(Long buketIdentifier);
+    boolean isBuketExists(String buketName);
+
 }

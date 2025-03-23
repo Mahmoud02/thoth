@@ -6,7 +6,6 @@ import com.mahmoud.thoth.function.config.ExtensionValidatorConfig;
 import com.mahmoud.thoth.function.config.FunctionConfig;
 import com.mahmoud.thoth.function.enums.FunctionType;
 
-import lombok.var;
 
 import org.springframework.stereotype.Component;
 import java.io.InputStream;

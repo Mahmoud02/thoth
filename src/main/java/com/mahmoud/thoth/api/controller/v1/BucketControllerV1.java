@@ -21,7 +21,6 @@ import com.mahmoud.thoth.api.dto.BucketDTO;
 import com.mahmoud.thoth.api.mapper.BucketMapper;
 import com.mahmoud.thoth.domain.port.in.CreateBucketRequest;
 import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
-import com.mahmoud.thoth.domain.port.out.BucketRepository;
 import com.mahmoud.thoth.domain.service.CreateBucketService;
 import com.mahmoud.thoth.domain.service.UpdateBucketService;
 import com.mahmoud.thoth.domain.service.DeleteBucketService;
@@ -43,7 +42,6 @@ public class BucketControllerV1 {
     private final UpdateBucketService updateBucketService;
     private final DeleteBucketService deleteBucketService;
     private final BucketMapper bucketMapper;
-    private final BucketRepository bucketRepository;
 
     @PostMapping
     public ResponseEntity<BucketDTO> createBucket(@RequestBody @Valid CreateBucketRequest createBucketRequestDTO) {
@@ -68,11 +66,11 @@ public class BucketControllerV1 {
 
     @GetMapping("/{bucketName}")
     public ResponseEntity<BucketDTO> getBucketMetadata(@PathVariable @NotBlank String bucketName) {
-        return ResponseEntity.ok(bucketMapper.toBucketDTO(bucketName, bucketRepository.getBucketMetadata(bucketName)));
+        return ResponseEntity.ok(bucketMapper.toBucketDTO(bucketName,null));
     }
 
     @GetMapping
     public ResponseEntity<List<BucketDTO>> listBuckets(@RequestParam(required = false, defaultValue = DEFAULT_NAMESPACE) String namespace) {
-        return ResponseEntity.ok(bucketMapper.toBucketDTOList(bucketRepository.getBucketsByNamespace(namespace)));
+        return ResponseEntity.ok(bucketMapper.toBucketDTOList(null));
     }
 }

@@ -33,4 +33,9 @@ public class BucketMetadataQueryAdapter implements BucketMetadataQueryRepository
     public boolean isBuketExists(Long bucketIdentifier) {
         return bucketStore.isBuketExists(bucketIdentifier);
     }
+
+    @Override
+    public boolean isBuketExists(String buketName) {
+        return false;
+    }
 }

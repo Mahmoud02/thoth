@@ -1,6 +1,7 @@
 package com.mahmoud.thoth.domain.service;
 
-import com.mahmoud.thoth.domain.port.out.BucketRepository;
+import com.mahmoud.thoth.domain.port.out.BucketMetadataCommandRepository;
+import com.mahmoud.thoth.domain.port.out.BucketMetadataQueryRepository;
 import com.mahmoud.thoth.domain.port.out.MetadataRepository;
 import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
@@ -11,15 +12,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DeleteBucketService {
 
-    private final BucketRepository bucketRepository;
+    private final BucketMetadataQueryRepository bucketMetadataQueryRepository;
+    private final BucketMetadataCommandRepository bucketMetadataCommandRepository;
     private final VersionedBucketStore versionedBucketStore;
     private final MetadataRepository metadataRepository;
 
     public void deleteRegularBucket(String bucketName) {
-        if (!bucketRepository.containsKey(bucketName)) {
+        if (!bucketMetadataQueryRepository.isBuketExists(bucketName)) {
             throw new ResourceNotFoundException("Bucket not found: " + bucketName);
         }
-        bucketRepository.deleteBucket(bucketName);
+        bucketMetadataCommandRepository.deleteBucket(1L);
         metadataRepository.deleteObjectMetadata(bucketName);
     }
 

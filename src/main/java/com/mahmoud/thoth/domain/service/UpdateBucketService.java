@@ -4,7 +4,8 @@ import com.mahmoud.thoth.api.dto.BucketDTO;
 import com.mahmoud.thoth.api.mapper.BucketMapper;
 import com.mahmoud.thoth.domain.model.BucketMetadata;
 import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
-import com.mahmoud.thoth.domain.port.out.BucketRepository;
+import com.mahmoud.thoth.domain.port.out.BucketMetadataCommandRepository;
+import com.mahmoud.thoth.domain.port.out.BucketMetadataQueryRepository;
 import com.mahmoud.thoth.domain.port.out.MetadataRepository;
 import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
@@ -17,26 +18,25 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UpdateBucketService {
 
-    private final BucketRepository bucketRepository;
+    private final BucketMetadataQueryRepository bucketMetadataQueryRepository;
+    private final BucketMetadataCommandRepository bucketMetadataCommandRepository;
     private final VersionedBucketStore versionedBucketStore;
     private final MetadataRepository metadataRepository;
     private final BucketMapper bucketMapper;
 
     public BucketDTO updateRegularBucket(String bucketName, UpdateBucketRequest request) {
-        if (!bucketRepository.containsKey(bucketName)) {
+        if (!bucketMetadataQueryRepository.isBuketExists(bucketName)) {
             throw new ResourceNotFoundException("Bucket not found: " + bucketName);
         }
 
-        if (bucketRepository.containsKey(request.getName()) && !bucketName.equals(request.getName())) {
+        if (bucketMetadataQueryRepository.isBuketExists(request.getName()) && !bucketName.equals(request.getName())) {
             throw new ResourceConflictException("Bucket already exists: " + request.getName());
         }
 
-        BucketMetadata bucketMetadata = bucketRepository.remove(bucketName);
-        if (bucketMetadata != null) {
-            bucketRepository.save(bucketMetadata);
-        }
+        bucketMetadataCommandRepository.deleteBucket(1L);
+
         metadataRepository.updateObjectMetadata(bucketName, request.getName());
-        return bucketMapper.toBucketDTO(request.getName(), bucketRepository.getBucketMetadata(request.getName()));
+        return bucketMapper.toBucketDTO(request.getName(), null);
     }
 
     public BucketDTO updateVersionedBucket(String bucketName, UpdateBucketRequest request) {
