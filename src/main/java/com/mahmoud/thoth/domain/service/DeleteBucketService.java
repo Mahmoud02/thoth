@@ -14,7 +14,7 @@ public class DeleteBucketService {
 
     private final BucketMetadataQueryRepository bucketMetadataQueryRepository;
     private final BucketMetadataCommandRepository bucketMetadataCommandRepository;
-    private final VersionedBucketStore versionedBucketStore;
+    private final VersionedBucketStore versionedBucketStore = null;
     private final MetadataRepository metadataRepository;
 
     public void deleteRegularBucket(String bucketName) {

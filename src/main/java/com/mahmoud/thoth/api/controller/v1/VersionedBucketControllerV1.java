@@ -33,7 +33,7 @@ public class VersionedBucketControllerV1 {
     private final CreateBucketService createBucketService;
     private final UpdateBucketService updateBucketService;
     private final DeleteBucketService deleteBucketService;
-    private final VersionedBucketStore versionedBucketStore;
+    private final VersionedBucketStore versionedBucketStore = null;
     private final BucketMapper bucketMapper;
 
     @PostMapping

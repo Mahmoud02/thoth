@@ -29,7 +29,7 @@ public class FileSystemStorageService implements StorageService {
 
     private static final String STORAGE_PATH = "thoth-storage";
     private final BucketStore bucketStore;
-    private final VersionedBucketStore versionedBucketStore;
+    private final VersionedBucketStore versionedBucketStore = null;
     private final ObjectMetadataMapper objectMetadataMapper;
     private static final Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);
 

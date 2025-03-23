@@ -20,7 +20,7 @@ public class UpdateBucketService {
 
     private final BucketMetadataQueryRepository bucketMetadataQueryRepository;
     private final BucketMetadataCommandRepository bucketMetadataCommandRepository;
-    private final VersionedBucketStore versionedBucketStore;
+    private final VersionedBucketStore versionedBucketStore = null;
     private final MetadataRepository metadataRepository;
     private final BucketMapper bucketMapper;
 

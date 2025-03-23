@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 public class CreateBucketService {
 
     private final NamespaceRepository namespaceRepository;
-    private final VersionedBucketStore versionedBucketStore;
+    private final VersionedBucketStore versionedBucketStore = null;
     private final StorageService storageService;
     private final BucketMapper bucketMapper;
     private final BucketMetadataCommandRepository bucketMetadataCommandRepository;

@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  development-postgres:
+    image: postgres:17.4
+    container_name: development-postgres
+    environment:
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    networks:
+      - development-network
+    volumes:
+      - development-postgres-data:/var/lib/postgresql/data
+
+  development-pgadmin:
+    image: dpage/pgadmin4
+    container_name: development-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    networks:
+      - development-network
+    depends_on:
+      - development-postgres
+    volumes:
+      - development-pgadmin-data:/var/lib/pgadmin
+
+networks:
+  development-network:
+    driver: bridge
+
+volumes:
+  development-postgres-data:
+  development-pgadmin-data:

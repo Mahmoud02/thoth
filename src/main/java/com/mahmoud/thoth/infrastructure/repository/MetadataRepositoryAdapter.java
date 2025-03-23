@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class MetadataRepositoryAdapter implements MetadataRepository {
 
-    private final MetadataStore metadataStore;
+    private final MetadataStore metadataStore = null;
 
     @Override
     public void addObjectMetadata(String bucketName, String objectName, long size, String contentType) {
