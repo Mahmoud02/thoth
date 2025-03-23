@@ -1,19 +1,25 @@
 package com.mahmoud.thoth.domain.model;
 
+import java.time.LocalDateTime;
+
 import lombok.Getter;
 
 @Getter
 public class Namespace {
     public static final String DEFAULT_NAMESPACE_NAME = "default";
 
-    private Long identifier;
+    private Long id;
     private String name;
+    private String description;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    public Namespace( Long identifier , String name) {
-        this.name = name;
-        this.identifier = identifier;
+    public static boolean isInvalid(String name) {
+        if (DEFAULT_NAMESPACE_NAME.equals(name))  {
+            return true;
+        }
+        return false;
     }
-
     public static boolean isDefaultNamespace(String namespaceName) {
         return DEFAULT_NAMESPACE_NAME.equals(namespaceName);
     }

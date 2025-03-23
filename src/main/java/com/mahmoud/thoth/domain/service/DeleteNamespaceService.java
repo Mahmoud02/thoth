@@ -11,10 +11,10 @@ public class DeleteNamespaceService {
 
     private final NamespaceRepository namespaceRepository;
 
-    public void execute(String namespaceName) {
-        if (!namespaceRepository.containsKey(namespaceName)) {
-            throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
+    public void execute(Long ID) {
+        if (namespaceRepository.existsById(ID)) {
+            namespaceRepository.deleteById(ID);
         }
-        namespaceRepository.deleteNamespace(namespaceName);
+        throw new ResourceNotFoundException("Namespace not found: " + ID);
     }
 }

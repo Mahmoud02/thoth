@@ -16,15 +16,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mahmoud.thoth.api.dto.UpdateNamespaceRequest;
 import com.mahmoud.thoth.domain.model.Namespace;
 import com.mahmoud.thoth.domain.port.in.CreateNamespaceRequest;
+import com.mahmoud.thoth.domain.port.in.UpdateNamespaceRequest;
 import com.mahmoud.thoth.domain.service.CreateNamespaceService;
 import com.mahmoud.thoth.domain.service.DeleteNamespaceService;
+import com.mahmoud.thoth.domain.service.UpdateNamespaceService;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import lombok.var;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,33 +34,26 @@ import lombok.RequiredArgsConstructor;
 @Validated
 public class NamespaceControllerV1 {
 
-
-    private static final Logger logger = LoggerFactory.getLogger(NamespaceControllerV1.class);
-
     private final CreateNamespaceService createNamespaceService;
     private final DeleteNamespaceService deleteNamespaceService;
+    private final UpdateNamespaceService updateNamespaceService;
 
 
     @PostMapping
     public ResponseEntity<Namespace> createNamespace(@RequestBody @Valid CreateNamespaceRequest request) {
-        logger.info("Creating namespace: {}", request.getNamespaceName());
-        createNamespaceService.execute(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+        var namespace = createNamespaceService.execute(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(namespace);
     }
 
     @PutMapping("/{namespaceName}")
-    public ResponseEntity<Namespace> updateNamespace(@PathVariable @NotBlank String namespaceName, @RequestBody @Valid UpdateNamespaceRequest request) {
-        if (Namespace.DEFAULT_NAMESPACE_NAME.equals(namespaceName)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-        }
-        logger.info("Updating namespace: {} to {}", namespaceName, request.getNewNamespaceName());
-        return ResponseEntity.ok(null);
+    public ResponseEntity<Void> updateNamespace(@PathVariable @NotBlank Long Id, @RequestBody @Valid UpdateNamespaceRequest request) {
+        updateNamespaceService.execute(Id,request);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{namespaceName}")
-    public ResponseEntity<Void> deleteNamespace(@PathVariable @NotBlank String namespaceName) {
-        logger.info("Deleting namespace: {}", namespaceName);
-        deleteNamespaceService.execute(namespaceName);
+    public ResponseEntity<Void> deleteNamespace(@PathVariable @NotBlank Long Id) {
+        deleteNamespaceService.execute(Id);
         return ResponseEntity.noContent().build();
     }
 
