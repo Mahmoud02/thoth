@@ -2,7 +2,6 @@ package com.mahmoud.thoth.domain.service;
 
 import com.mahmoud.thoth.api.dto.BucketDTO;
 import com.mahmoud.thoth.api.mapper.BucketMapper;
-import com.mahmoud.thoth.domain.model.BucketMetadata;
 import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
 import com.mahmoud.thoth.domain.port.out.BucketMetadataCommandRepository;
 import com.mahmoud.thoth.domain.port.out.BucketMetadataQueryRepository;

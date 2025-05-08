@@ -7,7 +7,7 @@ import com.mahmoud.thoth.domain.model.Namespace;
 import com.mahmoud.thoth.domain.port.in.CreateBucketRequest;
 import com.mahmoud.thoth.domain.port.out.BucketMetadataCommandRepository;
 import com.mahmoud.thoth.domain.port.out.BucketMetadataQueryRepository;
-import com.mahmoud.thoth.domain.port.out.NamespaceRepository;
+import com.mahmoud.thoth.domain.port.out.NamespaceQueryRepository;
 import com.mahmoud.thoth.infrastructure.StorageService;
 import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
@@ -20,12 +20,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CreateBucketService {
 
-    private final NamespaceRepository namespaceRepository;
     private final VersionedBucketStore versionedBucketStore = null;
     private final StorageService storageService;
     private final BucketMapper bucketMapper;
     private final BucketMetadataCommandRepository bucketMetadataCommandRepository;
     private final BucketMetadataQueryRepository bucketMetadataQueryRepository;
+    private final NamespaceQueryRepository namespaceQueryRepository;
 
     public BucketDTO createRegularBucket(CreateBucketRequest request) {
         String bucketName = request.getName();
@@ -36,7 +36,7 @@ public class CreateBucketService {
         }
         if (namespaceName == null || namespaceName.isEmpty()) {
             namespaceName = Namespace.DEFAULT_NAMESPACE_NAME;
-        } else if (!namespaceRepository.containsKey(namespaceName)) {
+        } else if (!namespaceQueryRepository.exists(namespaceName)) {
             throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
         }
 

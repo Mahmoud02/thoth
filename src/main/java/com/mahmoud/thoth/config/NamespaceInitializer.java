@@ -1,7 +1,8 @@
 package com.mahmoud.thoth.config;
 
 import com.mahmoud.thoth.domain.model.Namespace;
-import com.mahmoud.thoth.domain.port.out.NamespaceRepository;
+import com.mahmoud.thoth.domain.port.out.NamespaceCommandRepository;
+import com.mahmoud.thoth.domain.port.out.NamespaceQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -10,15 +11,15 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class NamespaceInitializer implements CommandLineRunner {
 
-    private final NamespaceRepository namespaceRepository;
+    private final NamespaceCommandRepository namespaceCommandRepository;
+    private final NamespaceQueryRepository namespaceQueryRepository;
 
     @Override
     public void run(String... args) throws Exception {
-        var namespaces = namespaceRepository.getListNamespaces();
-        var isDefaultNamespaceExist = namespaces.stream().anyMatch(namespace -> Namespace.DEFAULT_NAMESPACE_NAME.equals(namespace.getName()));
+        var isDefaultNamespaceExist = namespaceQueryRepository.exists(Namespace.DEFAULT_NAMESPACE_NAME);
         if (!isDefaultNamespaceExist) {
-            namespaceRepository.saveNameSpaceMetaData(Namespace.DEFAULT_NAMESPACE_NAME);
-            namespaceRepository.createNameSpaceFolder(Namespace.DEFAULT_NAMESPACE_NAME);
+            namespaceCommandRepository.save(Namespace.DEFAULT_NAMESPACE_NAME);
+            namespaceCommandRepository.createFolder(Namespace.DEFAULT_NAMESPACE_NAME);
         }
 
     }

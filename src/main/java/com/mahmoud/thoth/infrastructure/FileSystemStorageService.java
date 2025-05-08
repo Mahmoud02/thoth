@@ -3,7 +3,6 @@ package com.mahmoud.thoth.infrastructure;
 import com.mahmoud.thoth.api.dto.ObjectMetadataDTO;
 import com.mahmoud.thoth.api.mapper.ObjectMetadataMapper;
 import com.mahmoud.thoth.domain.model.VersionedBucket;
-import com.mahmoud.thoth.infrastructure.store.BucketStore;
 import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
 
 import jakarta.annotation.PostConstruct;
@@ -28,7 +27,6 @@ import java.util.stream.Collectors;
 public class FileSystemStorageService implements StorageService {
 
     private static final String STORAGE_PATH = "thoth-storage";
-    private final BucketStore bucketStore;
     private final VersionedBucketStore versionedBucketStore = null;
     private final ObjectMetadataMapper objectMetadataMapper;
     private static final Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);

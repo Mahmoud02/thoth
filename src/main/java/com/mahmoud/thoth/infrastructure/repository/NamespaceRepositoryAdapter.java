@@ -1,7 +1,8 @@
 package com.mahmoud.thoth.infrastructure.repository;
 
 import com.mahmoud.thoth.domain.model.Namespace;
-import com.mahmoud.thoth.domain.port.out.NamespaceRepository;
+import com.mahmoud.thoth.domain.port.out.NamespaceCommandRepository;
+import com.mahmoud.thoth.domain.port.out.NamespaceQueryRepository;
 import com.mahmoud.thoth.infrastructure.StorageService;
 import com.mahmoud.thoth.infrastructure.store.NamespaceStore;
 
@@ -12,40 +13,38 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class NamespaceRepositoryAdapter implements NamespaceRepository {
+public class NamespaceRepositoryAdapter implements NamespaceCommandRepository ,NamespaceQueryRepository {
 
     private final NamespaceStore namespaceStore;
     private final StorageService storageService;
-
     @Override
-    public void saveNameSpaceMetaData(String namespaceName) {
-        namespaceStore.createNamespace(namespaceName);
+    public List<Namespace> findAll() {
+        return namespaceStore.findAll();
     }
-
     @Override
-    public void deleteNamespace(String namespaceName) {
-        
+    public boolean exists(Long namespaceId) {
+        return namespaceStore.exists(namespaceId);
+    }
+    @Override
+    public boolean exists(String namespaceName) {
+        return namespaceStore.exists(namespaceName);
+    }
+    @Override
+    public Namespace save(String namespaceName) {
+        return namespaceStore.save(namespaceName);
+    }
+    @Override
+    public void createFolder(String namespaceName) {
+        storageService.createNamespaceFolder(namespaceName);
+    }
+    @Override
+    public void updateName(Long namespaceId, String value) {
+        namespaceStore.updateName(namespaceId, value);
+    }
+    @Override
+    public void delete(Long namespaceId) {
+        namespaceStore.delete(namespaceId);
     }
 
     
-
-    @Override
-    public Namespace getNamespace(String namespaceName) {
-        return null;
-    }
-
-    @Override
-    public List<Namespace> getListNamespaces() {
-        return namespaceStore.getListNamespaces();
-    }
-
-    @Override
-    public boolean containsKey(String namespaceName) {
-        return false;
-    }
-
-    @Override
-    public void createNameSpaceFolder(String namespaceName) {
-        this.storageService.createNamespaceFolder(namespaceName);
-    }
 }

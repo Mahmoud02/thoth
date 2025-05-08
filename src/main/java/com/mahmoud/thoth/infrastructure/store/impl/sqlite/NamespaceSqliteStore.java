@@ -20,7 +20,7 @@ public class NamespaceSqliteStore implements NamespaceStore {
     private NamespaceRepository namespaceRepository;
 
     @Override
-    public Namespace createNamespace(String namespaceName) {
+    public Namespace save(String namespaceName) {
         NamespaceEntity entity = new NamespaceEntity();
         entity.setName(namespaceName);
         NamespaceEntity savedEntity = namespaceRepository.save(entity);
@@ -28,30 +28,28 @@ public class NamespaceSqliteStore implements NamespaceStore {
     }
 
     @Override
-    public Namespace updatNamespaceName(Long namespaceId, String namespaceName) {
+    public void updateName(Long namespaceId, String namespaceName) {
         Optional<NamespaceEntity> optionalEntity = namespaceRepository.findById(namespaceId);
         if (optionalEntity.isPresent()) {
             NamespaceEntity entity = optionalEntity.get();
             entity.setName(namespaceName);
-            NamespaceEntity updatedEntity = namespaceRepository.save(entity);
-            return toModel(updatedEntity);
+            namespaceRepository.save(entity);
         }
-        return null;
     }
 
     @Override
-    public void deleteNamespace(Long namespaceId) {
+    public void delete(Long namespaceId) {
         namespaceRepository.deleteById(namespaceId);
     }
 
     @Override
-    public Namespace getNamespace(Long namespaceId) {
+    public Namespace find(Long namespaceId) {
         Optional<NamespaceEntity> optionalEntity = namespaceRepository.findById(namespaceId);
         return optionalEntity.map(this::toModel).orElse(null);
     }
 
     @Override
-    public List<Namespace> getListNamespaces() {
+    public List<Namespace> findAll() {
         Iterable<NamespaceEntity> entities = namespaceRepository.findAll();
         return StreamSupport.stream(entities.spliterator(), false)
                             .map(this::toModel)
@@ -59,16 +57,27 @@ public class NamespaceSqliteStore implements NamespaceStore {
     }
 
     @Override
-    public boolean isNamespaceExist(String namespaceName) {
+    public boolean exists(String namespaceName) {
        return namespaceRepository.existsByName(namespaceName);
     }
 
     @Override
-    public boolean isNamespaceExist(Long namespaceId) {
+    public boolean exists(Long namespaceId) {
         return namespaceRepository.existsById(namespaceId);
     }
 
     private Namespace toModel(NamespaceEntity entity) {
-      return new Namespace(entity.getId(), entity.getName());
+      return new Namespace(entity.getId(), entity.getName(),entity.getDescription(),entity.getCreatedAt(), entity.getUpdatedAt());
+    }
+
+    @Override
+    public void delete(String namespaceName) {
+        namespaceRepository.deleteByName(namespaceName);
+    }
+
+    @Override
+    public Namespace find(String nameSpaceName) {
+        Optional<NamespaceEntity> optionalEntity = namespaceRepository.findByName(nameSpaceName);
+        return optionalEntity.map(this::toModel).orElse(null);
     }
 }
