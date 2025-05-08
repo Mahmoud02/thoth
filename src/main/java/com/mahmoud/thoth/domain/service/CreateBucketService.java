@@ -8,8 +8,6 @@ import com.mahmoud.thoth.domain.port.in.CreateBucketRequest;
 import com.mahmoud.thoth.domain.port.out.BucketMetadataCommandRepository;
 import com.mahmoud.thoth.domain.port.out.BucketMetadataQueryRepository;
 import com.mahmoud.thoth.domain.port.out.NamespaceQueryRepository;
-import com.mahmoud.thoth.infrastructure.StorageService;
-import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 
@@ -20,8 +18,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CreateBucketService {
 
-    private final VersionedBucketStore versionedBucketStore = null;
-    private final StorageService storageService;
     private final BucketMapper bucketMapper;
     private final BucketMetadataCommandRepository bucketMetadataCommandRepository;
     private final BucketMetadataQueryRepository bucketMetadataQueryRepository;
@@ -44,13 +40,5 @@ public class CreateBucketService {
         bucketMetadataCommandRepository.saveBucket(bucketMetadata);
         bucketMetadataCommandRepository.createBucketFolder(bucketName);
         return bucketMapper.toBucketDTO(bucketName, bucketMetadata);
-    }
-
-    public BucketDTO createVersionedBucket(CreateBucketRequest request) {
-        String bucketName = request.getName();
-        String namespace = request.getNamespaceName() != null ? request.getNamespaceName() : Namespace.DEFAULT_NAMESPACE_NAME;
-        versionedBucketStore.createVersionedBucket(bucketName, namespace);
-        storageService.createVersionedBucket(bucketName);
-        return bucketMapper.toVersionedBucketDTO(bucketName, versionedBucketStore.getVersionedBucketMetadata(bucketName));
     }
 }

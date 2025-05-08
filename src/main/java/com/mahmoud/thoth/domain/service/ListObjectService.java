@@ -18,8 +18,4 @@ public class ListObjectService {
     public List<ObjectMetadataDTO> listObjects(String bucketName) throws IOException {
         return storageService.listObjects(bucketName);
     }
-
-    public List<ObjectMetadataDTO> listObjectsWithVersions(String bucketName) throws IOException {
-        return storageService.listObjectsWithVersions(bucketName);
-    }
 }

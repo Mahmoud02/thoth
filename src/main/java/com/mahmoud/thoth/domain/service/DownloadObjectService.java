@@ -17,7 +17,4 @@ public class DownloadObjectService {
         return storageService.downloadObject(bucketName, objectName);
     }
 
-    public byte[] downloadObjectWithVersion(String bucketName, String objectName, String version) throws IOException {
-        return storageService.downloadObjectWithVersion(bucketName, objectName, version);
-    }
 }

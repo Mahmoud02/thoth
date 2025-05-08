@@ -14,8 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -39,19 +37,7 @@ public class UploadObjectService {
         return objectMetadataMapper.toObjectMetadataDTO(bucketName, objectName, file);
     }
 
-    public ObjectMetadataDTO uploadVersionedObject(String bucketName, UploadObjectRequest uploadObjectRequest) throws IOException {
-        String objectName = uploadObjectRequest.getObjectName();
-        MultipartFile file = uploadObjectRequest.getFile();
-        String version = generateVersion();
-        byte[] content = file.getBytes();
-
-        executeBucketFunctions(bucketName, objectName, content);
-
-        storageService.uploadObjectWithVersion(bucketName, objectName, version, new ByteArrayInputStream(content));
-        metadataRepository.addObjectMetadata(bucketName, objectName, file.getSize(), file.getContentType());
-
-        return objectMetadataMapper.toObjectMetadataDTO(bucketName, objectName, file);
-    }
+   
 
     private void executeBucketFunctions(String bucketName, String objectName, byte[] content) throws IOException {
         BufferedInputStream bufferedInputStream = new BufferedInputStream(new ByteArrayInputStream(content));
@@ -64,8 +50,4 @@ public class UploadObjectService {
         }
     }
 
-    private String generateVersion() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-        return LocalDateTime.now().format(formatter);
-    }
 }

@@ -2,7 +2,6 @@ package com.mahmoud.thoth.api.mapper;
 
 import com.mahmoud.thoth.api.dto.BucketDTO;
 import com.mahmoud.thoth.domain.model.BucketMetadata;
-import com.mahmoud.thoth.domain.model.VersionedBucket;
 
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -22,18 +21,5 @@ public class BucketMapper {
             return null;
         }
         return new BucketDTO(bucketName, 0, 0, bucketMetadata.getCreationDate(), bucketMetadata.getLastModifiedDate(), null);
-    }
-
-    public List<BucketDTO> toVersionedBucketDTOList(Map<String, VersionedBucket> versionedBucketMap) {
-        return versionedBucketMap.entrySet().stream()
-                .map(entry -> new BucketDTO(entry.getKey(), 0, 0, entry.getValue().getCreatedAt(), entry.getValue().getUpdatedAt(), null))
-                .collect(Collectors.toList());
-    }
-
-    public BucketDTO toVersionedBucketDTO(String bucketName, VersionedBucket versionedBucket) {
-        if (versionedBucket == null) {
-            return null;
-        }
-        return new BucketDTO(bucketName, 0, 0, versionedBucket.getCreatedAt(), versionedBucket.getUpdatedAt(), null);
     }
 }

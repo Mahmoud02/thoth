@@ -12,12 +12,5 @@ public interface StorageService {
     void deleteObject(String bucketName, String objectName) throws IOException;
     List<ObjectMetadataDTO> listObjects(String bucketName) throws IOException;
     void createBucketFolder(String bucketName);
-
-    // Methods for versioned buckets
-    void uploadObjectWithVersion(String bucketName, String objectName, String version, InputStream inputStream) throws IOException;
-    byte[] downloadObjectWithVersion(String bucketName, String objectName, String version) throws IOException;
-    void deleteObjectWithVersion(String bucketName, String objectName, String version) throws IOException;
-    List<ObjectMetadataDTO> listObjectsWithVersions(String bucketName) throws IOException;
-    void createVersionedBucket(String bucketName);
     void createNamespaceFolder(String namespaceName);
 }

@@ -19,9 +19,4 @@ public class DeleteObjectService {
         storageService.deleteObject(bucketName, objectName);
         metadataRepository.removeObjectMetadata(bucketName, objectName);
     }
-
-    public void deleteObjectWithVersion(String bucketName, String objectName, String version) throws IOException {
-        storageService.deleteObjectWithVersion(bucketName, objectName, version);
-        metadataRepository.removeObjectMetadata(bucketName, objectName);
-    }
 }

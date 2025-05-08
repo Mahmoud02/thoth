@@ -2,8 +2,6 @@ package com.mahmoud.thoth.infrastructure;
 
 import com.mahmoud.thoth.api.dto.ObjectMetadataDTO;
 import com.mahmoud.thoth.api.mapper.ObjectMetadataMapper;
-import com.mahmoud.thoth.domain.model.VersionedBucket;
-import com.mahmoud.thoth.infrastructure.store.VersionedBucketStore;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +25,6 @@ import java.util.stream.Collectors;
 public class FileSystemStorageService implements StorageService {
 
     private static final String STORAGE_PATH = "thoth-storage";
-    private final VersionedBucketStore versionedBucketStore = null;
     private final ObjectMetadataMapper objectMetadataMapper;
     private static final Logger logger = LoggerFactory.getLogger(FileSystemStorageService.class);
 
@@ -44,21 +41,7 @@ public class FileSystemStorageService implements StorageService {
         writeFile(objectPath, content);
     }
 
-    @Override
-    public void uploadObjectWithVersion(String bucketName, String objectName, String version, InputStream inputStream) throws IOException {
-        if (versionedBucketStore.getVersionedBucketMetadata(bucketName) == null) {
-            versionedBucketStore.createVersionedBucket(bucketName);
-        }
-
-        byte[] content = readInputStream(inputStream);
-
-        Path objectPath = createObjectPath(bucketName, version, objectName);
-        writeFile(objectPath, content);
-
-        VersionedBucket versionedBucket = versionedBucketStore.getVersionedBucketMetadata(bucketName);
-        versionedBucket.addObject(objectName, version);
-    }
-
+    
     @Override
     public byte[] downloadObject(String bucketName, String objectName) throws IOException {
         Path objectPath = createObjectPath(bucketName, objectName);
@@ -66,24 +49,9 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public byte[] downloadObjectWithVersion(String bucketName, String objectName, String version) throws IOException {
-        Path objectPath = createObjectPath(bucketName, version, objectName);
-        return readFile(objectPath);
-    }
-
-    @Override
     public void deleteObject(String bucketName, String objectName) throws IOException {
         Path objectPath = createObjectPath(bucketName, objectName);
         deleteFile(objectPath);
-    }
-
-    @Override
-    public void deleteObjectWithVersion(String bucketName, String objectName, String version) throws IOException {
-        Path objectPath = createObjectPath(bucketName, version, objectName);
-        deleteFile(objectPath);
-
-        VersionedBucket versionedBucket = versionedBucketStore.getVersionedBucketMetadata(bucketName);
-        versionedBucket.removeObject(objectName, version);
     }
 
     @Override
@@ -98,18 +66,7 @@ public class FileSystemStorageService implements StorageService {
         }
     }
 
-    @Override
-    public List<ObjectMetadataDTO> listObjectsWithVersions(String bucketName) throws IOException {
-        Path bucketDirectory = createBucketPath(bucketName);
-        if (Files.isDirectory(bucketDirectory)) {
-            return Files.walk(bucketDirectory)
-                        .filter(Files::isRegularFile)
-                        .map(path -> objectMetadataMapper.toObjectMetadataDTO(bucketName, path))
-                        .collect(Collectors.toList());
-        } else {
-            throw new IOException("Bucket not found");
-        }
-    }
+    
 
     @Override
     public void createBucketFolder(String bucketName) {
@@ -118,16 +75,6 @@ public class FileSystemStorageService implements StorageService {
             Files.createDirectories(bucketDirectory);
         } catch (IOException e) {
             logger.error("Error creating bucket directory", e);
-        }
-    }
-
-    @Override
-    public void createVersionedBucket(String bucketName) {
-        try {
-            Path bucketDirectory = createBucketPath(bucketName);
-            Files.createDirectories(bucketDirectory);
-        } catch (IOException e) {
-            logger.error("Error creating versioned bucket directory", e);
         }
     }
 
@@ -141,10 +88,6 @@ public class FileSystemStorageService implements StorageService {
 
     private Path createObjectPath(String bucketName, String objectName) {
         return createBucketPath(bucketName).resolve(objectName);
-    }
-
-    private Path createObjectPath(String bucketName, String version, String objectName) {
-        return createBucketPath(bucketName).resolve(version).resolve(objectName);
     }
 
     private void writeFile(Path path, byte[] content) throws IOException {
