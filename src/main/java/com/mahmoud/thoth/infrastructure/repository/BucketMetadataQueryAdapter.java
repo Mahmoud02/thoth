@@ -34,6 +34,6 @@ public class BucketMetadataQueryAdapter implements BucketMetadataQueryRepository
 
     @Override
     public boolean isBuketExists(String buketName) {
-        return false;
+        return bucketStore.isExists(buketName);
     }
 }

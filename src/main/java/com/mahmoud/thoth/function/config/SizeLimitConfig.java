@@ -7,10 +7,10 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-@JsonTypeName(EXTENSION_VALIDATOR_FUNCTION_ID)
+@JsonTypeName(FunctionID.SIZE_LIMIT_FUNCTION_ID)
 public class SizeLimitConfig implements FunctionAssignConfig {
     
-    public static final String ID = FunctionID.EXTENSION_VALIDATOR_FUNCTION_ID;
+    public static final String ID = FunctionID.SIZE_LIMIT_FUNCTION_ID;
     
     @NotNull
     @Positive

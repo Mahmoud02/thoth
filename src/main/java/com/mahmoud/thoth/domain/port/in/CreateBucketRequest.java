@@ -10,5 +10,6 @@ public class CreateBucketRequest {
     @NotNull(message = "Bucket name must not be null")
     private String name;
 
-    private String namespaceName;
+    @NotNull(message = "NamespaceId name must not be null")
+    private Long namespaceId;
 }

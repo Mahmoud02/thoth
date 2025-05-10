@@ -3,7 +3,6 @@ package com.mahmoud.thoth.domain.service;
 import com.mahmoud.thoth.api.dto.BucketDTO;
 import com.mahmoud.thoth.api.mapper.BucketMapper;
 import com.mahmoud.thoth.domain.model.BucketMetadata;
-import com.mahmoud.thoth.domain.model.Namespace;
 import com.mahmoud.thoth.domain.port.in.CreateBucketRequest;
 import com.mahmoud.thoth.domain.port.out.BucketMetadataCommandRepository;
 import com.mahmoud.thoth.domain.port.out.BucketMetadataQueryRepository;
@@ -25,18 +24,17 @@ public class CreateBucketService {
 
     public BucketDTO createRegularBucket(CreateBucketRequest request) {
         String bucketName = request.getName();
-        String namespaceName = request.getNamespaceName();
+        Long namespaceId = request.getNamespaceId();
+
+        if (!namespaceQueryRepository.exists(namespaceId)) {
+            throw new ResourceNotFoundException("Namespace not found: " + namespaceId);
+        }
 
         if (bucketMetadataQueryRepository.isBuketExists(bucketName)) {
             throw new ResourceConflictException("Bucket already exists: " + bucketName);
         }
-        if (namespaceName == null || namespaceName.isEmpty()) {
-            namespaceName = Namespace.DEFAULT_NAMESPACE_NAME;
-        } else if (!namespaceQueryRepository.exists(namespaceName)) {
-            throw new ResourceNotFoundException("Namespace not found: " + namespaceName);
-        }
-
-        BucketMetadata bucketMetadata = new BucketMetadata(bucketName, namespaceName);
+        
+        BucketMetadata bucketMetadata = new BucketMetadata(bucketName, namespaceId);
         bucketMetadataCommandRepository.save(bucketMetadata);
         bucketMetadataCommandRepository.createFolder(bucketName);
         return bucketMapper.toBucketDTO(bucketName, bucketMetadata);

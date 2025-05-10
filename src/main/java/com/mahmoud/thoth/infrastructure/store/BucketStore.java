@@ -4,6 +4,7 @@ import com.mahmoud.thoth.domain.model.BucketMetadata;
 
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface BucketStore {
@@ -14,8 +15,11 @@ public interface BucketStore {
     List<BucketMetadata> findByNamespace(String namespaceName);
 
     boolean isExists(Long buketIdentifier);
-
+    boolean isExists(String name);
+    
     void updateName(Long buketIdentifier, String newBucketName);
     void delete(Long buketIdentifier);
+
+     public void updateFunctionsConfig(Long bucketId, String functionConfigMap);
     
 }

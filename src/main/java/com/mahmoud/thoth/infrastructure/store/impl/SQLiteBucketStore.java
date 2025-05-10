@@ -8,6 +8,7 @@ import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -59,7 +60,7 @@ public class SQLiteBucketStore implements BucketStore {
     private BucketMetadata toBucketMetadata(BucketEntity entity) {
         BucketMetadata metadata = new BucketMetadata();
         metadata.setBucketName(entity.getName());
-        metadata.setNamespaceName(entity.getNamespaceId().toString());
+        metadata.setNamespaceId(entity.getNamespaceId());
         metadata.setCreationDate(entity.getCreationDate());
         metadata.setLastModifiedDate(entity.getUpdatedAt());
         return metadata;
@@ -68,9 +69,19 @@ public class SQLiteBucketStore implements BucketStore {
     private BucketEntity toBucketEntity(BucketMetadata metadata) {
         BucketEntity entity = new BucketEntity();
         entity.setName(metadata.getBucketName());
-        entity.setNamespaceId(Long.parseLong(metadata.getNamespaceName()));
+        entity.setNamespaceId(metadata.getNamespaceId());
         entity.setCreationDate(metadata.getCreationDate());
         entity.setUpdatedAt(metadata.getLastModifiedDate());
         return entity;
+    }
+
+    @Override
+    public boolean isExists(String name) {
+        return bucketRepository.existsByName(name);
+    }
+
+    @Override
+    public void updateFunctionsConfig(Long bucketId, String functionConfigMap) {
+        this.bucketRepository.updateFunctionsConfig(bucketId, functionConfigMap);
     }
 }

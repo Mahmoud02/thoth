@@ -12,14 +12,14 @@ import com.mahmoud.thoth.function.config.FunctionAssignConfig;
 public class BucketMetadata {
     private Long buketIdentifier;
     private String bucketName;
-    private String namespaceName;
+    private Long namespaceId;
     private LocalDateTime creationDate;
     private LocalDateTime lastModifiedDate;
     private Map<String, Object> functions;
 
-    public BucketMetadata(String bucketName, String namespaceName) {
+    public BucketMetadata(String bucketName, Long namespaceId) {
         this.bucketName = bucketName;
-        this.namespaceName = namespaceName;
+        this.namespaceId = namespaceId;
         this.creationDate = LocalDateTime.now();
         this.lastModifiedDate = LocalDateTime.now();
     }
