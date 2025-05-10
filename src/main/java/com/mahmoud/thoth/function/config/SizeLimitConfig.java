@@ -1,15 +1,17 @@
 package com.mahmoud.thoth.function.config;
 
+import static com.mahmoud.thoth.function.config.FunctionID.EXTENSION_VALIDATOR_FUNCTION_ID;
+
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.mahmoud.thoth.function.enums.FunctionType;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import static com.mahmoud.thoth.function.values.FunctionID.EXTENSION_VALIDATOR_FUNCTION_ID;
 
 @JsonTypeName(EXTENSION_VALIDATOR_FUNCTION_ID)
-public class SizeLimitConfig implements FunctionConfig {
-
+public class SizeLimitConfig implements FunctionAssignConfig {
+    
+    public static final String ID = FunctionID.EXTENSION_VALIDATOR_FUNCTION_ID;
+    
     @NotNull
     @Positive
     private Long maxSizeBytes;

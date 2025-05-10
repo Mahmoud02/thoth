@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -16,22 +17,19 @@ public class BucketMetadataQueryAdapter implements BucketMetadataQueryRepository
     private final BucketStore bucketStore;
 
     @Override
-    public BucketMetadata getBucketMetadata(Long bucketIdentifier) {
-        return bucketStore.getBucket(bucketIdentifier);
+    public Optional<BucketMetadata> getBucketMetadata(Long bucketIdentifier) {
+        return bucketStore.find(bucketIdentifier);
     }
 
-    @Override
-    public long getBucketSize(String bucketName) {
-       return 0;
-    }
+   
     @Override
     public List<BucketMetadata> getBucketsByNamespace(String namespaceName) {
-        return bucketStore.getBucketsMetaDataByNamespace(namespaceName);
+        return bucketStore.findByNamespace(namespaceName);
     }
 
     @Override
     public boolean isBuketExists(Long bucketIdentifier) {
-        return bucketStore.isBuketExists(bucketIdentifier);
+        return bucketStore.isExists(bucketIdentifier);
     }
 
     @Override

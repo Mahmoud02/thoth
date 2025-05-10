@@ -4,26 +4,18 @@ import com.mahmoud.thoth.domain.model.BucketMetadata;
 
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BucketStore {
 
-    void saveBuket(BucketMetadata bucketName);
+    void save(BucketMetadata bucketName);
 
-    BucketMetadata getBucket(Long buketIdentifier);
-    List<BucketMetadata> getBucketsMetaDataByNamespace(String namespaceName);
+    Optional<BucketMetadata> find(Long buketIdentifier);
+    List<BucketMetadata> findByNamespace(String namespaceName);
 
-    boolean isBuketExists(Long buketIdentifier);
+    boolean isExists(Long buketIdentifier);
 
-    void updateBucketName(Long buketIdentifier, String newBucketName);
-    void deleteBucket(Long buketIdentifier);
+    void updateName(Long buketIdentifier, String newBucketName);
+    void delete(Long buketIdentifier);
     
-    /* 
-    void updateBucketFunctionConfig(String bucketName, BucketFunctionsConfig config);
-    void removeBucketFunctionConfig(String bucketName);
-    BucketFunctionsConfig getBucketFunctionConfig(String bucketName);
-    
-    void addFunctionDefinition(String bucketName, BucketFunctionDefinition definition);
-    void removeFunctionDefinition(String bucketName, FunctionType functionType);
-    BucketFunctionDefinition getFunctionDefinition(String bucketName, FunctionType functionType);
-    */
 }

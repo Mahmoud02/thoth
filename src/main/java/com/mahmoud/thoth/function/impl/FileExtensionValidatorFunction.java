@@ -3,9 +3,8 @@ package com.mahmoud.thoth.function.impl;
 import com.mahmoud.thoth.function.BucketFunction;
 import com.mahmoud.thoth.function.BucketFunctionException;
 import com.mahmoud.thoth.function.config.ExtensionValidatorConfig;
-import com.mahmoud.thoth.function.config.FunctionConfig;
-import com.mahmoud.thoth.function.enums.FunctionType;
-
+import com.mahmoud.thoth.function.config.FunctionAssignConfig;
+import com.mahmoud.thoth.function.config.FunctionType;
 
 import org.springframework.stereotype.Component;
 import java.io.InputStream;
@@ -23,7 +22,7 @@ public class FileExtensionValidatorFunction implements BucketFunction {
     }
     
     @Override
-    public void validate(String bucketName, String objectName, InputStream inputStream, FunctionConfig config) 
+    public void validate(String bucketName, String objectName, InputStream inputStream, FunctionAssignConfig config) 
             throws BucketFunctionException {
         
         var extensionValidatorConfig = (ExtensionValidatorConfig) config;

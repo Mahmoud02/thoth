@@ -1,7 +1,7 @@
 package com.mahmoud.thoth.function.factory;
 
 import com.mahmoud.thoth.function.BucketFunction;
-import com.mahmoud.thoth.function.enums.FunctionType;
+import com.mahmoud.thoth.function.config.FunctionType;
 
 import org.springframework.stereotype.Component;
 

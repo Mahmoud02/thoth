@@ -5,6 +5,9 @@ import com.mahmoud.thoth.domain.port.out.BucketMetadataCommandRepository;
 import com.mahmoud.thoth.infrastructure.StorageService;
 import com.mahmoud.thoth.infrastructure.store.BucketStore;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,22 +18,27 @@ public class BucketMetadataCommandAdapter implements BucketMetadataCommandReposi
     private final StorageService storageService;
 
     @Override
-    public void updateBucketName(Long buketIdentifier, String newBuketName) {
-        bucketStore.updateBucketName(buketIdentifier, newBuketName);
+    public void updateName(Long buketIdentifier, String newBuketName) {
+        bucketStore.updateName(buketIdentifier, newBuketName);
     }
 
     @Override
-    public void deleteBucket(Long buketIdentifier) {
-        bucketStore.deleteBucket(buketIdentifier);
+    public void delete(Long buketIdentifier) {
+        bucketStore.delete(buketIdentifier);
     }
 
     @Override
-    public void saveBucket(BucketMetadata bucketMetadata) {
-        bucketStore.saveBuket(bucketMetadata);
+    public void save(BucketMetadata bucketMetadata) {
+        bucketStore.save(bucketMetadata);
     }
 
     @Override
-    public void createBucketFolder(String bucketName) {
+    public void createFolder(String bucketName) {
         this.storageService.createBucketFolder(bucketName);
+    }
+
+    @Override
+    public void updateFunctionsConfig(Long bucketId, Map<String, Object> functionConfigMap) {
+        throw new UnsupportedOperationException("Unimplemented method 'updateFunctionsConfig'");
     }
 }

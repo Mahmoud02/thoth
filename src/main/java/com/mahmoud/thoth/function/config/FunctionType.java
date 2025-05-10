@@ -1,6 +1,6 @@
-package com.mahmoud.thoth.function.enums;
-import static com.mahmoud.thoth.function.values.FunctionID.SIZE_LIMIT_FUNCTION_ID;
-import static com.mahmoud.thoth.function.values.FunctionID.EXTENSION_VALIDATOR_FUNCTION_ID;
+package com.mahmoud.thoth.function.config;
+import static com.mahmoud.thoth.function.config.FunctionID.EXTENSION_VALIDATOR_FUNCTION_ID;
+import static com.mahmoud.thoth.function.config.FunctionID.SIZE_LIMIT_FUNCTION_ID;
 
 public enum FunctionType {
 

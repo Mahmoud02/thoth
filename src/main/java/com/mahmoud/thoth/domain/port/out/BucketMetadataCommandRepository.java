@@ -1,10 +1,13 @@
 package com.mahmoud.thoth.domain.port.out;
 
+import java.util.Map;
+
 import com.mahmoud.thoth.domain.model.BucketMetadata;
 
 public interface BucketMetadataCommandRepository {
-    void updateBucketName(Long buketIdentifier, String newBuketName);
-    void deleteBucket(Long buketIdentifier);
-    void saveBucket(BucketMetadata bucketMetadata);
-    void createBucketFolder(String bucketName);
+    void updateName(Long buketIdentifier, String newBuketName);
+    void delete(Long buketIdentifier);
+    void save(BucketMetadata bucketMetadata);
+    void createFolder(String bucketName);
+    void updateFunctionsConfig(Long bucketId, Map<String, Object> functionConfigMap);
 }

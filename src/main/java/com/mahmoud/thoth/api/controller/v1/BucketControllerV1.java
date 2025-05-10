@@ -50,17 +50,16 @@ public class BucketControllerV1 {
         return ResponseEntity.status(HttpStatus.CREATED).body(bucketDTO);
     }
 
-    @PutMapping("/{bucketName}")
-    public ResponseEntity<BucketDTO> updateBucket(@PathVariable @NotBlank String bucketName, @RequestBody @Valid UpdateBucketRequest updateBucketRequestDTO) {
-        logger.info("Updating bucket: {} to {}", bucketName, updateBucketRequestDTO.getName());
-        BucketDTO updatedBucketDTO = updateBucketService.updateRegularBucket(bucketName, updateBucketRequestDTO);
-        return ResponseEntity.ok(updatedBucketDTO);
+    @PutMapping("/{buketId}")
+    public ResponseEntity<Void> updateBucket(@PathVariable @NotBlank Long buketId, @RequestBody @Valid UpdateBucketRequest updateBucketRequestDTO) {
+         updateBucketService.updateBuketName(buketId, updateBucketRequestDTO);
+         return ResponseEntity.noContent().build();
+
     }
 
-    @DeleteMapping("/{bucketName}")
-    public ResponseEntity<Void> deleteBucket(@PathVariable @NotBlank String bucketName) {
-        logger.info("Deleting bucket: {}", bucketName);
-        deleteBucketService.deleteRegularBucket(bucketName);
+    @DeleteMapping("/{buketId}")
+    public ResponseEntity<Void> deleteBucket(@PathVariable @NotBlank Long buketId) {
+        deleteBucketService.execute(buketId);
         return ResponseEntity.noContent().build();
     }
 

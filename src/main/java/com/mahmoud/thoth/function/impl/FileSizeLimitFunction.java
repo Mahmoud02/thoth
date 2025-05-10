@@ -2,9 +2,9 @@ package com.mahmoud.thoth.function.impl;
 
 import com.mahmoud.thoth.function.BucketFunction;
 import com.mahmoud.thoth.function.BucketFunctionException;
-import com.mahmoud.thoth.function.config.FunctionConfig;
+import com.mahmoud.thoth.function.config.FunctionAssignConfig;
+import com.mahmoud.thoth.function.config.FunctionType;
 import com.mahmoud.thoth.function.config.SizeLimitConfig;
-import com.mahmoud.thoth.function.enums.FunctionType;
 
 import org.springframework.stereotype.Component;
 import java.io.IOException;
@@ -21,7 +21,7 @@ public class FileSizeLimitFunction implements BucketFunction {
     }
     
     @Override
-    public void validate(String bucketName, String objectName, InputStream inputStream, FunctionConfig config) 
+    public void validate(String bucketName, String objectName, InputStream inputStream, FunctionAssignConfig config) 
             throws BucketFunctionException {
         
         if (!(config instanceof SizeLimitConfig)) {

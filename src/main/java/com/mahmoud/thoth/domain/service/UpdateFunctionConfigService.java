@@ -1,10 +1,13 @@
 package com.mahmoud.thoth.domain.service;
 
-import com.mahmoud.thoth.function.config.BucketFunctionsConfig;
-import com.mahmoud.thoth.function.config.FunctionConfig;
-import com.mahmoud.thoth.function.config.BucketFunctionDefinition;
-import com.mahmoud.thoth.infrastructure.store.BucketStore;
+import com.mahmoud.thoth.domain.model.BucketMetadata;
+import com.mahmoud.thoth.domain.port.out.BucketMetadataCommandRepository;
+import com.mahmoud.thoth.domain.port.out.BucketMetadataQueryRepository;
+import com.mahmoud.thoth.function.config.FunctionAssignConfig;
+import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,41 +16,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UpdateFunctionConfigService {
 
-    private final BucketStore bucketStore;
+    private final BucketMetadataQueryRepository bucketMetadataQueryAdapter;
+    private final BucketMetadataCommandRepository bucketMetadataCommandRepository;
 
-    public void updateFunctionConfig(String bucketName, FunctionConfig functionConfig, int executionOrder) {
-        BucketFunctionsConfig config = null ;//bucketStore.getBucketFunctionConfig(bucketName);
-        if (config == null) {
-            config = new BucketFunctionsConfig();
+    public void updateFunctionConfig(Long buketId, List<FunctionAssignConfig> functionsConfig) {
+       
+        var isbuketExist =  bucketMetadataQueryAdapter.isBuketExists(buketId);
+        
+        if (!isbuketExist) {
+            throw new ResourceNotFoundException("Bucket not found");
         }
 
-        BucketFunctionDefinition definition = BucketFunctionDefinition.builder()
-                .type(functionConfig.getType())
-                .config(functionConfig)
-                .executionOrder(executionOrder)
-                .build();
+        
+        var functions  = BucketMetadata.genrateFunctions(functionsConfig);
+       
+        bucketMetadataCommandRepository.updateFunctionsConfig(buketId,functions);
 
-        //bucketStore.addFunctionDefinition(bucketName, definition);
-    }
-
-    public void updateFunctionConfigs(String bucketName, List<FunctionConfig> functionConfigs) {
-        BucketFunctionsConfig config = null;//bucketStore.getBucketFunctionConfig(bucketName);
-        if (config == null) {
-            config = new BucketFunctionsConfig();
-        }
-
-        config.getDefinitions().clear();
-
-        for (int i = 0; i < functionConfigs.size(); i++) {
-            FunctionConfig functionConfig = functionConfigs.get(i);
-            BucketFunctionDefinition definition = BucketFunctionDefinition.builder()
-                    .type(functionConfig.getType())
-                    .config(functionConfig)
-                    .executionOrder(i)
-                    .build();
-            config.getDefinitions().add(definition);
-        }
-
-        //bucketStore.updateBucketFunctionConfig(bucketName, config);
     }
 }

@@ -1,18 +1,21 @@
 package com.mahmoud.thoth.function.config;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.mahmoud.thoth.function.enums.FunctionType;
 
 import jakarta.validation.constraints.NotEmpty;
+
+import static com.mahmoud.thoth.function.config.FunctionID.EXTENSION_VALIDATOR_FUNCTION_ID;
+
 import java.util.List;
 
-import static com.mahmoud.thoth.function.values.FunctionID.EXTENSION_VALIDATOR_FUNCTION_ID;
-
 @JsonTypeName(EXTENSION_VALIDATOR_FUNCTION_ID)
-public class ExtensionValidatorConfig implements FunctionConfig {
+public class ExtensionValidatorConfig implements FunctionAssignConfig {
+
+    public static final String ID = FunctionID.EXTENSION_VALIDATOR_FUNCTION_ID;
 
     @NotEmpty
     private List<String> allowedExtensions;
+    
     @NotEmpty
     private int executionOrder;
 

@@ -1,11 +1,8 @@
 package com.mahmoud.thoth.domain.service;
 
-import com.mahmoud.thoth.api.dto.BucketDTO;
-import com.mahmoud.thoth.api.mapper.BucketMapper;
 import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
 import com.mahmoud.thoth.domain.port.out.BucketMetadataCommandRepository;
 import com.mahmoud.thoth.domain.port.out.BucketMetadataQueryRepository;
-import com.mahmoud.thoth.domain.port.out.MetadataRepository;
 import com.mahmoud.thoth.shared.exception.ResourceConflictException;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 
@@ -18,21 +15,16 @@ public class UpdateBucketService {
 
     private final BucketMetadataQueryRepository bucketMetadataQueryRepository;
     private final BucketMetadataCommandRepository bucketMetadataCommandRepository;
-    private final MetadataRepository metadataRepository;
-    private final BucketMapper bucketMapper;
 
-    public BucketDTO updateRegularBucket(String bucketName, UpdateBucketRequest request) {
-        if (!bucketMetadataQueryRepository.isBuketExists(bucketName)) {
-            throw new ResourceNotFoundException("Bucket not found: " + bucketName);
+    public void updateBuketName(Long buketId, UpdateBucketRequest request) {
+        if (!bucketMetadataQueryRepository.isBuketExists(buketId)) {
+            throw new ResourceNotFoundException("Bucket not found: " + buketId);
         }
 
-        if (bucketMetadataQueryRepository.isBuketExists(request.getName()) && !bucketName.equals(request.getName())) {
+        if (bucketMetadataQueryRepository.isBuketExists(request.getName())) {
             throw new ResourceConflictException("Bucket already exists: " + request.getName());
         }
 
-        bucketMetadataCommandRepository.deleteBucket(1L);
-
-        metadataRepository.updateObjectMetadata(bucketName, request.getName());
-        return bucketMapper.toBucketDTO(request.getName(), null);
+        this.bucketMetadataCommandRepository.updateName(buketId, request.getName());
     }
 }

@@ -8,6 +8,7 @@ import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -20,31 +21,31 @@ public class SQLiteBucketStore implements BucketStore {
     }
 
     @Override
-    public void saveBuket(BucketMetadata bucketMetadata) {
+    public void save(BucketMetadata bucketMetadata) {
         bucketRepository.save(toBucketEntity(bucketMetadata));
     }
 
     @Override
-    public BucketMetadata getBucket(Long bucketIdentifier) {
+    public Optional<BucketMetadata> find(Long bucketIdentifier) {
         return bucketRepository.findById(bucketIdentifier)
                 .map(this::toBucketMetadata)
-                .orElseThrow(() -> new ResourceNotFoundException("Bucket not found: " + bucketIdentifier));
+                .or(() ->  Optional.empty());
     }
 
     @Override
-    public List<BucketMetadata> getBucketsMetaDataByNamespace(String namespaceName) {
+    public List<BucketMetadata> findByNamespace(String namespaceName) {
         return bucketRepository.findByNamespaceId(Long.parseLong(namespaceName)).stream()
                 .map(this::toBucketMetadata)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public boolean isBuketExists(Long bucketIdentifier) {
+    public boolean isExists(Long bucketIdentifier) {
         return bucketRepository.existsById(bucketIdentifier);
     }
 
     @Override
-    public void updateBucketName(Long bucketIdentifier, String newBucketName) {
+    public void updateName(Long bucketIdentifier, String newBucketName) {
         BucketEntity bucketEntity = bucketRepository.findById(bucketIdentifier)
                 .orElseThrow(() -> new ResourceNotFoundException("Bucket not found: " + bucketIdentifier));
         bucketEntity.setName(newBucketName);
@@ -52,7 +53,7 @@ public class SQLiteBucketStore implements BucketStore {
     }
 
     @Override
-    public void deleteBucket(Long bucketIdentifier) {
+    public void delete(Long bucketIdentifier) {
         bucketRepository.deleteById(bucketIdentifier);
     }
     private BucketMetadata toBucketMetadata(BucketEntity entity) {
