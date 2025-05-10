@@ -11,11 +11,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,13 +47,13 @@ public class BucketFunctionControllerV1 {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{bucketName}/{type}")
+    @DeleteMapping("/{buketId}/{type}")
     @RemoveBucketFunctionOp
     public ResponseEntity<Void> removeFunction(
-            @PathVariable @NotBlank String bucketName,
-            @PathVariable FunctionType type) {
+            @PathVariable @NonNull Long buketId,
+            @PathVariable @NonNull FunctionType type) {
 
-        removeFunctionConfigService.removeFunctionConfig(bucketName, type);
+        removeFunctionConfigService.removeFunctionConfig(buketId, type);
         return ResponseEntity.noContent().build();
     }
 }

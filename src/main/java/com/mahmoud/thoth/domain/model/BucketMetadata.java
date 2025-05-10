@@ -15,6 +15,7 @@ public class BucketMetadata {
     private String namespaceName;
     private LocalDateTime creationDate;
     private LocalDateTime lastModifiedDate;
+    private Map<String, Object> functions;
 
     public BucketMetadata(String bucketName, String namespaceName) {
         this.bucketName = bucketName;
