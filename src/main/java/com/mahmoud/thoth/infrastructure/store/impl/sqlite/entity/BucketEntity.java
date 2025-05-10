@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 
@@ -17,10 +18,14 @@ public class BucketEntity {
     @Id
     private Long id;
     private String name;
+    @Column("namespace_id")
     private Long namespaceId;
+    @Column("created_at")
     private LocalDateTime creationDate;
-    private LocalDateTime lastModifiedDate;
-    private Map<String, Object> functions; // Maps to the jsonb column
+    @Column("updated_at")
+    private LocalDateTime updatedAt;
+    
+    private Map<String, Object> functions; 
 
     public BucketEntity() {
     }
@@ -29,6 +34,6 @@ public class BucketEntity {
         this.name = name;
         this.namespaceId = namespaceId;
         this.creationDate = LocalDateTime.now();
-        this.lastModifiedDate = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 }

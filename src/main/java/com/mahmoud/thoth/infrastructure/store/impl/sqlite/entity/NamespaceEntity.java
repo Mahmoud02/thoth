@@ -3,6 +3,7 @@ package com.mahmoud.thoth.infrastructure.store.impl.sqlite.entity;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import lombok.Getter;
@@ -15,7 +16,9 @@ public class NamespaceEntity {
     @Id
     private Long id;
     private String name;
-     private String description;
+    private String description;
+    @Column("created_at")
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;    
+    @Column("updated_at")
+    private LocalDateTime updatedAt;
 }

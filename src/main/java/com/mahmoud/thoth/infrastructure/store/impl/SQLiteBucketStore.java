@@ -61,7 +61,7 @@ public class SQLiteBucketStore implements BucketStore {
         metadata.setBucketName(entity.getName());
         metadata.setNamespaceName(entity.getNamespaceId().toString());
         metadata.setCreationDate(entity.getCreationDate());
-        metadata.setLastModifiedDate(entity.getLastModifiedDate());
+        metadata.setLastModifiedDate(entity.getUpdatedAt());
         return metadata;
     }
 
@@ -70,7 +70,7 @@ public class SQLiteBucketStore implements BucketStore {
         entity.setName(metadata.getBucketName());
         entity.setNamespaceId(Long.parseLong(metadata.getNamespaceName()));
         entity.setCreationDate(metadata.getCreationDate());
-        entity.setLastModifiedDate(metadata.getLastModifiedDate());
+        entity.setUpdatedAt(metadata.getLastModifiedDate());
         return entity;
     }
 }

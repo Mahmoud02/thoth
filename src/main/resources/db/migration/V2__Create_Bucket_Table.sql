@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS buckets (
     name VARCHAR(255) NOT NULL,
     namespace_id INTEGER NOT NULL,
     creation_date TIMESTAMP NOT NULL,
-    last_modified_date TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
+    functions JSONB, 
     FOREIGN KEY (namespace_id) REFERENCES namespaces(id)
 );
 
