@@ -2,6 +2,7 @@ package com.mahmoud.thoth.infrastructure.store.impl;
 
 import com.mahmoud.thoth.domain.model.BucketMetadata;
 import com.mahmoud.thoth.infrastructure.store.BucketStore;
+import com.mahmoud.thoth.infrastructure.store.impl.sqlite.converter.JsonbWritingConverter;
 import com.mahmoud.thoth.infrastructure.store.impl.sqlite.entity.BucketEntity;
 import com.mahmoud.thoth.infrastructure.store.impl.sqlite.repository.BucketRepository;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
@@ -16,9 +17,11 @@ import java.util.stream.Collectors;
 public class SQLiteBucketStore implements BucketStore {
 
     private final BucketRepository bucketRepository;
+    private final JsonbWritingConverter jsonbWritingConverter;
 
-    public SQLiteBucketStore(BucketRepository bucketRepository) {
+    public SQLiteBucketStore(BucketRepository bucketRepository, JsonbWritingConverter jsonbWritingConverter) {
         this.bucketRepository = bucketRepository;
+        this.jsonbWritingConverter = jsonbWritingConverter;
     }
 
     @Override
@@ -81,7 +84,8 @@ public class SQLiteBucketStore implements BucketStore {
     }
 
     @Override
-    public void updateFunctionsConfig(Long bucketId, String functionConfigMap) {
-        this.bucketRepository.updateFunctionsConfig(bucketId, functionConfigMap);
+    public void updateFunctionsConfig(Long bucketId, Map<String , Object> functionsConfigMap) {
+        var jsonbValue = jsonbWritingConverter.convert(functionsConfigMap);
+        this.bucketRepository.updateFunctionsConfig(bucketId, jsonbValue);
     }
 }

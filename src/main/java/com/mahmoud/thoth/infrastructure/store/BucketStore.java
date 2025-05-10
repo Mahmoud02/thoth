@@ -20,6 +20,6 @@ public interface BucketStore {
     void updateName(Long buketIdentifier, String newBucketName);
     void delete(Long buketIdentifier);
 
-     public void updateFunctionsConfig(Long bucketId, String functionConfigMap);
+     public void updateFunctionsConfig(Long bucketId, Map<String , Object> functionsConfigMap);
     
 }

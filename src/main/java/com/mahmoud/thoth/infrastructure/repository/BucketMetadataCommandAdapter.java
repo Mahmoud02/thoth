@@ -1,6 +1,5 @@
 package com.mahmoud.thoth.infrastructure.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mahmoud.thoth.domain.model.BucketMetadata;
 import com.mahmoud.thoth.domain.port.out.BucketMetadataCommandRepository;
 import com.mahmoud.thoth.infrastructure.StorageService;
@@ -40,17 +39,7 @@ public class BucketMetadataCommandAdapter implements BucketMetadataCommandReposi
 
     @Override
     public void updateFunctionsConfig(Long bucketId, Map<String, Object> functionConfigMap) {
-        // convert config map to json string
-         var jsonString = convertToJson(functionConfigMap);
-
-        this.bucketStore.updateFunctionsConfig(bucketId, jsonString);
-    }
-
-    private String convertToJson(Map<String, Object> map) {
-        try {
-            return new ObjectMapper().writeValueAsString(map);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to convert map to JSON", e);
-        }
+     
+        this.bucketStore.updateFunctionsConfig(bucketId, functionConfigMap);
     }
 }
