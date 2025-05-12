@@ -10,4 +10,5 @@ public interface BucketMetadataQueryRepository {
     List<BucketMetadata> getBucketsByNamespace(String namespaceName);
     boolean isBuketExists(Long buketIdentifier);
     boolean isBuketExists(String buketName);
+    List<BucketListViewDTO> findAllByNameSpaceId(Long nameSpaceId);
 }

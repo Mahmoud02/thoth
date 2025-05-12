@@ -21,6 +21,8 @@ import com.mahmoud.thoth.api.dto.BucketDTO;
 import com.mahmoud.thoth.api.mapper.BucketMapper;
 import com.mahmoud.thoth.domain.port.in.CreateBucketRequest;
 import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
+import com.mahmoud.thoth.domain.port.out.BucketListViewDTO;
+import com.mahmoud.thoth.domain.service.BuketQueryService;
 import com.mahmoud.thoth.domain.service.CreateBucketService;
 import com.mahmoud.thoth.domain.service.UpdateBucketService;
 import com.mahmoud.thoth.domain.service.DeleteBucketService;
@@ -41,6 +43,7 @@ public class BucketControllerV1 {
     private final CreateBucketService createBucketService;
     private final UpdateBucketService updateBucketService;
     private final DeleteBucketService deleteBucketService;
+    private final BuketQueryService bucketMetadataQueryService;
     private final BucketMapper bucketMapper;
 
     @PostMapping
@@ -69,7 +72,7 @@ public class BucketControllerV1 {
     }
 
     @GetMapping
-    public ResponseEntity<List<BucketDTO>> listBuckets(@RequestParam(required = false, defaultValue = DEFAULT_NAMESPACE) String namespace) {
-        return ResponseEntity.ok(bucketMapper.toBucketDTOList(null));
+    public ResponseEntity<List<BucketListViewDTO>> listBuckets(@RequestParam(required = true) Long namespaceId) {
+        return ResponseEntity.ok(bucketMetadataQueryService.findBucketsBynameSpace(namespaceId));
     }
 }

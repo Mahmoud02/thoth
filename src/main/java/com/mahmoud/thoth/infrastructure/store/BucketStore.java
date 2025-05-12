@@ -1,7 +1,7 @@
 package com.mahmoud.thoth.infrastructure.store;
 
 import com.mahmoud.thoth.domain.model.BucketMetadata;
-
+import com.mahmoud.thoth.domain.port.out.BucketListViewDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -20,6 +20,8 @@ public interface BucketStore {
     void updateName(Long buketIdentifier, String newBucketName);
     void delete(Long buketIdentifier);
 
-     public void updateFunctionsConfig(Long bucketId, Map<String , Object> functionsConfigMap);
+    void updateFunctionsConfig(Long bucketId, Map<String , Object> functionsConfigMap);
+
+    List<BucketListViewDTO> findAllByNameSpaceId(Long nameSpaceId);
     
 }

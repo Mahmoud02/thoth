@@ -1,6 +1,7 @@
 package com.mahmoud.thoth.infrastructure.store.impl;
 
 import com.mahmoud.thoth.domain.model.BucketMetadata;
+import com.mahmoud.thoth.domain.port.out.BucketListViewDTO;
 import com.mahmoud.thoth.infrastructure.store.BucketStore;
 import com.mahmoud.thoth.infrastructure.store.impl.sqlite.converter.JsonbWritingConverter;
 import com.mahmoud.thoth.infrastructure.store.impl.sqlite.entity.BucketEntity;
@@ -69,15 +70,6 @@ public class SQLiteBucketStore implements BucketStore {
         return metadata;
     }
 
-    private BucketEntity toBucketEntity(BucketMetadata metadata) {
-        BucketEntity entity = new BucketEntity();
-        entity.setName(metadata.getBucketName());
-        entity.setNamespaceId(metadata.getNamespaceId());
-        entity.setCreationDate(metadata.getCreationDate());
-        entity.setUpdatedAt(metadata.getLastModifiedDate());
-        return entity;
-    }
-
     @Override
     public boolean isExists(String name) {
         return bucketRepository.existsByName(name);
@@ -88,4 +80,27 @@ public class SQLiteBucketStore implements BucketStore {
         var jsonbValue = jsonbWritingConverter.convert(functionsConfigMap);
         this.bucketRepository.updateFunctionsConfig(bucketId, jsonbValue);
     }
+
+    @Override
+    public List<BucketListViewDTO> findAllByNameSpaceId(Long nameSpaceId) {
+        return bucketRepository.findByNamespaceId(nameSpaceId).stream()
+                .map(entity -> {
+                    BucketListViewDTO dto = new BucketListViewDTO();
+                    dto.setId(entity.getId());
+                    dto.setName(entity.getName());
+                    dto.setUpdatedAt(entity.getCreationDate());
+                    dto.setCreatedAt(entity.getUpdatedAt());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+    private BucketEntity toBucketEntity(BucketMetadata metadata) {
+        BucketEntity entity = new BucketEntity();
+        entity.setName(metadata.getBucketName());
+        entity.setNamespaceId(metadata.getNamespaceId());
+        entity.setCreationDate(metadata.getCreationDate());
+        entity.setUpdatedAt(metadata.getLastModifiedDate());
+        return entity;
+    }
+
 }
