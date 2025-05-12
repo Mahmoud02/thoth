@@ -17,10 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mahmoud.thoth.api.dto.BucketDTO;
-import com.mahmoud.thoth.api.mapper.BucketMapper;
 import com.mahmoud.thoth.domain.port.in.CreateBucketRequest;
 import com.mahmoud.thoth.domain.port.in.UpdateBucketRequest;
+import com.mahmoud.thoth.domain.port.out.BucketViewDTO;
 import com.mahmoud.thoth.domain.port.out.BucketListViewDTO;
 import com.mahmoud.thoth.domain.service.BuketQueryService;
 import com.mahmoud.thoth.domain.service.CreateBucketService;
@@ -38,18 +37,16 @@ import lombok.RequiredArgsConstructor;
 public class BucketControllerV1 {
 
     private static final Logger logger = LoggerFactory.getLogger(BucketControllerV1.class);
-    private static final String DEFAULT_NAMESPACE = "default";
 
     private final CreateBucketService createBucketService;
     private final UpdateBucketService updateBucketService;
     private final DeleteBucketService deleteBucketService;
     private final BuketQueryService bucketMetadataQueryService;
-    private final BucketMapper bucketMapper;
 
     @PostMapping
-    public ResponseEntity<BucketDTO> createBucket(@RequestBody @Valid CreateBucketRequest createBucketRequestDTO) {
+    public ResponseEntity<BucketViewDTO> createBucket(@RequestBody @Valid CreateBucketRequest createBucketRequestDTO) {
         logger.info("Creating bucket: {}", createBucketRequestDTO.getName());
-        BucketDTO bucketDTO = createBucketService.createRegularBucket(createBucketRequestDTO);
+        BucketViewDTO bucketDTO = createBucketService.createRegularBucket(createBucketRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(bucketDTO);
     }
 
@@ -66,9 +63,9 @@ public class BucketControllerV1 {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{bucketName}")
-    public ResponseEntity<BucketDTO> getBucketMetadata(@PathVariable @NotBlank String bucketName) {
-        return ResponseEntity.ok(bucketMapper.toBucketDTO(bucketName,null));
+    @GetMapping("/{buketId}")
+    public ResponseEntity<BucketViewDTO> getBucketMetadata(@RequestParam(required = true) Long buketId) {
+        return ResponseEntity.ok(bucketMetadataQueryService.findByBuketId(buketId));
     }
 
     @GetMapping

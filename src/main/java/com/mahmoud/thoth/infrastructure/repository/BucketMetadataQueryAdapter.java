@@ -3,6 +3,7 @@ package com.mahmoud.thoth.infrastructure.repository;
 import com.mahmoud.thoth.domain.model.BucketMetadata;
 import com.mahmoud.thoth.domain.port.out.BucketListViewDTO;
 import com.mahmoud.thoth.domain.port.out.BucketMetadataQueryRepository;
+import com.mahmoud.thoth.domain.port.out.BucketViewDTO;
 import com.mahmoud.thoth.infrastructure.store.BucketStore;
 import lombok.RequiredArgsConstructor;
 
@@ -42,5 +43,11 @@ public class BucketMetadataQueryAdapter implements BucketMetadataQueryRepository
     @Override
     public List<BucketListViewDTO> findAllByNameSpaceId(Long nameSpaceId) {
         return bucketStore.findAllByNameSpaceId(nameSpaceId);
+    }
+
+
+    @Override
+    public BucketViewDTO findBuketById(Long buketId) {
+       return this.bucketStore.findById(buketId);
     }
 }

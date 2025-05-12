@@ -1,6 +1,5 @@
 package com.mahmoud.thoth.function.config;
 
-import static com.mahmoud.thoth.function.config.FunctionID.EXTENSION_VALIDATOR_FUNCTION_ID;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 

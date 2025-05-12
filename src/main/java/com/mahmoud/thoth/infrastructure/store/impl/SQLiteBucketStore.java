@@ -2,6 +2,7 @@ package com.mahmoud.thoth.infrastructure.store.impl;
 
 import com.mahmoud.thoth.domain.model.BucketMetadata;
 import com.mahmoud.thoth.domain.port.out.BucketListViewDTO;
+import com.mahmoud.thoth.domain.port.out.BucketViewDTO;
 import com.mahmoud.thoth.infrastructure.store.BucketStore;
 import com.mahmoud.thoth.infrastructure.store.impl.sqlite.converter.JsonbWritingConverter;
 import com.mahmoud.thoth.infrastructure.store.impl.sqlite.entity.BucketEntity;
@@ -101,6 +102,12 @@ public class SQLiteBucketStore implements BucketStore {
         entity.setCreationDate(metadata.getCreationDate());
         entity.setUpdatedAt(metadata.getLastModifiedDate());
         return entity;
+    }
+
+    @Override
+    public BucketViewDTO findById(Long buketId) {
+        var bucketMetadata = this.bucketRepository.findById(buketId);
+        return BucketViewDTO.from(bucketMetadata);
     }
 
 }

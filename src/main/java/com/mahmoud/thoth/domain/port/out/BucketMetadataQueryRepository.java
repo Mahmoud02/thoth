@@ -11,4 +11,5 @@ public interface BucketMetadataQueryRepository {
     boolean isBuketExists(Long buketIdentifier);
     boolean isBuketExists(String buketName);
     List<BucketListViewDTO> findAllByNameSpaceId(Long nameSpaceId);
+    BucketViewDTO findBuketById(Long buketId);
 }
