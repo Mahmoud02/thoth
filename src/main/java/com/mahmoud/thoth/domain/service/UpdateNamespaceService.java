@@ -1,5 +1,6 @@
 package com.mahmoud.thoth.domain.service;
 
+import com.mahmoud.thoth.domain.model.Namespace;
 import com.mahmoud.thoth.domain.port.in.UpdateNamespaceRequest;
 import com.mahmoud.thoth.domain.port.out.NamespaceCommandRepository;
 import com.mahmoud.thoth.domain.port.out.NamespaceQueryRepository;
@@ -16,10 +17,15 @@ public class UpdateNamespaceService {
     private final NamespaceQueryRepository namespaceQueryRepository;
 
     public void execute(Long id, UpdateNamespaceRequest request) {
-        if (namespaceQueryRepository.exists(id)) {
-            namespaceCommandRepository.updateName(id, request.getNewNamespaceName());
-            return;
+        if (Namespace.isDefaultNamespace(request.getNewNamespaceName())) {
+            throw new ResourceConflictException("Invalid namespace name: " + request.getNewNamespaceName());
         }
-        throw new ResourceConflictException("Namespace already exists: " + request.getNewNamespaceName());
+        if (!namespaceQueryRepository.exists(id)) {
+            throw new ResourceConflictException("Namespace does not exist: " + id);
+        }
+        if (namespaceQueryRepository.exists(request.getNewNamespaceName())) {
+            throw new ResourceConflictException("Namespace already exists: " + request.getNewNamespaceName());
+        }
+        namespaceCommandRepository.updateName(id, request.getNewNamespaceName());
     }
 }

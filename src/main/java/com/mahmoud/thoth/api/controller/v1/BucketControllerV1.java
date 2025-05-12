@@ -27,7 +27,6 @@ import com.mahmoud.thoth.domain.service.UpdateBucketService;
 import com.mahmoud.thoth.domain.service.DeleteBucketService;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -51,14 +50,14 @@ public class BucketControllerV1 {
     }
 
     @PutMapping("/{buketId}")
-    public ResponseEntity<Void> updateBucket(@PathVariable @NotBlank Long buketId, @RequestBody @Valid UpdateBucketRequest updateBucketRequestDTO) {
+    public ResponseEntity<Void> updateBucket(@PathVariable  Long buketId, @RequestBody @Valid UpdateBucketRequest updateBucketRequestDTO) {
          updateBucketService.updateBuketName(buketId, updateBucketRequestDTO);
          return ResponseEntity.noContent().build();
 
     }
 
     @DeleteMapping("/{buketId}")
-    public ResponseEntity<Void> deleteBucket(@PathVariable @NotBlank Long buketId) {
+    public ResponseEntity<Void> deleteBucket(@PathVariable  Long buketId) {
         deleteBucketService.execute(buketId);
         return ResponseEntity.noContent().build();
     }

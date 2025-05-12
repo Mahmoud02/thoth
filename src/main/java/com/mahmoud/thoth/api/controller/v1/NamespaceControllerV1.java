@@ -26,7 +26,6 @@ import com.mahmoud.thoth.domain.service.UpdateNamespaceService;
 
 import jakarta.annotation.Nonnull;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.var;
 
@@ -48,20 +47,20 @@ public class NamespaceControllerV1 {
         return ResponseEntity.status(HttpStatus.CREATED).body(namespace);
     }
 
-    @PutMapping("/{namespaceName}")
-    public ResponseEntity<Void> updateNamespace(@PathVariable @NotBlank Long Id, @RequestBody @Valid UpdateNamespaceRequest request) {
-        updateNamespaceService.execute(Id,request);
+    @PutMapping("/{namespaceId}")
+    public ResponseEntity<Void> updateNamespace(@PathVariable  @Nonnull Long namespaceId, @RequestBody @Valid UpdateNamespaceRequest request) {
+        updateNamespaceService.execute(namespaceId,request);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{namespaceName}")
-    public ResponseEntity<Void> deleteNamespace(@PathVariable @NotBlank Long Id) {
-        deleteNamespaceService.execute(Id);
+    @DeleteMapping("/{namespaceId}")
+    public ResponseEntity<Void> deleteNamespace(@PathVariable @Nonnull Long namespaceId) {
+        deleteNamespaceService.execute(namespaceId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{namespaceId}")
-    public ResponseEntity<NameSpaceViewDto> getNamespace(@PathVariable @Nonnull Long namespaceId) {
+    public ResponseEntity<NameSpaceViewDto> getNamespace(@PathVariable  Long namespaceId) {
         return ResponseEntity.ok(namespaceQueryService.findById(namespaceId));
     }
 

@@ -13,10 +13,11 @@ public class DeleteNamespaceService {
     private final NamespaceCommandRepository namespaceCommandRepository;
     private final NamespaceQueryRepository namespaceQueryRepository ;
 
-    public void execute(Long ID) {
-        if (namespaceQueryRepository.exists(ID)) {
-            namespaceCommandRepository.delete(ID);
+    public void execute(Long nameSpaceId) {
+        
+        if (!namespaceQueryRepository.exists(nameSpaceId)) {
+            throw new ResourceNotFoundException("Namespace not found: " + nameSpaceId); 
         }
-        throw new ResourceNotFoundException("Namespace not found: " + ID);
+        namespaceCommandRepository.delete(nameSpaceId);
     }
 }
