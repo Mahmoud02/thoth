@@ -17,10 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mahmoud.thoth.domain.model.Namespace;
 import com.mahmoud.thoth.domain.port.in.CreateNamespaceRequest;
 import com.mahmoud.thoth.domain.port.in.UpdateNamespaceRequest;
+import com.mahmoud.thoth.domain.port.out.NameSpaceListViewDto;
+import com.mahmoud.thoth.domain.port.out.NameSpaceViewDto;
 import com.mahmoud.thoth.domain.service.CreateNamespaceService;
 import com.mahmoud.thoth.domain.service.DeleteNamespaceService;
+import com.mahmoud.thoth.domain.service.NamespaceQueryService;
 import com.mahmoud.thoth.domain.service.UpdateNamespaceService;
 
+import jakarta.annotation.Nonnull;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +39,7 @@ public class NamespaceControllerV1 {
     private final CreateNamespaceService createNamespaceService;
     private final DeleteNamespaceService deleteNamespaceService;
     private final UpdateNamespaceService updateNamespaceService;
+    private final NamespaceQueryService namespaceQueryService;
 
 
     @PostMapping
@@ -55,13 +60,13 @@ public class NamespaceControllerV1 {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{namespaceName}")
-    public ResponseEntity<Namespace> getNamespace(@PathVariable @NotBlank String namespaceName) {
-        return ResponseEntity.ok(null);
+    @GetMapping("/{namespaceId}")
+    public ResponseEntity<NameSpaceViewDto> getNamespace(@PathVariable @Nonnull Long namespaceId) {
+        return ResponseEntity.ok(namespaceQueryService.findById(namespaceId));
     }
 
     @GetMapping
-    public ResponseEntity<List<Namespace>> listNamespaces() {
-        return ResponseEntity.ok(null);
+    public ResponseEntity<List<NameSpaceListViewDto>> listNamespaces() {
+        return ResponseEntity.ok(namespaceQueryService.findAll());
     }
 }

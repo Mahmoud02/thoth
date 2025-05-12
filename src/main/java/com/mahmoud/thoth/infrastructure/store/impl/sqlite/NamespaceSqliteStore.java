@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.mahmoud.thoth.domain.model.Namespace;
+import com.mahmoud.thoth.domain.port.out.NameSpaceListViewDto;
+import com.mahmoud.thoth.domain.port.out.NameSpaceViewDto;
 import com.mahmoud.thoth.infrastructure.store.NamespaceStore;
 import com.mahmoud.thoth.infrastructure.store.impl.sqlite.entity.NamespaceEntity;
 import com.mahmoud.thoth.infrastructure.store.impl.sqlite.repository.NamespaceRepository;
@@ -24,7 +26,7 @@ public class NamespaceSqliteStore implements NamespaceStore {
         NamespaceEntity entity = new NamespaceEntity();
         entity.setName(namespaceName);
         NamespaceEntity savedEntity = namespaceRepository.save(entity);
-        return toModel(savedEntity);
+        return toDomainModel(savedEntity);
     }
 
     @Override
@@ -43,17 +45,12 @@ public class NamespaceSqliteStore implements NamespaceStore {
     }
 
     @Override
-    public Namespace find(Long namespaceId) {
-        Optional<NamespaceEntity> optionalEntity = namespaceRepository.findById(namespaceId);
-        return optionalEntity.map(this::toModel).orElse(null);
-    }
-
-    @Override
-    public List<Namespace> findAll() {
-        Iterable<NamespaceEntity> entities = namespaceRepository.findAll();
-        return StreamSupport.stream(entities.spliterator(), false)
-                            .map(this::toModel)
-                            .collect(Collectors.toList());
+    public List<NameSpaceListViewDto> findAll() {
+        var entities = namespaceRepository.findAll();
+        return  StreamSupport.stream(entities.spliterator(), false)
+                .map(this::toListViewDto)
+                .collect(Collectors.toList());
+        
     }
 
     @Override
@@ -66,18 +63,33 @@ public class NamespaceSqliteStore implements NamespaceStore {
         return namespaceRepository.existsById(namespaceId);
     }
 
-    private Namespace toModel(NamespaceEntity entity) {
-      return new Namespace(entity.getId(), entity.getName(),entity.getDescription(),entity.getCreatedAt(), entity.getUpdatedAt());
-    }
 
     @Override
     public void delete(String namespaceName) {
         namespaceRepository.deleteByName(namespaceName);
     }
 
+
     @Override
-    public Namespace find(String nameSpaceName) {
-        Optional<NamespaceEntity> optionalEntity = namespaceRepository.findByName(nameSpaceName);
+    public NameSpaceViewDto findById(Long namespaceId) {
+        Optional<NamespaceEntity> optionalEntity = namespaceRepository.findById(namespaceId);
         return optionalEntity.map(this::toModel).orElse(null);
+    }
+
+    private Namespace toDomainModel(NamespaceEntity entity) {
+        return new Namespace(entity.getId(), entity.getName(),entity.getDescription(),entity.getCreatedAt(), entity.getUpdatedAt());
+    }
+
+    private NameSpaceViewDto toModel(NamespaceEntity entity) {
+        NameSpaceViewDto namespace = new NameSpaceViewDto();
+        namespace.setId(entity.getId());
+        namespace.setName(entity.getName());
+        return namespace;
+    }
+    private NameSpaceListViewDto toListViewDto (NamespaceEntity entity) {
+        NameSpaceListViewDto namespace = new NameSpaceListViewDto();
+        namespace.setId(entity.getId());
+        namespace.setName(entity.getName());
+        return namespace;
     }
 }
