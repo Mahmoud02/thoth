@@ -1,11 +1,11 @@
 package com.mahmoud.thoth.api.controller.v1;
 
-import com.mahmoud.thoth.domain.service.UpdateFunctionConfigService;
+import com.mahmoud.thoth.domain.service.UpdateFunctionConfigUseCase;
 import com.mahmoud.thoth.function.config.FunctionType;
 import com.mahmoud.thoth.api.doc.BucketFunctionApiDocs.AddBucketFunctionOp;
 import com.mahmoud.thoth.api.doc.BucketFunctionApiDocs.RemoveBucketFunctionOp;
 import com.mahmoud.thoth.api.dto.CreateBucketFunctionRequest;
-import com.mahmoud.thoth.domain.service.RemoveFunctionConfigService;
+import com.mahmoud.thoth.domain.service.RemoveFunctionConfigUseCase;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -26,18 +26,15 @@ import java.util.Map;
 @Tag(name = "Bucket Functions", description = "APIs to manage function assignments to buckets")
 public class BucketFunctionControllerV1 {
 
-    private final UpdateFunctionConfigService updateFunctionConfigService;
-    private final RemoveFunctionConfigService removeFunctionConfigService;
+    private final UpdateFunctionConfigUseCase updateFunctionConfigUseCase;
+    private final RemoveFunctionConfigUseCase removeFunctionConfigUseCase;
 
     @PostMapping
     @AddBucketFunctionOp
     public ResponseEntity<Map<String, Object>> addFunctions(
             @RequestBody @Valid CreateBucketFunctionRequest request) {
 
-        updateFunctionConfigService.updateFunctionConfig(
-            request.getBucketId(),
-            request.getConfigs()
-        );
+        updateFunctionConfigUseCase.updateFunctionConfig(request.getBucketId(), request.getConfigs());
 
         Map<String, Object> response = new HashMap<>();
         response.put("bucketName", request.getBucketId());
@@ -53,7 +50,7 @@ public class BucketFunctionControllerV1 {
             @PathVariable @NonNull Long buketId,
             @PathVariable @NonNull FunctionType type) {
 
-        removeFunctionConfigService.removeFunctionConfig(buketId, type);
+        removeFunctionConfigUseCase.removeFunctionConfig(buketId, type);
         return ResponseEntity.noContent().build();
     }
 }

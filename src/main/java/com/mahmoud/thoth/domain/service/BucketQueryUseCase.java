@@ -12,14 +12,14 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class BuketQueryService {
+public class BucketQueryUseCase {
 
     private final BucketMetadataQueryRepository bucketMetadataQueryRepository;
 
-    public List<BucketListViewDTO> findBucketsBynameSpace(Long nameSpaceId) {
-        return this.bucketMetadataQueryRepository.findAllByNameSpaceId(nameSpaceId);
+    public List<BucketListViewDTO> findBucketsByNamespace(Long namespaceId) {
+        return this.bucketMetadataQueryRepository.findAllByNamespaceId(namespaceId);
     }
-    public BucketViewDTO findByBuketId(Long buketId) {
-        return this.bucketMetadataQueryRepository.findBuketById(buketId);
+    public BucketViewDTO findByBucketId(Long bucketId) {
+        return this.bucketMetadataQueryRepository.findBucketById(bucketId);
     }
 }

@@ -30,24 +30,22 @@ public class BucketMetadataQueryAdapter implements BucketMetadataQueryRepository
     }
 
     @Override
-    public boolean isBuketExists(Long bucketIdentifier) {
+    public boolean isBucketExists(Long bucketIdentifier) {
         return bucketStore.isExists(bucketIdentifier);
     }
 
     @Override
-    public boolean isBuketExists(String buketName) {
-        return bucketStore.isExists(buketName);
+    public boolean isBucketExists(String bucketName) {
+        return bucketStore.isExists(bucketName);
     }
 
-
     @Override
-    public List<BucketListViewDTO> findAllByNameSpaceId(Long nameSpaceId) {
-        return bucketStore.findAllByNameSpaceId(nameSpaceId);
+    public List<BucketListViewDTO> findAllByNamespaceId(Long namespaceId) {
+        return bucketStore.findAllByNameSpaceId(namespaceId);
     }
 
-
     @Override
-    public BucketViewDTO findBuketById(Long buketId) {
-       return this.bucketStore.findById(buketId);
+    public BucketViewDTO findBucketById(Long bucketId) {
+       return this.bucketStore.findById(bucketId);
     }
 }

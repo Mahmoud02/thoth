@@ -14,23 +14,19 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateFunctionConfigService {
+public class UpdateFunctionConfigUseCase {
 
     private final BucketMetadataQueryRepository bucketMetadataQueryAdapter;
     private final BucketMetadataCommandRepository bucketMetadataCommandRepository;
 
-    public void updateFunctionConfig(Long buketId, List<FunctionAssignConfig> functionsConfig) {
-       
-        var isbuketExist =  bucketMetadataQueryAdapter.isBuketExists(buketId);
+    public void updateFunctionConfig(Long bucketId, List<FunctionAssignConfig> functionsConfig) {
+        boolean isBucketExist = bucketMetadataQueryAdapter.isBucketExists(bucketId);
         
-        if (!isbuketExist) {
+        if (!isBucketExist) {
             throw new ResourceNotFoundException("Bucket not found");
         }
 
-        
-        var functions  = BucketMetadata.generateFunctions(functionsConfig);
-       
-        bucketMetadataCommandRepository.updateFunctionsConfig(buketId,functions);
-
+        var functions = BucketMetadata.generateFunctions(functionsConfig);
+        bucketMetadataCommandRepository.updateFunctionsConfig(bucketId, functions);
     }
 }

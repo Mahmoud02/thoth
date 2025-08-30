@@ -17,12 +17,12 @@ import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
-public class UploadObjectService {
+public class UploadObjectUseCase {
 
     private final StorageService storageService;
     private final MetadataRepository metadataRepository;
     private final ObjectMetadataMapper objectMetadataMapper;
-    private final ExecuteBucketFunctionsService executeBucketFunctionsService;
+    private final ExecuteBucketFunctionsUseCase executeBucketFunctionsUseCase;
 
     public ObjectMetadataDTO uploadObject(String bucketName, UploadObjectRequest uploadObjectRequest) throws IOException {
         String objectName = uploadObjectRequest.getObjectName();
@@ -44,7 +44,7 @@ public class UploadObjectService {
         bufferedInputStream.mark(Integer.MAX_VALUE);
 
         try {
-            executeBucketFunctionsService.executeBucketFunctions(bucketName, objectName, bufferedInputStream);
+            executeBucketFunctionsUseCase.executeBucketFunctions(bucketName, objectName, new ByteArrayInputStream(content));
         } catch (BucketFunctionException e) {
             throw new IOException("Bucket function validation failed for " + bucketName + "/" + objectName + ": " + e.getMessage(), e);
         }

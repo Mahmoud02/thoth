@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class DeleteNamespaceService {
+public class DeleteNamespaceUseCase {
 
     private final NamespaceCommandRepository namespaceCommandRepository;
     private final NamespaceQueryRepository namespaceQueryRepository ;

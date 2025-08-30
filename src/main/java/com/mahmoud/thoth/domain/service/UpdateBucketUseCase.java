@@ -11,20 +11,20 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateBucketService {
+public class UpdateBucketUseCase {
 
     private final BucketMetadataQueryRepository bucketMetadataQueryRepository;
     private final BucketMetadataCommandRepository bucketMetadataCommandRepository;
 
-    public void updateBuketName(Long buketId, UpdateBucketRequest request) {
-        if (!bucketMetadataQueryRepository.isBuketExists(buketId)) {
-            throw new ResourceNotFoundException("Bucket not found: " + buketId);
+    public void updateBucketName(Long bucketId, UpdateBucketRequest request) {
+        if (!bucketMetadataQueryRepository.isBucketExists(bucketId)) {
+            throw new ResourceNotFoundException("Bucket not found: " + bucketId);
         }
 
-        if (bucketMetadataQueryRepository.isBuketExists(request.getName())) {
+        if (bucketMetadataQueryRepository.isBucketExists(request.getName())) {
             throw new ResourceConflictException("Bucket already exists: " + request.getName());
         }
 
-        this.bucketMetadataCommandRepository.updateName(buketId, request.getName());
+        this.bucketMetadataCommandRepository.updateName(bucketId, request.getName());
     }
 }

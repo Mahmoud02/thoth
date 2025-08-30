@@ -10,7 +10,7 @@ import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
-public class DeleteObjectService {
+public class DeleteObjectUseCase {
 
     private final StorageService storageService;
     private final MetadataRepository metadataRepository;

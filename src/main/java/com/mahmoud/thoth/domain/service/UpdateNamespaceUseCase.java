@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateNamespaceService {
+public class UpdateNamespaceUseCase {
 
     private final NamespaceCommandRepository namespaceCommandRepository;
     private final NamespaceQueryRepository namespaceQueryRepository;

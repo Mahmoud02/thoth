@@ -11,7 +11,7 @@ import com.mahmoud.thoth.domain.port.out.NamespaceQueryRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service@RequiredArgsConstructor
-public class NamespaceQueryService {
+public class NamespaceQueryUseCase {
 
     private final NamespaceQueryRepository namespaceQueryRepository;
 

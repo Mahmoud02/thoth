@@ -19,10 +19,10 @@ import com.mahmoud.thoth.domain.port.in.CreateNamespaceRequest;
 import com.mahmoud.thoth.domain.port.in.UpdateNamespaceRequest;
 import com.mahmoud.thoth.domain.port.out.NameSpaceListViewDto;
 import com.mahmoud.thoth.domain.port.out.NameSpaceViewDto;
-import com.mahmoud.thoth.domain.service.CreateNamespaceService;
-import com.mahmoud.thoth.domain.service.DeleteNamespaceService;
-import com.mahmoud.thoth.domain.service.NamespaceQueryService;
-import com.mahmoud.thoth.domain.service.UpdateNamespaceService;
+import com.mahmoud.thoth.domain.service.CreateNamespaceUseCase;
+import com.mahmoud.thoth.domain.service.DeleteNamespaceUseCase;
+import com.mahmoud.thoth.domain.service.NamespaceQueryUseCase;
+import com.mahmoud.thoth.domain.service.UpdateNamespaceUseCase;
 
 import jakarta.annotation.Nonnull;
 import jakarta.validation.Valid;
@@ -34,37 +34,37 @@ import lombok.RequiredArgsConstructor;
 @Validated
 public class NamespaceControllerV1 {
 
-    private final CreateNamespaceService createNamespaceService;
-    private final DeleteNamespaceService deleteNamespaceService;
-    private final UpdateNamespaceService updateNamespaceService;
-    private final NamespaceQueryService namespaceQueryService;
+    private final CreateNamespaceUseCase createNamespaceUseCase;
+    private final DeleteNamespaceUseCase deleteNamespaceUseCase;
+    private final UpdateNamespaceUseCase updateNamespaceUseCase;
+    private final NamespaceQueryUseCase namespaceQueryUseCase;
 
 
     @PostMapping
-    public ResponseEntity<Namespace> createNamespace(@RequestBody @Valid CreateNamespaceRequest request) {
-        Namespace namespace = createNamespaceService.execute(request);
+    public ResponseEntity<Namespace> createNamespace(@RequestBody @Valid CreateNamespaceRequest createNamespaceRequest) {
+        Namespace namespace = createNamespaceUseCase.execute(createNamespaceRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(namespace);
     }
 
     @PutMapping("/{namespaceId}")
     public ResponseEntity<Void> updateNamespace(@PathVariable  @Nonnull Long namespaceId, @RequestBody @Valid UpdateNamespaceRequest request) {
-        updateNamespaceService.execute(namespaceId,request);
+        updateNamespaceUseCase.execute(namespaceId,request);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{namespaceId}")
     public ResponseEntity<Void> deleteNamespace(@PathVariable @Nonnull Long namespaceId) {
-        deleteNamespaceService.execute(namespaceId);
+        deleteNamespaceUseCase.execute(namespaceId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{namespaceId}")
     public ResponseEntity<NameSpaceViewDto> getNamespace(@PathVariable  Long namespaceId) {
-        return ResponseEntity.ok(namespaceQueryService.findById(namespaceId));
+        return ResponseEntity.ok(namespaceQueryUseCase.findById(namespaceId));
     }
 
     @GetMapping
     public ResponseEntity<List<NameSpaceListViewDto>> listNamespaces() {
-        return ResponseEntity.ok(namespaceQueryService.findAll());
+        return ResponseEntity.ok(namespaceQueryUseCase.findAll());
     }
 }

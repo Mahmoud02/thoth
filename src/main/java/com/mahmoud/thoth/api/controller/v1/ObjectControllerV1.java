@@ -1,11 +1,11 @@
 package com.mahmoud.thoth.api.controller.v1;
 
-import com.mahmoud.thoth.domain.service.UploadObjectService;
-import com.mahmoud.thoth.domain.service.DownloadObjectService;
+import com.mahmoud.thoth.domain.service.UploadObjectUseCase;
+import com.mahmoud.thoth.domain.service.DownloadObjectUseCase;
 import com.mahmoud.thoth.api.dto.ObjectMetadataDTO;
 import com.mahmoud.thoth.api.dto.UploadObjectRequest;
-import com.mahmoud.thoth.domain.service.DeleteObjectService;
-import com.mahmoud.thoth.domain.service.ListObjectService;
+import com.mahmoud.thoth.domain.service.DeleteObjectUseCase;
+import com.mahmoud.thoth.domain.service.ListObjectUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,16 +18,16 @@ import java.util.List;
 @RequestMapping("/v1/thoth/buckets")
 public class ObjectControllerV1 {
 
-    private final UploadObjectService uploadObjectService;
-    private final DownloadObjectService downloadObjectService;
-    private final DeleteObjectService deleteObjectService;
-    private final ListObjectService listObjectService;
+    private final UploadObjectUseCase uploadObjectUseCase;
+    private final DownloadObjectUseCase downloadObjectUseCase;
+    private final DeleteObjectUseCase deleteObjectUseCase;
+    private final ListObjectUseCase listObjectUseCase;
 
     @PostMapping(value = "/{bucketName}/objects", consumes = "multipart/form-data")
     public ResponseEntity<ObjectMetadataDTO> uploadObject(
             @PathVariable String bucketName, 
             @Valid @ModelAttribute UploadObjectRequest uploadObjectRequest) throws IOException {
-        ObjectMetadataDTO objectMetadata = uploadObjectService.uploadObject(bucketName, uploadObjectRequest);
+        ObjectMetadataDTO objectMetadata = uploadObjectUseCase.uploadObject(bucketName, uploadObjectRequest);
         return ResponseEntity.ok(objectMetadata);
     }
 
@@ -37,7 +37,7 @@ public class ObjectControllerV1 {
     public ResponseEntity<byte[]> downloadObject(
             @PathVariable String bucketName, 
             @PathVariable String objectName) throws IOException {
-        byte[] data = downloadObjectService.downloadObject(bucketName, objectName);
+        byte[] data = downloadObjectUseCase.downloadObject(bucketName, objectName);
         return ResponseEntity.ok(data);
     }
 
@@ -46,7 +46,7 @@ public class ObjectControllerV1 {
     public ResponseEntity<String> deleteObject(
             @PathVariable String bucketName, 
             @PathVariable String objectName) throws IOException {
-        deleteObjectService.deleteObject(bucketName, objectName);
+        deleteObjectUseCase.deleteObject(bucketName, objectName);
         return ResponseEntity.ok("Object deleted");
     }
 
@@ -54,7 +54,7 @@ public class ObjectControllerV1 {
     @GetMapping("/{bucketName}/objects")
     public ResponseEntity<List<ObjectMetadataDTO>> listObjects(
             @PathVariable String bucketName) throws IOException {
-        List<ObjectMetadataDTO> objects = listObjectService.listObjects(bucketName);
+        List<ObjectMetadataDTO> objects = listObjectUseCase.listObjects(bucketName);
         return ResponseEntity.ok(objects);
     }
 }

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CreateBucketService {
+public class CreateBucketUseCase {
 
     private final BucketMetadataCommandRepository bucketMetadataCommandRepository;
     private final BucketMetadataQueryRepository bucketMetadataQueryRepository;
@@ -28,7 +28,7 @@ public class CreateBucketService {
             throw new ResourceNotFoundException("Namespace not found: " + namespaceId);
         }
 
-        if (bucketMetadataQueryRepository.isBuketExists(bucketName)) {
+        if (bucketMetadataQueryRepository.isBucketExists(bucketName)) {
             throw new ResourceConflictException("Bucket already exists: " + bucketName);
         }
         

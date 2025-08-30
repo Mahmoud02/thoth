@@ -9,7 +9,7 @@ import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
-public class DownloadObjectService {
+public class DownloadObjectUseCase {
 
     private final StorageService storageService;
 

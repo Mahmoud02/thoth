@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class DeleteBucketService {
+public class DeleteBucketUseCase {
 
     private final BucketMetadataQueryRepository bucketMetadataQueryRepository;
     private final BucketMetadataCommandRepository bucketMetadataCommandRepository;
 
     public void execute(Long Id) {
-        if (!bucketMetadataQueryRepository.isBuketExists(Id)) {
+        if (!bucketMetadataQueryRepository.isBucketExists(Id)) {
             throw new ResourceNotFoundException("Bucket not found: " + Id);
         }
         bucketMetadataCommandRepository.delete(Id);

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class RemoveFunctionConfigService {
+public class RemoveFunctionConfigUseCase {
     
     private final BucketMetadataQueryRepository bucketMetadataQueryRepository;
     private final BucketMetadataCommandRepository bucketMetadataCommandRepository;

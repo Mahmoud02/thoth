@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BucketMetadataQueryRepository {
-    Optional<BucketMetadata> getBucketMetadata(Long buketIdentifier);
+    Optional<BucketMetadata> getBucketMetadata(Long bucketIdentifier);
     List<BucketMetadata> getBucketsByNamespace(String namespaceName);
-    boolean isBuketExists(Long buketIdentifier);
-    boolean isBuketExists(String buketName);
-    List<BucketListViewDTO> findAllByNameSpaceId(Long nameSpaceId);
-    BucketViewDTO findBuketById(Long buketId);
+    boolean isBucketExists(Long bucketIdentifier);
+    boolean isBucketExists(String bucketName);
+    List<BucketListViewDTO> findAllByNamespaceId(Long namespaceId);
+    BucketViewDTO findBucketById(Long bucketId);
 }

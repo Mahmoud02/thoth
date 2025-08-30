@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CreateNamespaceService {
+public class CreateNamespaceUseCase {
 
     private final NamespaceCommandRepository namespaceCommandRepository;
     private final NamespaceQueryRepository namespaceQueryRepository;
