@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/thoth/buckets")
+@RequestMapping("/api/v1/buckets")
 public class ObjectControllerV1 {
 
     private final UploadObjectUseCase uploadObjectUseCase;

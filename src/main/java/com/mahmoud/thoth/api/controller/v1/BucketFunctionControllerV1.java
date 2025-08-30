@@ -21,7 +21,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/thoth/buckets/functions")
+@RequestMapping("/api/v1/buckets/functions")
 @Validated
 @Tag(name = "Bucket Functions", description = "APIs to manage function assignments to buckets")
 public class BucketFunctionControllerV1 {

@@ -18,6 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
+@SuppressWarnings("null")
 class NamespaceControllerV1IntegrationTest extends TestcontainersConfig {
 
     @Autowired
@@ -30,7 +31,7 @@ class NamespaceControllerV1IntegrationTest extends TestcontainersConfig {
 
     @BeforeEach
     void setUp() {
-        baseUrl = "http://localhost:" + port + "/v1/thoth/namespaces";
+        baseUrl = "http://localhost:" + port + "/api/v1/namespaces";
     }
 
     @Test

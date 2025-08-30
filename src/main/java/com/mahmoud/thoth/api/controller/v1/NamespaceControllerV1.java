@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/thoth/namespaces")
+@RequestMapping("/api/v1/namespaces")
 @Validated
 public class NamespaceControllerV1 {
 

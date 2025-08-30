@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/thoth/buckets")
+@RequestMapping("/api/v1/buckets")
 @Validated
 public class BucketControllerV1 {
 

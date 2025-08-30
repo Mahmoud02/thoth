@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
+@SuppressWarnings("null")
 class BucketControllerV1IntegrationTest extends TestcontainersConfig {
 
     @Autowired
@@ -35,8 +36,8 @@ class BucketControllerV1IntegrationTest extends TestcontainersConfig {
 
     @BeforeEach
     void setUp() {
-        bucketUrl = "http://localhost:" + port + "/v1/thoth/buckets";
-        namespaceUrl = "http://localhost:" + port + "/v1/thoth/namespaces";
+        bucketUrl = "http://localhost:" + port + "/api/v1/buckets";
+        namespaceUrl = "http://localhost:" + port + "/api/v1/namespaces";
     }
 
     @Test
