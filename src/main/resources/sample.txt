@@ -1,0 +1,14 @@
+Thoth - Document Analysis Test
+==============================
+
+This is a sample text document for testing the document analysis feature of the Thoth application.
+
+Key Features:
+- Document analysis using AI
+- Support for multiple document formats
+- Context-aware responses
+
+Example Question:
+What is the main purpose of this document?
+
+This document is a test file used to verify that the document analysis functionality is working correctly.
