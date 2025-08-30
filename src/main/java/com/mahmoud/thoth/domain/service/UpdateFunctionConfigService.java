@@ -28,7 +28,7 @@ public class UpdateFunctionConfigService {
         }
 
         
-        var functions  = BucketMetadata.genrateFunctions(functionsConfig);
+        var functions  = BucketMetadata.generateFunctions(functionsConfig);
        
         bucketMetadataCommandRepository.updateFunctionsConfig(buketId,functions);
 

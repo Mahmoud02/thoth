@@ -10,15 +10,15 @@ import com.mahmoud.thoth.function.config.FunctionAssignConfig;
 
 @Data
 public class BucketMetadata {
-    private Long buketIdentifier;
-    private String bucketName;
+    private Long bucketIdentifier;
+    private String name;
     private Long namespaceId;
     private LocalDateTime creationDate;
     private LocalDateTime lastModifiedDate;
     private Map<String, Object> functions;
 
-    public BucketMetadata(String bucketName, Long namespaceId) {
-        this.bucketName = bucketName;
+    public BucketMetadata(String name, Long namespaceId) {
+        this.name = name;
         this.namespaceId = namespaceId;
         this.creationDate = LocalDateTime.now();
         this.lastModifiedDate = LocalDateTime.now();
@@ -29,7 +29,7 @@ public class BucketMetadata {
         this.lastModifiedDate = LocalDateTime.now();
     }
 
-    public static Map<String, Object> genrateFunctions (List<FunctionAssignConfig> functionAssignConfigs) {
+    public static Map<String, Object> generateFunctions(List<FunctionAssignConfig> functionAssignConfigs) {
         Map<String, Object> functionConfigMap = new HashMap<>();
         for (FunctionAssignConfig config : functionAssignConfigs) {
             functionConfigMap.put(config.getType().name(), config);

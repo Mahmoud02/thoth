@@ -27,7 +27,6 @@ import com.mahmoud.thoth.domain.service.UpdateNamespaceService;
 import jakarta.annotation.Nonnull;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.var;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,7 +42,7 @@ public class NamespaceControllerV1 {
 
     @PostMapping
     public ResponseEntity<Namespace> createNamespace(@RequestBody @Valid CreateNamespaceRequest request) {
-        var namespace = createNamespaceService.execute(request);
+        Namespace namespace = createNamespaceService.execute(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(namespace);
     }
 

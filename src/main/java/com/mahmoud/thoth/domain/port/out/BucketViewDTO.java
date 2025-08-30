@@ -54,9 +54,9 @@ public class BucketViewDTO {
         }
         
         BucketViewDTO bucketViewDTO = new BucketViewDTO();
-        bucketViewDTO.setId(bucketMetadata.getBuketIdentifier());
+        bucketViewDTO.setId(bucketMetadata.getBucketIdentifier());
         bucketViewDTO.setNamespaceId(bucketMetadata.getNamespaceId());
-        bucketViewDTO.setName(bucketMetadata.getBucketName());
+        bucketViewDTO.setName(bucketMetadata.getName());
         bucketViewDTO.setCreatedAt(bucketMetadata.getCreationDate());
         bucketViewDTO.setUpdatedAt(bucketMetadata.getLastModifiedDate());
         bucketViewDTO.setFunctions(bucketMetadata.getFunctions());

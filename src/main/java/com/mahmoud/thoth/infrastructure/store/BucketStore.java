@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface BucketStore {
 
-    void save(BucketMetadata bucketName);
+    BucketMetadata save(BucketMetadata bucketName);
 
     Optional<BucketMetadata> find(Long buketIdentifier);
     List<BucketMetadata> findByNamespace(String namespaceName);
@@ -21,7 +21,7 @@ public interface BucketStore {
     void updateName(Long buketIdentifier, String newBucketName);
     void delete(Long buketIdentifier);
 
-    void updateFunctionsConfig(Long bucketId, Map<String , Object> functionsConfigMap);
+    void updateFunctionsConfig(Long bucketId, Map<String , Object> functionConfigMap);
 
     List<BucketListViewDTO> findAllByNameSpaceId(Long nameSpaceId);
 

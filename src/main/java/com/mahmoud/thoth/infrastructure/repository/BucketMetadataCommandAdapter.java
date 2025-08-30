@@ -28,8 +28,8 @@ public class BucketMetadataCommandAdapter implements BucketMetadataCommandReposi
     }
 
     @Override
-    public void save(BucketMetadata bucketMetadata) {
-        bucketStore.save(bucketMetadata);
+    public BucketMetadata save(BucketMetadata bucketMetadata) {
+        return bucketStore.save(bucketMetadata);
     }
 
     @Override

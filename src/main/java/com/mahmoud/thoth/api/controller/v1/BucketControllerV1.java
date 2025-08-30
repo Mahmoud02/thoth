@@ -49,22 +49,21 @@ public class BucketControllerV1 {
         return ResponseEntity.status(HttpStatus.CREATED).body(bucketDTO);
     }
 
-    @PutMapping("/{buketId}")
-    public ResponseEntity<Void> updateBucket(@PathVariable  Long buketId, @RequestBody @Valid UpdateBucketRequest updateBucketRequestDTO) {
-         updateBucketService.updateBuketName(buketId, updateBucketRequestDTO);
+    @PutMapping("/{bucketId}")
+    public ResponseEntity<Void> updateBucket(@PathVariable Long bucketId, @RequestBody @Valid UpdateBucketRequest updateBucketRequestDTO) {
+         updateBucketService.updateBuketName(bucketId, updateBucketRequestDTO);
          return ResponseEntity.noContent().build();
-
     }
 
-    @DeleteMapping("/{buketId}")
-    public ResponseEntity<Void> deleteBucket(@PathVariable  Long buketId) {
-        deleteBucketService.execute(buketId);
+    @DeleteMapping("/{bucketId}")
+    public ResponseEntity<Void> deleteBucket(@PathVariable Long bucketId) {
+        deleteBucketService.execute(bucketId);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{buketId}")
-    public ResponseEntity<BucketViewDTO> getBucketMetadata(@RequestParam(required = true) Long buketId) {
-        return ResponseEntity.ok(bucketMetadataQueryService.findByBuketId(buketId));
+    @GetMapping("/{bucketId}")
+    public ResponseEntity<BucketViewDTO> getBucketMetadata(@PathVariable Long bucketId) {
+        return ResponseEntity.ok(bucketMetadataQueryService.findByBuketId(bucketId));
     }
 
     @GetMapping

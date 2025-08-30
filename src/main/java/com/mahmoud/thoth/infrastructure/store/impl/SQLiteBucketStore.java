@@ -27,8 +27,9 @@ public class SQLiteBucketStore implements BucketStore {
     }
 
     @Override
-    public void save(BucketMetadata bucketMetadata) {
-        bucketRepository.save(toBucketEntity(bucketMetadata));
+    public BucketMetadata save(BucketMetadata bucketMetadata) {
+        BucketEntity savedEntity = bucketRepository.save(toBucketEntity(bucketMetadata));
+        return toBucketMetadata(savedEntity);
     }
 
     @Override
@@ -64,10 +65,12 @@ public class SQLiteBucketStore implements BucketStore {
     }
     private BucketMetadata toBucketMetadata(BucketEntity entity) {
         BucketMetadata metadata = new BucketMetadata();
-        metadata.setBucketName(entity.getName());
+        metadata.setBucketIdentifier(entity.getId());
+        metadata.setName(entity.getName());
         metadata.setNamespaceId(entity.getNamespaceId());
         metadata.setCreationDate(entity.getCreationDate());
         metadata.setLastModifiedDate(entity.getUpdatedAt());
+        metadata.setFunctions(entity.getFunctions());
         return metadata;
     }
 
@@ -97,7 +100,7 @@ public class SQLiteBucketStore implements BucketStore {
     }
     private BucketEntity toBucketEntity(BucketMetadata metadata) {
         BucketEntity entity = new BucketEntity();
-        entity.setName(metadata.getBucketName());
+        entity.setName(metadata.getName());
         entity.setNamespaceId(metadata.getNamespaceId());
         entity.setCreationDate(metadata.getCreationDate());
         entity.setUpdatedAt(metadata.getLastModifiedDate());
