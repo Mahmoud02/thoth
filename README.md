@@ -10,6 +10,11 @@
 [![Build Status](https://github.com/Mahmoud02/thoth/actions/workflows/build.yml/badge.svg)](https://github.com/Mahmoud02/thoth/actions)
 [![Code Coverage](https://codecov.io/gh/Mahmoud02/thoth/branch/main/graph/badge.svg)](https://codecov.io/gh/Mahmoud02/thoth)
 
+<div align="center">
+  <img src="https://i.etsystatic.com/11274738/r/il/01c4c2/1200262022/il_570xN.1200262022_5g9f.jpg" alt="Thoth - Egyptian God of Wisdom" width="200">
+  <p><em>Thoth - The Egyptian God of Wisdom, Writing, and Knowledge</em></p>
+</div>
+
 ## 🏛️ Inspiration
 
 Thoth is inspired by the ancient Egyptian god of wisdom, writing, and knowledge. Just as Thoth was the divine scribe and mediator of the gods, this project aims to be a reliable and intelligent storage solution for modern applications.
