@@ -54,6 +54,16 @@
 				<artifactId>tika-parsers-standard-package</artifactId>
 				<version>2.9.1</version>
 			</dependency>
+			<!-- Vector Database Dependencies -->
+			<dependency>
+				<groupId>org.springframework.ai</groupId>
+				<artifactId>spring-ai-starter-vector-store-pgvector</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>org.postgresql</groupId>
+				<artifactId>pgvector</artifactId>
+				<scope>runtime</scope>
+			</dependency>
 			<dependency>
 				<groupId>org.springframework.ai</groupId>
 				<artifactId>spring-ai-bom</artifactId>
@@ -135,6 +145,12 @@
 		<dependency>
 			<groupId>org.springframework.ai</groupId>
 			<artifactId>spring-ai-ollama-spring-boot-starter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-pgvector-store</artifactId>
+			<version>${spring-ai.version}</version>
 		</dependency>
 
 		<dependency>

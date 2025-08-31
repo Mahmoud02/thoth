@@ -13,4 +13,13 @@ public interface StorageService {
     List<ObjectMetadataDTO> listObjects(String bucketName) throws IOException;
     void createBucketFolder(String bucketName);
     void createNamespaceFolder(String namespaceName);
+    
+    /**
+     * Gets the filesystem path for an object
+     * @param bucketName The name of the bucket
+     * @param objectName The name of the object
+     * @return The absolute path to the object
+     * @throws IOException if the object doesn't exist or can't be accessed
+     */
+    String getObjectPath(String bucketName, String objectName) throws IOException;
 }

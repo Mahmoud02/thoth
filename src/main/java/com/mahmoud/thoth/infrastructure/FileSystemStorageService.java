@@ -113,4 +113,13 @@ public class FileSystemStorageService implements StorageService {
             logger.error("Error creating namespace directory", e);
         }
     }
+    
+    @Override
+    public String getObjectPath(String bucketName, String objectName) throws IOException {
+        Path objectPath = createObjectPath(bucketName, objectName);
+        if (!Files.exists(objectPath)) {
+            throw new IOException("Object not found: " + objectPath);
+        }
+        return objectPath.toAbsolutePath().toString();
+    }
 }
