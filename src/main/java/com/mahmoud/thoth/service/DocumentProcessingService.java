@@ -43,8 +43,12 @@ public class DocumentProcessingService {
         processStoredDocument(bucketName, fileName);
     }
     
-    public List<Document> searchSimilarDocuments(String query, int k) {
-        return vectorStore.similaritySearch(SearchRequest.query(query).withTopK(k));
+    public List<Document> searchSimilarDocuments(String query, String bucketName, int k) {
+        return vectorStore.similaritySearch(
+            SearchRequest.query(query)
+                .withTopK(k)
+                .withFilterExpression("bucketName == '" + bucketName + "'")
+        );
     }
     
     /**
@@ -65,6 +69,8 @@ public class DocumentProcessingService {
     }
     
     private void processFile(String filePath) throws IOException {
+        // Extract bucket name from file path
+        String bucketName = new java.io.File(filePath).getParentFile().getName();
         List<Document> documents;
         String filename = filePath.toLowerCase();
         
@@ -98,6 +104,11 @@ public class DocumentProcessingService {
         
         // Split documents into chunks
         List<Document> chunks = textSplitter.apply(documents);
+        
+        // Add bucket name to metadata for each chunk
+        chunks.forEach(doc -> {
+            doc.getMetadata().put("bucketName", bucketName);
+        });
         
         // Store in vector database
         vectorStore.add(chunks);

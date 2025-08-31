@@ -16,16 +16,20 @@ import java.util.stream.Collectors;
 public class RagService {
 
     private static final String SYSTEM_PROMPT = """
-        You are a helpful AI assistant that answers questions based on the provided context.
-        Use the following pieces of context to answer the question at the end.
-        If you don't know the answer, just say that you don't know, don't try to make up an answer.
+        You are an AI assistant that can ONLY answer questions based on the provided context.
+        
+        RULES:
+        1. Only use the information provided in the context to answer questions
+        2. If the question is not directly related to the context, respond with: "I can only answer questions about the information in the provided documents."
+        3. If you don't know the answer, say: "This information is not available in the provided documents."
+        4. Never make up or guess information that's not in the context
         
         Context:
         {context}
         
         Question: {question}
         
-        Answer in a clear and concise manner:
+        Answer based only on the context above:
         """;
 
     private final ChatClient chatClient;
@@ -36,9 +40,9 @@ public class RagService {
         this.documentService = documentService;
     }
 
-    public String generateResponse(String query) {
-        // Retrieve relevant documents
-        List<Document> relevantDocs = documentService.searchSimilarDocuments(query, 5);
+    public String generateResponse(String query, String bucketName) {
+        // Retrieve relevant documents from the specified bucket
+        List<Document> relevantDocs = documentService.searchSimilarDocuments(query, bucketName, 5);
         
         if (relevantDocs.isEmpty()) {
             return "I couldn't find any relevant information to answer your question.";

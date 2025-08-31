@@ -58,9 +58,11 @@ public class RagController {
     }
 
     @PostMapping("/query")
-    public ResponseEntity<String> query(@RequestParam("q") String query) {
+    public ResponseEntity<String> query(
+            @RequestParam("q") String query,
+            @RequestParam("bucket") String bucketName) {
         try {
-            String response = ragService.generateResponse(query);
+            String response = ragService.generateResponse(query, bucketName);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
