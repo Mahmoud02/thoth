@@ -1,6 +1,6 @@
 package com.mahmoud.thoth.service;
 
-import org.springframework.ai.chat.ChatClient;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.ai.document.Document;
@@ -52,8 +52,12 @@ public class AiService {
             Prompt prompt = new Prompt(systemPromptTemplate.createMessage(Map.of("input", message)));
             
             // Get the AI response
-            String response = chatClient.call(prompt).getResult().getOutput().getContent();
-            
+
+            var response = chatClient.prompt(prompt)
+                    .call()
+                    .content();
+
+
             if (response == null || response.trim().isEmpty()) {
                 throw new RuntimeException("Received empty response from AI service");
             }
@@ -71,21 +75,23 @@ public class AiService {
             String questionId = DigestUtils.md5DigestAsHex((documentId + message).getBytes(StandardCharsets.UTF_8));
             
             // Check if we have a cached response for this exact question
-            List<Document> similarDocs = vectorStore.similaritySearch(
-                SearchRequest.query(message)
-                    .withTopK(1)
-                    .withFilterExpression("metadata->>'questionId' = '" + questionId + "'")
-            );
+
+            var searchRequest = SearchRequest.builder()
+                    .topK(1)
+                    .filterExpression("metadata->>'questionId' = '" + questionId + "'")
+                    .query(message)
+                    .build();
+            List<Document> similarDocs = vectorStore.similaritySearch(searchRequest);
             
             if (!similarDocs.isEmpty()) {
-                return similarDocs.get(0).getContent();
+                return similarDocs.getFirst().getFormattedContent();
             }
             
             // Convert MultipartFile to Resource
             Resource resource = new ByteArrayResource(file.getBytes()) {
                 @Override
                 public String getFilename() {
-                    return file != null && file.getOriginalFilename() != null ? 
+                    return file.getOriginalFilename() != null ?
                            file.getOriginalFilename() : "unnamed_file";
                 }
             };
@@ -118,7 +124,7 @@ public class AiService {
 
             // Extract text from documents
             String documentContent = splitDocs.stream()
-                .map(Document::getContent)
+                .map(Document::getFormattedContent)
                 .collect(Collectors.joining("\n\n"));
 
             // Create a prompt with document context
@@ -133,8 +139,10 @@ public class AiService {
                 """, documentContent, message);
 
             // Use chat client to get response
-            String response = chatClient.call(prompt);
-            
+            var response = chatClient.prompt(prompt)
+                    .call()
+                    .content();
+
             // Cache the response in the vector store
             Document responseDoc = new Document(
                 response,

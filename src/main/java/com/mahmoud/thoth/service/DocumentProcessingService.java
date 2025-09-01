@@ -44,11 +44,13 @@ public class DocumentProcessingService {
     }
     
     public List<Document> searchSimilarDocuments(String query, String bucketName, int k) {
-        return vectorStore.similaritySearch(
-            SearchRequest.query(query)
-                .withTopK(k)
-                .withFilterExpression("bucketName == '" + bucketName + "'")
-        );
+        var searchRequest = SearchRequest.builder()
+                .topK(1)
+                .filterExpression("bucketName == '" + bucketName + "'")
+                .query(query)
+                .build();
+
+        return vectorStore.similaritySearch(searchRequest);
     }
     
     /**

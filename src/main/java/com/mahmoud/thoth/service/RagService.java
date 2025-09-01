@@ -1,11 +1,11 @@
 package com.mahmoud.thoth.service;
 
-import org.springframework.ai.chat.ChatClient;
-import org.springframework.ai.document.Document;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.document.Document;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,7 +50,7 @@ public class RagService {
         
         // Format the context from documents
         String context = relevantDocs.stream()
-            .map(Document::getContent)
+            .map(Document::getFormattedContent)
             .collect(Collectors.joining("\n\n"));
         
         // Create the prompt with context and query
@@ -58,10 +58,12 @@ public class RagService {
         Message systemMessage = systemPromptTemplate.createMessage(
             Map.of("context", context, "question", query)
         );
-        
+        var prompt =  new Prompt(List.of(systemMessage, new UserMessage(query)));
+        var response = chatClient.prompt(prompt)
+                .user(query)
+                .call()
+                .content();
         // Generate response
-        return chatClient.call(
-            new Prompt(List.of(systemMessage, new UserMessage(query)))
-        ).getResult().getOutput().getContent();
+        return response;
     }
 }
