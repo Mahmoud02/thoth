@@ -54,12 +54,12 @@ public class BucketManagementByAIService {
        
     }
 
-    @Tool(description = "Lists all available namespaces")
+    @Tool(description = "Lists all available namespaces",returnDirect = true)
     public List<NameSpaceListViewDto> listNamespaces() {
         return namespaceQueryUseCase.findAll();
     }
 
-    @Tool(description = "Creates a new namespace with the given name")
+    @Tool(description = "Creates a new namespace with the given name",returnDirect = true)
     public String createNamespace(@ToolParam(description = "Name of the namespace to create") String nameSpaceName) {
         CreateNamespaceRequest createRequest = new CreateNamespaceRequest();
         createRequest.setNamespaceName(nameSpaceName);
@@ -67,7 +67,7 @@ public class BucketManagementByAIService {
         return "Namespace created successfully with ID: " + result.getId();
     }
 
-    @Tool(description = "Deletes a namespace by its ID")
+    @Tool(description = "Deletes a namespace by its ID" , returnDirect = true)
     public String deleteNamespace(@ToolParam(description = "ID of the namespace to delete") Long nameSpaceId) {
         deleteNamespaceUseCase.execute(nameSpaceId);
         return "Namespace with ID " + nameSpaceId + " deleted successfully";
