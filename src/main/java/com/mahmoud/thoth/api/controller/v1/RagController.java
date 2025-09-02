@@ -1,13 +1,10 @@
-package com.mahmoud.thoth.controller;
+package com.mahmoud.thoth.api.controller.v1;
 
 import com.mahmoud.thoth.service.DocumentProcessingService;
 import com.mahmoud.thoth.service.RagService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+
 
 import java.io.IOException;
 
@@ -37,26 +34,6 @@ public class RagController {
         }
     }
     
-    @GetMapping("/files/{bucket}/{filename:.+}")
-    public ResponseEntity<Resource> getFile(
-            @PathVariable String bucket,
-            @PathVariable String filename) {
-        try {
-            byte[] fileContent = documentService.fetchFile(bucket, filename);
-            ByteArrayResource resource = new ByteArrayResource(fileContent);
-            
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                    .contentLength(fileContent.length)
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .body(resource);
-        } catch (IOException e) {
-            return ResponseEntity.notFound().build();
-        } catch (SecurityException e) {
-            return ResponseEntity.status(403).build();
-        }
-    }
-
     @PostMapping("/query")
     public ResponseEntity<String> query(
             @RequestParam("q") String query,

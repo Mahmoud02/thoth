@@ -1,6 +1,5 @@
-package com.mahmoud.thoth.controller;
+package com.mahmoud.thoth.api.controller.v1;
 
-import com.mahmoud.thoth.service.BucketManagementByAIService;
 import com.mahmoud.thoth.service.ChatFunctions;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

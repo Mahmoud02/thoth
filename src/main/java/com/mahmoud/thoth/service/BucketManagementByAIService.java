@@ -6,16 +6,10 @@ import com.mahmoud.thoth.domain.service.*;
 
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Description;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
-// Record for namespace name input
 
 
 
@@ -24,6 +18,7 @@ import java.util.function.Supplier;
  * AI-powered service for managing document buckets/namespaces through natural language.
  * Uses function calling to execute appropriate use cases based on user queries.
  */
+
 @Service
 public class BucketManagementByAIService {
 
