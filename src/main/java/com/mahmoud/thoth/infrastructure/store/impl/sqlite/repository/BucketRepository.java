@@ -15,6 +15,7 @@ public interface BucketRepository extends CrudRepository<BucketEntity, Long> {
     List<BucketEntity> findByNamespaceId(Long namespaceId);
     boolean existsByName(String bucketName);
     void deleteByName(String bucketName);
+    BucketEntity findByName(String bucketName);
 
     @Modifying
     @Query(value = "UPDATE buckets SET functions = :functions WHERE id = :bucketId")

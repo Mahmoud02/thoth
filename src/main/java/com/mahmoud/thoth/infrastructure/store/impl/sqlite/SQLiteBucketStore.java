@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.infrastructure.store.impl;
+package com.mahmoud.thoth.infrastructure.store.impl.sqlite;
 
 import com.mahmoud.thoth.domain.model.BucketMetadata;
 import com.mahmoud.thoth.domain.port.out.BucketListViewDTO;
@@ -37,6 +37,12 @@ public class SQLiteBucketStore implements BucketStore {
         return bucketRepository.findById(bucketIdentifier)
                 .map(this::toBucketMetadata)
                 .or(() ->  Optional.empty());
+    }
+
+    @Override
+    public Optional<BucketMetadata> findByName(String bucketName) {
+        BucketEntity entity = bucketRepository.findByName(bucketName);
+        return entity != null ? Optional.of(toBucketMetadata(entity)) : Optional.empty();
     }
 
     @Override

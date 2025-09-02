@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface BucketMetadataQueryRepository {
     Optional<BucketMetadata> getBucketMetadata(Long bucketIdentifier);
+    Optional<BucketMetadata> getBucketMetadataByName(String bucketName);
     List<BucketMetadata> getBucketsByNamespace(String namespaceName);
     boolean isBucketExists(Long bucketIdentifier);
     boolean isBucketExists(String bucketName);

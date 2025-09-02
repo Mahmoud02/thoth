@@ -23,6 +23,11 @@ public class BucketMetadataQueryAdapter implements BucketMetadataQueryRepository
         return bucketStore.find(bucketIdentifier);
     }
 
+    @Override
+    public Optional<BucketMetadata> getBucketMetadataByName(String bucketName) {
+        return bucketStore.findByName(bucketName);
+    }
+
    
     @Override
     public List<BucketMetadata> getBucketsByNamespace(String namespaceName) {

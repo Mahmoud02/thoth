@@ -13,6 +13,7 @@ public interface BucketStore {
     BucketMetadata save(BucketMetadata bucketName);
 
     Optional<BucketMetadata> find(Long buketIdentifier);
+    Optional<BucketMetadata> findByName(String bucketName);
     List<BucketMetadata> findByNamespace(String namespaceName);
 
     boolean isExists(Long buketIdentifier);
