@@ -78,8 +78,9 @@ public class DocumentProcessingService {
         
         try {
             if (filename.endsWith(".pdf")) {
+                FileSystemResource resource = new FileSystemResource(filePath);
                 PagePdfDocumentReader pdfReader = new PagePdfDocumentReader(
-                    filePath,
+                    resource,
                     PdfDocumentReaderConfig.builder()
                         .withPageExtractedTextFormatter(ExtractedTextFormatter.builder()
                             .withNumberOfTopPagesToSkipBeforeDelete(0)

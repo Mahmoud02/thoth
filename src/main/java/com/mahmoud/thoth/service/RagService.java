@@ -50,7 +50,7 @@ public class RagService {
         
         // Format the context from documents
         String context = relevantDocs.stream()
-            .map(Document::getFormattedContent)
+            .map(Document::getText)
             .collect(Collectors.joining("\n\n"));
         
         // Create the prompt with context and query
@@ -60,7 +60,6 @@ public class RagService {
         );
         var prompt =  new Prompt(List.of(systemMessage, new UserMessage(query)));
         var response = chatClient.prompt(prompt)
-                .user(query)
                 .call()
                 .content();
         // Generate response
