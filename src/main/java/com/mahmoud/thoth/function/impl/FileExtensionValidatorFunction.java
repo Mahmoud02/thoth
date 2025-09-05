@@ -5,6 +5,7 @@ import com.mahmoud.thoth.function.BucketFunctionException;
 import com.mahmoud.thoth.function.config.ExtensionValidatorConfig;
 import com.mahmoud.thoth.function.config.FunctionAssignConfig;
 import com.mahmoud.thoth.function.config.FunctionType;
+import com.mahmoud.thoth.function.annotation.FunctionMetadata;
 
 import org.springframework.stereotype.Component;
 import java.io.InputStream;
@@ -12,6 +13,18 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Component
+@FunctionMetadata(
+    name = "File Extension Validator",
+    description = "Validates that uploaded files have allowed extensions",
+    properties = {"allowedExtensions", "order"},
+    propertyTypes = {"List<String>", "Integer"},
+    propertyRequired = {true, true},
+    propertyDescriptions = {
+        "List of allowed file extensions (without dot)",
+        "Execution order (lower numbers execute first)"
+    },
+    propertyDefaults = {"[\"jpg\", \"png\", \"pdf\", \"txt\"]", "2"}
+)
 public class FileExtensionValidatorFunction implements BucketFunction {
     
     private static final FunctionType TYPE = FunctionType.EXTENSION_VALIDATOR;

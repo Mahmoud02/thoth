@@ -81,6 +81,56 @@ public int updateFunctionsConfig(Long bucketId, PGobject functions) {
 - `src/main/java/com/mahmoud/thoth/infrastructure/store/impl/sqlite/repository/BucketRepository.java`
 - `src/main/java/com/mahmoud/thoth/infrastructure/store/impl/sqlite/converter/JsonbWritingConverter.java`
 
+## Dynamic Function Discovery System
+
+### Overview
+The system now dynamically discovers and provides metadata for all available bucket functions using Spring's dependency injection and custom annotations.
+
+### Implementation Details
+
+#### 1. FunctionMetadata Annotation
+```java
+@FunctionMetadata(
+    name = "File Size Limit",
+    description = "Restricts the maximum file size that can be uploaded to the bucket",
+    properties = {"maxSizeBytes", "order"},
+    propertyTypes = {"Long", "Integer"},
+    propertyRequired = {true, true},
+    propertyDescriptions = {
+        "Maximum file size in bytes",
+        "Execution order (lower numbers execute first)"
+    },
+    propertyDefaults = {"10485760", "1"}
+)
+```
+
+#### 2. Dynamic Discovery Process
+1. **Spring Auto-Discovery**: All `@Component` classes implementing `BucketFunction` are automatically injected
+2. **Annotation Processing**: `FunctionInfoService` reads `@FunctionMetadata` annotations at runtime
+3. **Dynamic Property Parsing**: Default values are parsed based on property types
+4. **API Generation**: Function metadata is automatically converted to API responses
+
+#### 3. Benefits
+- **Zero Configuration**: New functions are automatically discovered
+- **Self-Documenting**: Metadata is co-located with function implementations
+- **Type Safety**: Property types and defaults are validated at compile time
+- **Extensible**: Easy to add new function types without modifying core services
+
+#### 4. Adding New Functions
+To add a new function:
+1. Create a class implementing `BucketFunction`
+2. Add `@Component` annotation
+3. **Required**: Add `@FunctionMetadata` annotation with function details
+4. Function is automatically available via API
+
+**Note**: All functions MUST have the `@FunctionMetadata` annotation. The system will throw an exception if a function is missing this annotation.
+
+### Related Files
+- `src/main/java/com/mahmoud/thoth/function/annotation/FunctionMetadata.java`
+- `src/main/java/com/mahmoud/thoth/domain/service/FunctionInfoService.java`
+- `src/main/java/com/mahmoud/thoth/function/impl/FileSizeLimitFunction.java`
+- `src/main/java/com/mahmoud/thoth/function/impl/FileExtensionValidatorFunction.java`
+
 ---
 *Last Updated: $(date)*
-*Issue Resolved: Spring Data JDBC @Modifying queries with PGobject parameters*
+*Issues Resolved: Spring Data JDBC @Modifying queries with PGobject parameters, Dynamic function discovery system*

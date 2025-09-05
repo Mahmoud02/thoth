@@ -5,12 +5,25 @@ import com.mahmoud.thoth.function.BucketFunctionException;
 import com.mahmoud.thoth.function.config.FunctionAssignConfig;
 import com.mahmoud.thoth.function.config.FunctionType;
 import com.mahmoud.thoth.function.config.SizeLimitConfig;
+import com.mahmoud.thoth.function.annotation.FunctionMetadata;
 
 import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.InputStream;
 
 @Component
+@FunctionMetadata(
+    name = "File Size Limit",
+    description = "Restricts the maximum file size that can be uploaded to the bucket",
+    properties = {"maxSizeBytes", "order"},
+    propertyTypes = {"Long", "Integer"},
+    propertyRequired = {true, true},
+    propertyDescriptions = {
+        "Maximum file size in bytes",
+        "Execution order (lower numbers execute first)"
+    },
+    propertyDefaults = {"10485760", "1"}
+)
 public class FileSizeLimitFunction implements BucketFunction {
     
     private static final FunctionType TYPE = FunctionType.SIZE_LIMIT;
