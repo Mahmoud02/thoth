@@ -3,7 +3,7 @@ package com.mahmoud.thoth.domain.service;
 import com.mahmoud.thoth.domain.model.BucketMetadata;
 import com.mahmoud.thoth.domain.port.out.BucketMetadataCommandRepository;
 import com.mahmoud.thoth.domain.port.out.BucketMetadataQueryRepository;
-import com.mahmoud.thoth.function.config.FunctionAssignConfig;
+import com.mahmoud.thoth.function.config.FunctionConfig;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class UpdateFunctionConfigUseCase {
     private final BucketMetadataQueryRepository bucketMetadataQueryAdapter;
     private final BucketMetadataCommandRepository bucketMetadataCommandRepository;
 
-    public void updateFunctionConfig(Long bucketId, List<FunctionAssignConfig> functionsConfig) {
+    public void updateFunctionConfig(Long bucketId, List<FunctionConfig> functionsConfig) {
         boolean isBucketExist = bucketMetadataQueryAdapter.isBucketExists(bucketId);
         
         if (!isBucketExist) {

@@ -1,19 +1,14 @@
 package com.mahmoud.thoth.function.config;
-import static com.mahmoud.thoth.function.config.FunctionID.EXTENSION_VALIDATOR_FUNCTION_ID;
-import static com.mahmoud.thoth.function.config.FunctionID.SIZE_LIMIT_FUNCTION_ID;
 
 public enum FunctionType {
-
-    SIZE_LIMIT(SIZE_LIMIT_FUNCTION_ID),
-    EXTENSION_VALIDATOR(EXTENSION_VALIDATOR_FUNCTION_ID);
-
-    private final String FunctionID;
+    SIZE_LIMIT,
+    EXTENSION_VALIDATOR;
     
-    FunctionType(String FunctionID) {
-        this.FunctionID = FunctionID;
-    }
-    
+    /**
+     * Get the string representation of the function type.
+     * This is used in JSON configuration and API responses.
+     */
     public String getTypeName() {
-        return FunctionID;
+        return this.name();
     }
 }

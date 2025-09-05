@@ -1,6 +1,6 @@
 package com.mahmoud.thoth.function;
 
-import com.mahmoud.thoth.function.config.FunctionAssignConfig;
+import com.mahmoud.thoth.function.config.FunctionConfig;
 import com.mahmoud.thoth.function.config.FunctionType;
 
 import java.io.InputStream;
@@ -11,5 +11,5 @@ public interface BucketFunction {
     void validate(String bucketName, 
                  String objectName, 
                  InputStream inputStream, 
-                 FunctionAssignConfig config) throws BucketFunctionException;
+                 FunctionConfig config) throws BucketFunctionException;
 }

@@ -2,10 +2,12 @@ package com.mahmoud.thoth.function.impl;
 
 import com.mahmoud.thoth.function.BucketFunction;
 import com.mahmoud.thoth.function.BucketFunctionException;
-import com.mahmoud.thoth.function.config.FunctionAssignConfig;
+import com.mahmoud.thoth.function.config.FunctionConfig;
 import com.mahmoud.thoth.function.config.FunctionType;
-import com.mahmoud.thoth.function.config.SizeLimitConfig;
 import com.mahmoud.thoth.function.annotation.FunctionMetadata;
+import com.mahmoud.thoth.function.exception.FunctionConfigurationException;
+import com.mahmoud.thoth.function.exception.FunctionExecutionException;
+import com.mahmoud.thoth.function.exception.FunctionValidationException;
 
 import org.springframework.stereotype.Component;
 import java.io.IOException;
@@ -34,26 +36,40 @@ public class FileSizeLimitFunction implements BucketFunction {
     }
     
     @Override
-    public void validate(String bucketName, String objectName, InputStream inputStream, FunctionAssignConfig config) 
+    public void validate(String bucketName, String objectName, InputStream inputStream, FunctionConfig config) 
             throws BucketFunctionException {
         
-        if (!(config instanceof SizeLimitConfig)) {
-            throw new BucketFunctionException("Invalid configuration type. Expected SizeLimitConfig");
+        Long maxSizeBytes = config.getProperty("maxSizeBytes", Long.class);
+        if (maxSizeBytes == null) {
+            throw new FunctionConfigurationException(
+                TYPE, 
+                "maxSizeBytes", 
+                "Size limit function requires maxSizeBytes property to be configured"
+            );
         }
         
-        SizeLimitConfig sizeLimitConfig = (SizeLimitConfig) config;
-        if (sizeLimitConfig.getMaxSizeBytes() == null) {
-            throw new BucketFunctionException("Missing configuration: maxSizeBytes");
+        if (maxSizeBytes <= 0) {
+            throw new FunctionConfigurationException(
+                TYPE, 
+                "maxSizeBytes", 
+                "Size limit must be greater than 0, got: " + maxSizeBytes
+            );
         }
         
         try {
-            validateFileSize(inputStream, sizeLimitConfig.getMaxSizeBytes());
+            validateFileSize(inputStream, maxSizeBytes, bucketName, objectName);
         } catch (IOException e) {
-            throw new BucketFunctionException("Error reading input stream: " + e.getMessage(), e);
+            throw new FunctionExecutionException(
+                TYPE, 
+                bucketName, 
+                objectName, 
+                "Failed to read input stream: " + e.getMessage(), 
+                e
+            );
         }
     }
 
-    private void validateFileSize(InputStream inputStream, Long maxSizeBytes) throws IOException, BucketFunctionException {
+    private void validateFileSize(InputStream inputStream, Long maxSizeBytes, String bucketName, String objectName) throws IOException, BucketFunctionException {
         long contentLength = 0;
         byte[] buffer = new byte[8192];
         int bytesRead;
@@ -62,8 +78,13 @@ public class FileSizeLimitFunction implements BucketFunction {
             contentLength += bytesRead;
             
             if (contentLength > maxSizeBytes) {
-                throw new BucketFunctionException(
-                    String.format("File size exceeds the maximum allowed size of %d bytes", maxSizeBytes)
+                throw new FunctionValidationException(
+                    TYPE,
+                    bucketName,
+                    objectName,
+                    "FILE_SIZE_LIMIT",
+                    String.format("File size (%d bytes) exceeds the maximum allowed size of %d bytes", 
+                                contentLength, maxSizeBytes)
                 );
             }
         }

@@ -1,6 +1,6 @@
 package com.mahmoud.thoth.api.dto;
 
-import com.mahmoud.thoth.function.config.FunctionAssignConfig;
+import com.mahmoud.thoth.function.config.FunctionConfig;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -16,5 +16,14 @@ public class CreateBucketFunctionRequest {
     private Long bucketId;
     
     @NotEmpty
-    private List<FunctionAssignConfig> configs;
+    private List<FunctionConfig> configs;
+    
+    // Lombok @Data generates these automatically, but let's be explicit for clarity
+    public Long getBucketId() {
+        return bucketId;
+    }
+    
+    public List<FunctionConfig> getConfigs() {
+        return configs;
+    }
 }

@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.mahmoud.thoth.function.config.FunctionAssignConfig;
+import com.mahmoud.thoth.function.config.FunctionConfig;
 
 @Data
 public class BucketMetadata {
@@ -29,10 +29,16 @@ public class BucketMetadata {
         this.lastModifiedDate = LocalDateTime.now();
     }
 
-    public static Map<String, Object> generateFunctions(List<FunctionAssignConfig> functionAssignConfigs) {
+    public static Map<String, Object> generateFunctions(List<FunctionConfig> functionConfigs) {
         Map<String, Object> functionConfigMap = new HashMap<>();
-        for (FunctionAssignConfig config : functionAssignConfigs) {
-            functionConfigMap.put(config.getType().name(), config);
+        for (FunctionConfig config : functionConfigs) {
+            // Create a map with type and properties
+            Map<String, Object> configMap = new HashMap<>();
+            configMap.put("type", config.type());
+            configMap.put("properties", config.properties());
+            configMap.put("executionOrder", config.getExecutionOrder());
+            
+            functionConfigMap.put(config.type(), configMap);
         }
         return functionConfigMap;
     }

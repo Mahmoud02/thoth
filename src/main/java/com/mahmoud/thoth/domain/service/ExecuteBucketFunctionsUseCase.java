@@ -4,13 +4,14 @@ import com.mahmoud.thoth.domain.model.BucketMetadata;
 import com.mahmoud.thoth.domain.port.out.BucketMetadataQueryRepository;
 import com.mahmoud.thoth.function.BucketFunction;
 import com.mahmoud.thoth.function.BucketFunctionException;
-import com.mahmoud.thoth.function.config.FunctionAssignConfig;
+import com.mahmoud.thoth.function.config.FunctionConfig;
 import com.mahmoud.thoth.function.config.FunctionType;
 import com.mahmoud.thoth.function.factory.BucketFunctionFactory;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -27,55 +28,95 @@ public class ExecuteBucketFunctionsUseCase {
 
     public void executeBucketFunctions(String bucketName, String objectName, InputStream inputStream)
             throws BucketFunctionException {
-        // Mark the stream so we can reset it after each function execution
+                
+        prepareInputStream(inputStream);
+        
+        List<FunctionConfig> functionConfigs = getFunctionConfigurations(bucketName);
+        if (functionConfigs.isEmpty()) {
+            return; // No functions configured
+        }
+        
+        executeFunctionsInOrder(bucketName, objectName, inputStream, functionConfigs);
+    }
+    
+    private void prepareInputStream(InputStream inputStream) {
         if (inputStream.markSupported()) {
             inputStream.mark(Integer.MAX_VALUE);
         }
-        
-        // Get bucket metadata to retrieve function configurations
+    }
+    
+    private List<FunctionConfig> getFunctionConfigurations(String bucketName) {
         Optional<BucketMetadata> bucketMetadataOpt = bucketMetadataQueryRepository.getBucketMetadataByName(bucketName);
         
         if (bucketMetadataOpt.isEmpty() || bucketMetadataOpt.get().getFunctions() == null || bucketMetadataOpt.get().getFunctions().isEmpty()) {
-            // No functions configured for this bucket, skip validation
-            return;
+            return new ArrayList<>();
         }
         
-        BucketMetadata bucketMetadata = bucketMetadataOpt.get();
-        Map<String, Object> functionConfigs = bucketMetadata.getFunctions();
+        return convertToFunctionConfigs(bucketMetadataOpt.get().getFunctions());
+    }
+    
+    private List<FunctionConfig> convertToFunctionConfigs(Map<String, Object> functionConfigs) {
+        List<FunctionConfig> configsToExecute = new ArrayList<>();
         
-        // Create a list of function configs to sort by execution order
-        List<FunctionAssignConfig> configsToExecute = new ArrayList<>();
-        
-        // Extract function configs from the bucket metadata
-        for (FunctionType type : FunctionType.values()) {
-            Object configObj = functionConfigs.get(type.name());
-            if (configObj instanceof FunctionAssignConfig) {
-                configsToExecute.add((FunctionAssignConfig) configObj);
+        for (Map.Entry<String, Object> entry : functionConfigs.entrySet()) {
+            FunctionConfig config = convertToFunctionConfig(entry.getValue());
+            if (config != null) {
+                configsToExecute.add(config);
             }
         }
         
-        // Sort functions by execution order
-        configsToExecute.sort(Comparator.comparingInt(FunctionAssignConfig::getExecutionOrder));
+        configsToExecute.sort(Comparator.comparingInt(FunctionConfig::getExecutionOrder));
+        return configsToExecute;
+    }
+    
+    private FunctionConfig convertToFunctionConfig(Object configObj) {
+        if (!(configObj instanceof Map)) {
+            return null;
+        }
         
-        // Execute functions in order
-        for (FunctionAssignConfig config : configsToExecute) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> configMap = (Map<String, Object>) configObj;
+        
+        String configType = (String) configMap.get("type");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> properties = (Map<String, Object>) configMap.get("properties");
+        
+        if (configType != null && properties != null) {
+            return new FunctionConfig(configType, properties);
+        }
+        
+        return null;
+    }
+    
+    private void executeFunctionsInOrder(String bucketName, String objectName, InputStream inputStream, List<FunctionConfig> configs) {
+        for (FunctionConfig config : configs) {
+            executeFunction(bucketName, objectName, inputStream, config);
+        }
+    }
+    
+    private void executeFunction(String bucketName, String objectName, InputStream inputStream, FunctionConfig config) {
+        try {
+            FunctionType type = FunctionType.valueOf(config.type());
+            BucketFunction function = functionFactory.getFunction(type);
+            
+            function.validate(bucketName, objectName, inputStream, config);
+            resetInputStream(inputStream);
+            
+        } catch (IllegalArgumentException e) {
+            // Skip if function type is not implemented
+        } catch (Exception e) {
+            throw new BucketFunctionException("Error executing function " + config.type() + 
+                " on " + bucketName + "/" + objectName + ": " + e.getMessage(), e);
+        }
+    }
+    
+    private void resetInputStream(InputStream inputStream) {
+        if (inputStream.markSupported()) {
             try {
-                FunctionType type = config.getType();
-                BucketFunction function = functionFactory.getFunction(type);
-                
-                // Execute the function with its configuration
-                function.validate(bucketName, objectName, inputStream, config);
-                
-                // Reset the stream for the next function
-                if (inputStream.markSupported()) {
-                    inputStream.reset();
-                }
-            } catch (IllegalArgumentException e) {
-                // Skip if function type is not implemented
-                continue;
-            } catch (Exception e) {
-                throw new BucketFunctionException("Error executing function " + config.getType() + 
-                    " on " + bucketName + "/" + objectName + ": " + e.getMessage(), e);
+                inputStream.reset();
+            } catch (IOException e) {
+                // Log warning but continue execution
+                // Stream reset failure shouldn't stop function execution
             }
         }
     }
