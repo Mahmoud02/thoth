@@ -8,6 +8,8 @@ import com.mahmoud.thoth.infrastructure.store.impl.sqlite.converter.JsonbWriting
 import com.mahmoud.thoth.infrastructure.store.impl.sqlite.entity.BucketEntity;
 import com.mahmoud.thoth.infrastructure.store.impl.sqlite.repository.BucketRepository;
 import com.mahmoud.thoth.shared.exception.ResourceNotFoundException;
+import org.postgresql.util.PGobject;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,10 +22,12 @@ public class SQLiteBucketStore implements BucketStore {
 
     private final BucketRepository bucketRepository;
     private final JsonbWritingConverter jsonbWritingConverter;
+    private final JdbcTemplate jdbcTemplate;
 
-    public SQLiteBucketStore(BucketRepository bucketRepository, JsonbWritingConverter jsonbWritingConverter) {
+    public SQLiteBucketStore(BucketRepository bucketRepository, JsonbWritingConverter jsonbWritingConverter, JdbcTemplate jdbcTemplate) {
         this.bucketRepository = bucketRepository;
         this.jsonbWritingConverter = jsonbWritingConverter;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
@@ -87,10 +91,11 @@ public class SQLiteBucketStore implements BucketStore {
 
     @Override
     public void updateFunctionsConfig(Long bucketId, Map<String , Object> functionsConfigMap) {
-        var jsonbValue = jsonbWritingConverter.convert(functionsConfigMap);
-        this.bucketRepository.updateFunctionsConfig(bucketId, jsonbValue);
+        PGobject jsonbValue = jsonbWritingConverter.convert(functionsConfigMap);
+        String sql = "UPDATE buckets SET functions = ? WHERE id = ?";
+        jdbcTemplate.update(sql, jsonbValue, bucketId);
     }
-
+  
     @Override
     public List<BucketListViewDTO> findAllByNameSpaceId(Long nameSpaceId) {
         return bucketRepository.findByNamespaceId(nameSpaceId).stream()

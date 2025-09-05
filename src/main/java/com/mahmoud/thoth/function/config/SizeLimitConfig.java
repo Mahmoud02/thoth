@@ -31,6 +31,10 @@ public class SizeLimitConfig implements FunctionAssignConfig {
         this.maxSizeBytes = maxSizeBytes;
     }
 
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
     @Override
     public int getExecutionOrder() {
         return order;

@@ -17,7 +17,7 @@ public class ExtensionValidatorConfig implements FunctionAssignConfig {
     private List<String> allowedExtensions;
     
     @NotEmpty
-    private int executionOrder;
+    private int order;
 
     @Override
     public FunctionType getType() {
@@ -32,8 +32,12 @@ public class ExtensionValidatorConfig implements FunctionAssignConfig {
         this.allowedExtensions = allowedExtensions;
     }
 
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
     @Override
     public int getExecutionOrder() {
-        return executionOrder;
+        return order;
     }
 }
