@@ -1,5 +1,6 @@
 package com.mahmoud.thoth.api.controller.v1;
 
+import com.mahmoud.thoth.api.dto.RagQueryResponse;
 import com.mahmoud.thoth.service.DocumentProcessingService;
 import com.mahmoud.thoth.service.RagService;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/rag")
+@RequestMapping("/api/v1/rag")
 public class RagController {
 
     private final RagService ragService;
@@ -35,15 +36,10 @@ public class RagController {
     }
     
     @PostMapping("/query")
-    public ResponseEntity<String> query(
-            @RequestParam("q") String query,
-            @RequestParam("bucket") String bucketName) {
-        try {
+    public ResponseEntity<RagQueryResponse> query(@RequestParam("q") String query, @RequestParam("bucket") String bucketName) {
+
             String response = ragService.generateResponse(query, bucketName);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                .body("Error generating response: " + e.getMessage());
-        }
+            return ResponseEntity.ok(RagQueryResponse.builder().response(response).build());
+
     }
 }
