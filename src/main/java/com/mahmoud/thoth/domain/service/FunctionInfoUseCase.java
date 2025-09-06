@@ -2,7 +2,6 @@ package com.mahmoud.thoth.domain.service;
 
 import com.mahmoud.thoth.api.dto.AvailableFunctionInfo;
 import com.mahmoud.thoth.function.BucketFunction;
-import com.mahmoud.thoth.function.config.FunctionType;
 import com.mahmoud.thoth.function.annotation.FunctionMetadata;
 import org.springframework.stereotype.Service;
 
