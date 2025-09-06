@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class ThothActionAssistant {
 
     private final ChatClient chatClient;
-    private final BucketManagementByAIService bucketManagementByAIService;
+    private final ThothToolsActions bucketManagementByAIService;
 
     private static final String SYSTEM_PROMPT = """
         You are ThothActionAssistant, a helpful AI assistant for the Thoth document management system.
@@ -36,7 +36,7 @@ public class ThothActionAssistant {
         """;
 
     @Autowired
-    public ThothActionAssistant(ChatClient.Builder chatClientBuilder, BucketManagementByAIService bucketManagementByAIService) {
+    public ThothActionAssistant(ChatClient.Builder chatClientBuilder, ThothToolsActions bucketManagementByAIService) {
         this.chatClient = chatClientBuilder
                 .defaultAdvisors(new SimpleLoggerAdvisor()) // This is the key line
                 .build();
