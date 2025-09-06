@@ -146,21 +146,20 @@ PostgreSQL's `pgvector` extension enables efficient storage and querying of vect
 -- Enable pgvector extension
 CREATE EXTENSION IF NOT EXISTS vector;
 
--- Create table for document chunks with vector embeddings
-CREATE TABLE IF NOT EXISTS document_chunks (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    document_id UUID NOT NULL,
-    content TEXT NOT NULL,
-    metadata JSONB,
-    embedding VECTOR(768), -- nomic-embed-text uses 768 dimensions
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+-- Create table for vector store with vector embeddings (Spring AI compatible)
+CREATE TABLE IF NOT EXISTS vector_store (
+    id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+    content text,
+    metadata jsonb,
+    embedding vector(768)  -- nomic-embed-text uses 768 dimensions
 );
 
--- Create index for vector similarity search using IVFFlat
-CREATE INDEX IF NOT EXISTS document_chunks_embedding_idx 
-ON document_chunks USING ivfflat (embedding vector_cosine_ops);
+-- Create index for vector similarity search using HNSW
+CREATE INDEX IF NOT EXISTS vector_store_embedding_idx 
+ON vector_store USING hnsw (embedding vector_cosine_ops);
 ```
+
+**Note**: The `document_chunks` table (V4 migration) is also available for custom vector storage implementations, but the current system uses the `vector_store` table for Spring AI integration.
 
 **Spring AI Integration:**
 ```properties
@@ -168,6 +167,86 @@ ON document_chunks USING ivfflat (embedding vector_cosine_ops);
 spring.ai.ollama.vectorstore.pgvector.dimensions=768
 spring.ai.ollama.vectorstore.pgvector.index-type=hnsw
 ```
+
+### ⚠️ Critical: Embedding Model Configuration
+
+#### Why Embedding Dimensions Are Critical
+The embedding vector dimensions are **absolutely critical** and can completely break the service if mismatched. This is because:
+
+1. **Database Schema Dependency**: The `vector_store` table is created with a fixed dimension size
+2. **Runtime Validation**: PostgreSQL validates vector dimensions at insertion time
+3. **Service Failure**: Dimension mismatch causes immediate `PSQLException` and service crashes
+4. **No Graceful Degradation**: The service cannot recover from dimension mismatches
+
+#### Current Model Configuration
+
+**Two Separate Models in Use:**
+
+1. **Chat Model**: `llama3.2:latest`
+   - **Purpose**: Text generation, conversation, and reasoning
+   - **Usage**: RAG responses, AI assistant interactions
+   - **Configuration**: `spring.ai.ollama.chat.model=llama3.2:latest`
+
+2. **Embedding Model**: `nomic-embed-text`
+   - **Purpose**: Convert text to numerical vectors for similarity search
+   - **Dimensions**: **768** (critical for database schema)
+   - **Configuration**: `spring.ai.ollama.embedding.model=nomic-embed-text`
+
+#### Why Separate Models Are Required
+
+**Different Specializations:**
+- **Chat Models** (like Llama): Optimized for text generation, conversation flow, and reasoning
+- **Embedding Models** (like nomic-embed-text): Optimized for semantic understanding and vector representation
+
+**Performance Benefits:**
+- **Specialized Training**: Each model is trained for its specific task
+- **Optimized Architecture**: Different neural network architectures for different purposes
+- **Resource Efficiency**: Use smaller, faster models for embeddings, larger models for generation
+
+**Quality Dependencies:**
+- **Embedding Quality**: Determines search accuracy and semantic understanding
+- **Chat Quality**: Determines response relevance and coherence
+- **Model Strength**: Better models produce better results in their respective domains
+
+#### Model Strength Impact on Results
+
+**Embedding Model Strength:**
+- **Better Models**: More accurate semantic understanding, better similarity matching
+- **Weaker Models**: Poor semantic understanding, irrelevant search results
+- **Dimension Consistency**: Must match database schema exactly
+
+**Chat Model Strength:**
+- **Better Models**: More coherent responses, better reasoning, more accurate answers
+- **Weaker Models**: Incoherent responses, poor reasoning, inaccurate information
+- **RAG Quality**: Better chat models can better utilize retrieved context
+
+#### Configuration Validation
+
+**Critical Properties to Match:**
+```properties
+# These MUST match the embedding model's actual output dimensions
+spring.ai.ollama.vectorstore.pgvector.dimensions=768  # nomic-embed-text output
+spring.ai.ollama.embedding.model=nomic-embed-text     # 768 dimensions
+```
+
+**Common Dimension Mismatches:**
+- `text-embedding-ada-002`: 1536 dimensions ❌ (would break current setup)
+- `nomic-embed-text`: 768 dimensions ✅ (current configuration)
+- `all-MiniLM-L6-v2`: 384 dimensions ❌ (would break current setup)
+
+#### Migration Considerations
+
+**If Changing Embedding Models:**
+1. **Update Database Schema**: Modify `vector_store` table dimensions
+2. **Update Configuration**: Change `spring.ai.ollama.vectorstore.pgvector.dimensions`
+3. **Re-embed Data**: Existing vectors become incompatible
+4. **Test Thoroughly**: Verify all vector operations work correctly
+
+**Model Change Impact:**
+- **Database Migration Required**: New dimension size needs new table schema
+- **Data Loss**: Existing embeddings become unusable
+- **Performance Impact**: Different models have different performance characteristics
+- **Quality Impact**: Search results quality depends on model strength
 
 #### Benefits of pgvector
 1. **Native Vector Operations**: Built-in support for vector similarity search
@@ -306,7 +385,7 @@ services:
 - **Expression Indexes**: Custom indexes on computed JSONB values
 
 ### Related Files
-- `src/main/resources/db/migration/V4__document_chunks.sql` - Vector storage schema
+- `src/main/resources/db/migration/V6__Create_Vector_Store_Table.sql` - Vector storage schema (Spring AI compatible)
 - `src/main/resources/db/migration/V2__Create_Bucket_Table.sql` - JSONB configuration storage
 - `src/main/java/com/mahmoud/thoth/infrastructure/store/impl/sqlite/converter/JdbcConfig.java` - Conversion configuration
 - `src/main/java/com/mahmoud/thoth/infrastructure/store/impl/sqlite/converter/JsonbWritingConverter.java` - Java to JSONB conversion
