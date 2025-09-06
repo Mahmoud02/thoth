@@ -44,113 +44,59 @@ Thoth is built using **Hexagonal Architecture** (Ports & Adapters) to ensure:
 
 ```mermaid
 graph TB
-    %% External Services
+    %% External Layer
     Client[Client Applications]
-    Ollama[Ollama AI Service<br/>llama3.2 + nomic-embed-text]
+    Ollama[Ollama AI Service<br/>🤖 llama3.2 + nomic-embed-text]
     
-    %% API Layer
-    subgraph "API Layer"
-        REST[REST Controllers]
-        AI[RAG Controller]
-        Swagger[Swagger UI]
+    %% Application Layer
+    subgraph "Thoth Application"
+        API[REST API<br/>📡 Controllers & Swagger]
+        Domain[Domain Logic<br/>🧠 Use Cases & Services]
+        Storage[Storage Layer<br/>💾 File System + Vector Store]
     end
     
-    %% Domain Layer
-    subgraph "Domain Layer"
-        UseCases[Use Cases]
-        Services[Domain Services]
-        Models[Domain Models]
-        Ports[Ports/Interfaces]
-    end
+    %% Database Layer
+    PostgreSQL[(PostgreSQL 17<br/>🗄️ + pgvector extension)]
     
-    %% Infrastructure Layer
-    subgraph "Infrastructure Layer"
-        subgraph "Storage"
-            FileSystem[File System Storage]
-            VectorStore[Vector Store<br/>PostgreSQL pgvector]
-        end
-        
-        subgraph "Database"
-            PostgreSQL[(PostgreSQL 17<br/>+ pgvector extension)]
-            Migrations[Flyway Migrations]
-        end
-        
-        subgraph "AI Processing"
-            DocProcessor[Document Processing Service]
-            EmbeddingService[Embedding Service]
-            RagService[RAG Service]
-        end
-        
-        subgraph "Converters"
-            JsonbWriter[JSONB Writer]
-            JsonbReader[JSONB Reader]
-        end
-    end
+    %% Main Flows
+    Client --> API
+    API --> Domain
+    Domain --> Storage
+    Storage --> PostgreSQL
     
-    %% Data Flow
-    Client --> REST
-    Client --> Swagger
-    REST --> UseCases
-    AI --> UseCases
-    UseCases --> Services
-    Services --> Ports
-    Ports --> FileSystem
-    Ports --> VectorStore
-    Ports --> PostgreSQL
-    
-    %% AI Flow
-    DocProcessor --> EmbeddingService
-    EmbeddingService --> Ollama
-    EmbeddingService --> VectorStore
-    RagService --> Ollama
-    RagService --> VectorStore
-    
-    %% Database Flow
-    VectorStore --> PostgreSQL
-    FileSystem --> PostgreSQL
-    Migrations --> PostgreSQL
-    
-    %% Converter Flow
-    JsonbWriter --> PostgreSQL
-    JsonbReader --> PostgreSQL
+    %% AI Integration
+    Domain --> Ollama
+    Ollama --> Storage
     
     %% Styling
-    classDef external fill:#e1f5fe
-    classDef api fill:#f3e5f5
-    classDef domain fill:#e8f5e8
-    classDef infrastructure fill:#fff3e0
-    classDef database fill:#fce4ec
+    classDef external fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef application fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef database fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
     
     class Client,Ollama external
-    class REST,AI,Swagger api
-    class UseCases,Services,Models,Ports domain
-    class FileSystem,VectorStore,DocProcessor,EmbeddingService,RagService,JsonbWriter,JsonbReader infrastructure
-    class PostgreSQL,Migrations database
+    class API,Domain,Storage application
+    class PostgreSQL database
 ```
 
-### Component Communication Flow
+### Key Data Flows
 
-#### 1. **Document Upload & Processing**
+#### 📄 **Document Upload & AI Processing**
 ```
-Client → REST Controller → Use Case → Document Processing Service
-                                                      ↓
-File System Storage ← Storage Service ← Embedding Service → Ollama
-                                                      ↓
-Vector Store (PostgreSQL) ← Vector Store Service
+Client → API → Domain Logic → Storage Layer
+                              ↓
+                         Ollama (Embedding) → Vector Store → PostgreSQL
 ```
 
-#### 2. **RAG Query Processing**
+#### 🔍 **RAG Query Processing**
 ```
-Client → RAG Controller → RAG Service → Vector Store (similarity search)
-                                                      ↓
-RAG Service → Ollama (Chat Model) → Response to Client
+Client → API → Domain Logic → Vector Store (Search)
+                              ↓
+                         Ollama (Chat) → Response
 ```
 
-#### 3. **Bucket Function Processing**
+#### ⚙️ **Bucket Management**
 ```
-Client → Bucket Controller → Use Case → Function Factory
-                                                      ↓
-Function Execution → Validation → Storage Service
+Client → API → Domain Logic → Storage Layer → PostgreSQL
 ```
 
 ### Core Components
@@ -373,16 +319,55 @@ src/
 ├── main/
 │   ├── java/
 │   │   └── com/mahmoud/thoth/
-│   │       ├── api/                # API layer (controllers, DTOs)
-│   │       ├── domain/             # Core business logic
-│   │       │   ├── model/          # Domain models
-│   │       │   ├── port/           # Ports (interfaces)
-│   │       │   └── service/        # Domain services
-│   │       └── infrastructure/     # Infrastructure implementations
-│   │           ├── repository/     # Database repositories
-│   │           └── config/         # Spring configurations
-│   └── resources/                  # Configuration files
-└── test/                          # Test files
+│   │       ├── ai/                 # AI Integration Layer
+│   │       │   ├── config/         # AI Configuration (Ollama)
+│   │       │   ├── controller/     # AI Controllers (RAG, ThothAI)
+│   │       │   ├── dto/            # AI DTOs (Query, Response)
+│   │       │   └── service/        # AI Services (Document Processing, RAG)
+│   │       ├── api/                # REST API Layer
+│   │       │   ├── controller/v1/  # Versioned Controllers
+│   │       │   ├── doc/            # API Documentation
+│   │       │   ├── dto/            # API DTOs
+│   │       │   └── mapper/         # Object Mappers
+│   │       ├── config/             # Application Configuration
+│   │       ├── domain/             # Core Business Logic (Hexagonal Architecture)
+│   │       │   ├── model/          # Domain Models
+│   │       │   ├── port/           # Ports (Interfaces)
+│   │       │   │   ├── in/         # Input Ports (Commands/Queries)
+│   │       │   │   └── out/        # Output Ports (Repositories)
+│   │       │   └── service/        # Domain Services (Use Cases)
+│   │       ├── function/           # Bucket Functions System
+│   │       │   ├── annotation/     # Function Metadata Annotations
+│   │       │   ├── config/         # Function Configuration
+│   │       │   ├── exception/      # Function Exceptions
+│   │       │   ├── factory/        # Function Factory
+│   │       │   └── impl/           # Function Implementations
+│   │       ├── infrastructure/     # Infrastructure Layer
+│   │       │   ├── repository/     # Repository Adapters
+│   │       │   ├── store/          # Storage Implementations
+│   │       │   │   └── impl/sqlite/
+│   │       │   │       ├── converter/  # JSONB Converters
+│   │       │   │       ├── entity/     # Database Entities
+│   │       │   │       └── repository/ # SQLite Repositories
+│   │       │   └── StorageService.java
+│   │       ├── model/              # Shared Models
+│   │       ├── service/            # Application Services
+│   │       ├── shared/             # Shared Components
+│   │       │   ├── exception/      # Global Exception Handling
+│   │       │   └── JsonUtil.java   # JSON Utilities
+│   │       └── ThothApplication.java
+│   └── resources/
+│       ├── application.properties  # Application Configuration
+│       └── db/migration/           # Database Migrations
+│           ├── V1__Create_Namespace_Table.sql
+│           ├── V2__Create_Bucket_Table.sql
+│           ├── V3__Create_Object_Table.sql
+│           ├── V4__document_chunks.sql
+│           ├── V5__Add_Ingested_Column_To_Objects.sql
+│           └── V6__Create_Vector_Store_Table.sql
+└── test/                          # Test Files
+    ├── java/                      # Test Classes
+    └── resources/                 # Test Configuration
 ```
 
 ## 🤝 Contributing
