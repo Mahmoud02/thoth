@@ -1,8 +1,8 @@
-package com.mahmoud.thoth.api.controller.v1;
+package com.mahmoud.thoth.ai.controller;
 
-import com.mahmoud.thoth.service.ThothActionAssistant;
-import com.mahmoud.thoth.api.dto.QueryActionRequest;
-import com.mahmoud.thoth.api.dto.QueryActionResponse;
+import com.mahmoud.thoth.ai.service.ThothActionAssistant;
+import com.mahmoud.thoth.ai.dto.QueryActionRequest;
+import com.mahmoud.thoth.ai.dto.QueryActionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

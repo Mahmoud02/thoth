@@ -18,7 +18,7 @@ public class BucketFunctionApiDocs {
     @Retention(RetentionPolicy.RUNTIME)
     @Operation(
         summary = "Add functions to a bucket",
-        description = "Assigns multiple functions (like size limit or extension validation) to a specified bucket",
+        description = "Assigns multiple functions (like size limit or extension validation) to a specified bucket using dynamic configuration",
         requestBody = @RequestBody(
             content = @Content(
                 mediaType = "application/json",
@@ -28,15 +28,21 @@ public class BucketFunctionApiDocs {
                         summary = "Adding size limit and extension validation to a bucket",
                         value = """
                         {
-                          "bucketName": "my-documents",
+                          "bucketId": 1,
                           "configs": [
                             {
                               "type": "SIZE_LIMIT",
-                              "maxSizeBytes": 10485760
+                              "properties": {
+                                "maxSizeBytes": 10485760,
+                                "order": 1
+                              }
                             },
                             {
                               "type": "EXTENSION_VALIDATOR",
-                              "allowedExtensions": ["jpg", "png", "gif"]
+                              "properties": {
+                                "allowedExtensions": ["jpg", "png", "gif"],
+                                "order": 2
+                              }
                             }
                           ]
                         }
@@ -47,11 +53,33 @@ public class BucketFunctionApiDocs {
                         summary = "Adding just a size limit to a bucket",
                         value = """
                         {
-                          "bucketName": "my-documents",
+                          "bucketId": 1,
                           "configs": [
                             {
                               "type": "SIZE_LIMIT",
-                              "maxSizeBytes": 10485760
+                              "properties": {
+                                "maxSizeBytes": 5242880,
+                                "order": 1
+                              }
+                            }
+                          ]
+                        }
+                        """
+                    ),
+                    @ExampleObject(
+                        name = "Function with Custom Properties",
+                        summary = "Adding a function with custom configuration properties",
+                        value = """
+                        {
+                          "bucketId": 2,
+                          "configs": [
+                            {
+                              "type": "SIZE_LIMIT",
+                              "properties": {
+                                "maxSizeBytes": 20971520,
+                                "order": 1,
+                                "customProperty": "value"
+                              }
                             }
                           ]
                         }
@@ -63,11 +91,46 @@ public class BucketFunctionApiDocs {
         responses = {
             @ApiResponse(
                 responseCode = "200",
-                description = "Functions successfully added to bucket"
+                description = "Functions successfully added to bucket",
+                content = @Content(
+                    mediaType = "application/json",
+                    examples = {
+                        @ExampleObject(
+                            name = "Success Response",
+                            summary = "Response when functions are successfully added",
+                            value = """
+                            {
+                              "bucketId": 1,
+                              "functionsAdded": 2,
+                              "configValues": [
+                                {
+                                  "type": "SIZE_LIMIT",
+                                  "properties": {
+                                    "maxSizeBytes": 10485760,
+                                    "order": 1
+                                  }
+                                },
+                                {
+                                  "type": "EXTENSION_VALIDATOR",
+                                  "properties": {
+                                    "allowedExtensions": ["jpg", "png", "gif"],
+                                    "order": 2
+                                  }
+                                }
+                              ]
+                            }
+                            """
+                        )
+                    }
+                )
             ),
             @ApiResponse(
                 responseCode = "400",
-                description = "Invalid request parameters"
+                description = "Invalid request parameters or function configuration errors"
+            ),
+            @ApiResponse(
+                responseCode = "404",
+                description = "Bucket not found"
             )
         }
     )
@@ -78,19 +141,23 @@ public class BucketFunctionApiDocs {
     @Retention(RetentionPolicy.RUNTIME)
     @Operation(
         summary = "Remove a function from a bucket",
-        description = "Removes the specified function from a bucket",
+        description = "Removes the specified function from a bucket by bucket ID and function type",
         parameters = {
-            @Parameter(name = "bucketName", description = "Name of the bucket", example = "my-documents"),
+            @Parameter(name = "buketId", description = "ID of the bucket", example = "1"),
             @Parameter(name = "type", description = "Type of function to remove", example = "SIZE_LIMIT")
         },
         responses = {
             @ApiResponse(
                 responseCode = "204",
-                description = "Function successfully removed"
+                description = "Function successfully removed from bucket"
             ),
             @ApiResponse(
                 responseCode = "404",
                 description = "Bucket or function not found"
+            ),
+            @ApiResponse(
+                responseCode = "400",
+                description = "Invalid function type or bucket ID"
             )
         }
     )

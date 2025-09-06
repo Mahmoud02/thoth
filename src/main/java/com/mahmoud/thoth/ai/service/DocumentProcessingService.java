@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.service;
+package com.mahmoud.thoth.ai.service;
 
 import org.springframework.ai.document.Document;
 import org.springframework.ai.reader.ExtractedTextFormatter;

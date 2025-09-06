@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.service;
+package com.mahmoud.thoth.ai.service;
 
 import com.mahmoud.thoth.domain.port.in.CreateNamespaceRequest;
 import com.mahmoud.thoth.domain.port.out.NameSpaceListViewDto;

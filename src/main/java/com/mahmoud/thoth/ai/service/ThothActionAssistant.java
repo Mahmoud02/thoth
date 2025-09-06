@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.service;
+package com.mahmoud.thoth.ai.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;

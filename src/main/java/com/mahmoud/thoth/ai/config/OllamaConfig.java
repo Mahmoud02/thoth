@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.config;
+package com.mahmoud.thoth.ai.config;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatModel;

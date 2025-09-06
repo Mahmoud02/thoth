@@ -1,8 +1,8 @@
-package com.mahmoud.thoth.api.controller.v1;
+package com.mahmoud.thoth.ai.controller;
 
-import com.mahmoud.thoth.api.dto.RagQueryResponse;
-import com.mahmoud.thoth.service.DocumentProcessingService;
-import com.mahmoud.thoth.service.RagService;
+import com.mahmoud.thoth.ai.dto.RagQueryResponse;
+import com.mahmoud.thoth.ai.service.DocumentProcessingService;
+import com.mahmoud.thoth.ai.service.RagService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

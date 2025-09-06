@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.api.dto;
+package com.mahmoud.thoth.ai.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

@@ -1,4 +1,4 @@
-package com.mahmoud.thoth.api.dto;
+package com.mahmoud.thoth.ai.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
