@@ -100,11 +100,28 @@ public class SQLiteMetadataStore implements MetadataStore {
                 ));
     }
     
+    @Override
+    public void markObjectAsIngested(String bucketName, String objectName) {
+        var bucketEntity = bucketRepository.findByName(bucketName);
+        if (bucketEntity == null) {
+            throw new IllegalArgumentException("Bucket not found: " + bucketName);
+        }
+        
+        var objectEntity = objectRepository.findByBucketIdAndName(bucketEntity.getId(), objectName);
+        if (objectEntity == null) {
+            throw new IllegalArgumentException("Object not found: " + objectName + " in bucket: " + bucketName);
+        }
+        
+        objectEntity.setIngested(true);
+        objectRepository.save(objectEntity);
+    }
+    
     private ObjectMetadata toObjectMetadata(ObjectMetadataEntity entity) {
         return new ObjectMetadata(
                 entity.getSize(),
                 entity.getContentType(),
-                entity.getCreationDate() != null ? entity.getCreationDate() : LocalDateTime.now()
+                entity.getCreationDate() != null ? entity.getCreationDate() : LocalDateTime.now(),
+                entity.getIngested() != null ? entity.getIngested() : false
         );
     }
 }

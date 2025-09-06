@@ -14,6 +14,7 @@ public class ObjectMetadataEntity {
     private String contentType;
     private LocalDateTime creationDate;
     private Long bucketId;
+    private Boolean ingested;
 
     public ObjectMetadataEntity() {
     }
@@ -24,6 +25,7 @@ public class ObjectMetadataEntity {
         this.contentType = contentType;
         this.creationDate = LocalDateTime.now();
         this.bucketId = bucketId;
+        this.ingested = false;
     }
 
     public Long getId() {
@@ -71,5 +73,13 @@ public class ObjectMetadataEntity {
 
     public void setBucketId(Long bucketId) {
         this.bucketId = bucketId;
+    }
+
+    public Boolean getIngested() {
+        return ingested;
+    }
+
+    public void setIngested(Boolean ingested) {
+        this.ingested = ingested;
     }
 }

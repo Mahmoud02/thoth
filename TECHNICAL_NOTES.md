@@ -132,5 +132,132 @@ To add a new function:
 - `src/main/java/com/mahmoud/thoth/function/impl/FileExtensionValidatorFunction.java`
 
 ---
-*Last Updated: $(date)*
-*Issues Resolved: Spring Data JDBC @Modifying queries with PGobject parameters, Dynamic function discovery system*
+*Last Updated: January 2025*
+*Issues Resolved: Spring Data JDBC @Modifying queries with PGobject parameters, Dynamic function discovery system, Function assignment system evolution*
+
+## Function Assignment System Evolution
+
+### Overview
+The function assignment system underwent a significant evolution from a complex polymorphic configuration system to a simplified, dynamic approach that better supports extensibility and maintainability.
+
+### Initial Approach: Polymorphic Configuration System
+
+#### Original Design
+```java
+// Complex polymorphic interface
+public interface FunctionAssignConfig {
+    String getType();
+    int getOrder();
+}
+
+// Multiple concrete implementations
+public class SizeLimitConfig implements FunctionAssignConfig { ... }
+public class ExtensionValidatorConfig implements FunctionAssignConfig { ... }
+```
+
+#### Problems Encountered
+
+1. **Complexity Overhead**
+   - Required separate classes for each function type
+   - Jackson polymorphic deserialization complexity
+   - Difficult to add new function types
+
+2. **Order Field Issues**
+   - `order` field was always `0` despite being set in requests
+   - Missing setter methods in concrete implementations
+   - Inconsistent property mapping
+
+3. **Database Persistence Problems**
+   - Functions column was `null` after successful API calls
+   - Spring Data JDBC `@Modifying` queries couldn't handle `PGobject` parameters
+   - Required switching to `JdbcTemplate` approach
+
+4. **Type Safety Issues**
+   - `maxSizeBytes` property type mismatch (`Integer` stored, `Long` expected)
+   - Required manual type conversion in `FunctionConfig.getProperty()`
+
+### Final Solution: Simplified Dynamic System
+
+#### New Design
+```java
+// Simple record-based configuration
+public record FunctionConfig(
+    String type,
+    Map<String, Object> properties
+) {
+    public int getExecutionOrder() { ... }
+    public <T> T getProperty(String key, Class<T> type) { ... }
+    public <T> T getProperty(String key, Class<T> type, T defaultValue) { ... }
+}
+```
+
+#### Key Improvements
+
+1. **Simplified Configuration**
+   - Single `FunctionConfig` record instead of multiple classes
+   - Generic `Map<String, Object>` for properties
+   - Automatic type conversion in `getProperty()` method
+
+2. **Dynamic Function Discovery**
+   - `@FunctionMetadata` annotation for function metadata
+   - Spring auto-discovery of `BucketFunction` implementations
+   - No need to modify core services when adding functions
+
+3. **Robust Error Handling**
+   - Specific exception types: `FunctionValidationException`, `FunctionConfigurationException`, `FunctionExecutionException`
+   - Detailed error messages with context (bucket, object, function type)
+   - Global exception handler for consistent error responses
+
+4. **Clean Architecture**
+   - Single `BucketFunction` interface for all functions
+   - `BucketFunctionFactory` for function retrieval
+   - `ExecuteBucketFunctionsUseCase` with clean, focused methods
+
+### Why Functions Are Needed
+
+#### Business Requirements
+1. **File Validation**: Ensure uploaded files meet business rules
+2. **Security**: Prevent malicious or inappropriate file uploads
+3. **Compliance**: Enforce organizational policies
+4. **Resource Management**: Control file sizes and types
+
+#### Technical Benefits
+1. **Extensibility**: Easy to add new validation rules
+2. **Maintainability**: Clear separation of concerns
+3. **Testability**: Each function can be tested independently
+4. **Reusability**: Functions can be applied to multiple buckets
+5. **Configuration**: Flexible configuration per bucket
+
+#### Function Types Implemented
+
+1. **File Size Limit Function**
+   - Validates maximum file size
+   - Configurable `maxSizeBytes` property
+   - Prevents storage overflow
+
+2. **File Extension Validator Function**
+   - Validates allowed file extensions
+   - Configurable `allowedExtensions` list
+   - Security and compliance enforcement
+
+### Lessons Learned
+
+1. **Simplicity Over Complexity**: Simple, generic solutions often work better than complex polymorphic systems
+2. **Type Safety**: Always handle type conversions explicitly
+3. **Error Handling**: Provide specific, actionable error messages
+4. **Database Operations**: Use `JdbcTemplate` for complex operations, Spring Data JDBC for simple CRUD
+5. **Architecture**: Single responsibility principle makes code more maintainable
+
+### Migration Path
+
+1. **Phase 1**: Replace polymorphic system with `FunctionConfig` record
+2. **Phase 2**: Implement dynamic function discovery
+3. **Phase 3**: Add comprehensive error handling
+4. **Phase 4**: Clean up and refactor for maintainability
+
+### Related Files
+- `src/main/java/com/mahmoud/thoth/function/config/FunctionConfig.java`
+- `src/main/java/com/mahmoud/thoth/function/BucketFunction.java`
+- `src/main/java/com/mahmoud/thoth/function/factory/BucketFunctionFactory.java`
+- `src/main/java/com/mahmoud/thoth/domain/service/ExecuteBucketFunctionsUseCase.java`
+- `src/main/java/com/mahmoud/thoth/shared/exception/GlobalExceptionHandler.java`

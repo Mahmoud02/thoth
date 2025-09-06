@@ -31,6 +31,17 @@ public class ObjectMetadataMapper {
         metadata.setObjectName(objectName);
         metadata.setSize(file.getSize());
         metadata.setContentType(file.getContentType());
+        metadata.setIngested(false); // New files are not ingested by default
+        return metadata;
+    }
+
+    public ObjectMetadataDTO toObjectMetadataDTO(String bucketName, String objectName, long size, String contentType, boolean ingested) {
+        ObjectMetadataDTO metadata = new ObjectMetadataDTO();
+        metadata.setBucketName(bucketName);
+        metadata.setObjectName(objectName);
+        metadata.setSize(size);
+        metadata.setContentType(contentType);
+        metadata.setIngested(ingested);
         return metadata;
     }
 }

@@ -5,4 +5,5 @@ public interface MetadataRepository {
     void removeObjectMetadata(String bucketName, String objectName);
     void updateObjectMetadata(String oldBucketName, String newBucketName);
     void deleteObjectMetadata(String bucketName);
+    void markObjectAsIngested(String bucketName, String objectName);
 }

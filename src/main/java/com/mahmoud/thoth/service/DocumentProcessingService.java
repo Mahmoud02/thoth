@@ -15,10 +15,14 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.FileSystemResource;
 import com.mahmoud.thoth.infrastructure.StorageService;
+import com.mahmoud.thoth.infrastructure.store.MetadataStore;
+import com.mahmoud.thoth.domain.model.ObjectMetadata;
+import com.mahmoud.thoth.shared.exception.BadRequestException;
 
 @Service
 @RequiredArgsConstructor
@@ -27,11 +31,17 @@ public class DocumentProcessingService {
     private final VectorStore vectorStore;
     private final TokenTextSplitter textSplitter = new TokenTextSplitter(1000, 200, 10, 1000, true);
     private final StorageService storageService;
+    private final MetadataStore metadataStore;
 
     public void processAndStoreDocument(MultipartFile file, String bucketName, String fileName) throws IOException {
         Assert.notNull(file, "File cannot be null");
         Assert.hasText(bucketName, "Bucket name cannot be empty");
         Assert.hasText(fileName, "File name cannot be empty");
+        
+        // Check if file is already ingested
+        if (isFileAlreadyIngested(bucketName, fileName)) {
+            throw new BadRequestException("File '" + fileName + "' in bucket '" + bucketName + "' is already ingested.");
+        }
         
         // Create bucket if it doesn't exist
         storageService.createBucketFolder(bucketName);
@@ -63,11 +73,19 @@ public class DocumentProcessingService {
         Assert.hasText(bucketName, "Bucket name cannot be empty");
         Assert.hasText(fileName, "File name cannot be empty");
         
+        // Check if file is already ingested
+        if (isFileAlreadyIngested(bucketName, fileName)) {
+            throw new BadRequestException("File '" + fileName + "' in bucket '" + bucketName + "' is already ingested.");
+        }
+        
         // Get the file path directly from storage
         String filePath = storageService.getObjectPath(bucketName, fileName);
         
         // Process the file directly
         processFile(filePath);
+        
+        // Mark file as ingested after successful processing
+        markFileAsIngested(bucketName, fileName);
     }
     
     private void processFile(String filePath) throws IOException {
@@ -129,6 +147,38 @@ public class DocumentProcessingService {
             return storageService.downloadObject(bucketName, fileName);
         } catch (Exception e) {
             throw new IOException("Error fetching file: " + e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * Check if a file is already ingested
+     * @param bucketName The name of the bucket
+     * @param fileName The name of the file
+     * @return true if file is already ingested, false otherwise
+     */
+    private boolean isFileAlreadyIngested(String bucketName, String fileName) {
+        try {
+            Map<String, ObjectMetadata> objectMetadataMap = metadataStore.getObjectMetadata(bucketName);
+            ObjectMetadata metadata = objectMetadataMap.get(fileName);
+            return metadata != null && metadata.isIngested();
+        } catch (Exception e) {
+            // If there's an error checking metadata, assume not ingested
+            return false;
+        }
+    }
+    
+    /**
+     * Mark a file as ingested in the metadata store
+     * @param bucketName The name of the bucket
+     * @param fileName The name of the file
+     */
+    private void markFileAsIngested(String bucketName, String fileName) {
+        try {
+            metadataStore.markObjectAsIngested(bucketName, fileName);
+            System.out.println("File " + fileName + " in bucket " + bucketName + " marked as ingested.");
+        } catch (Exception e) {
+            System.err.println("Error marking file as ingested: " + e.getMessage());
+            // Don't throw exception here to avoid breaking the processing flow
         }
     }
 }

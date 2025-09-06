@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ObjectRepository extends CrudRepository<ObjectMetadataEntity, Long> {
     List<ObjectMetadataEntity> findByBucketId(Long bucketId);
+    ObjectMetadataEntity findByBucketIdAndName(Long bucketId, String name);
 }

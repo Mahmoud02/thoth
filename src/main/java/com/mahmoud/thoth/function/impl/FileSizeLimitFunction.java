@@ -70,6 +70,26 @@ public class FileSizeLimitFunction implements BucketFunction {
     }
 
     private void validateFileSize(InputStream inputStream, Long maxSizeBytes, String bucketName, String objectName) throws IOException, BucketFunctionException {
+        // For ByteArrayInputStream, we can get the available bytes directly
+        long availableBytes = inputStream.available();
+        
+        // If we can determine the size without reading, use it
+        if (availableBytes > 0) {
+            if (availableBytes > maxSizeBytes) {
+                throw new FunctionValidationException(
+                    TYPE,
+                    bucketName,
+                    objectName,
+                    "FILE_SIZE_LIMIT",
+                    String.format("File size (%d bytes) exceeds the maximum allowed size of %d bytes", 
+                                availableBytes, maxSizeBytes)
+                );
+            }
+            // Size is within limit, no need to read the stream
+            return;
+        }
+        
+        // Fallback: read in chunks but fail early (should rarely reach here)
         long contentLength = 0;
         byte[] buffer = new byte[8192];
         int bytesRead;
@@ -77,6 +97,7 @@ public class FileSizeLimitFunction implements BucketFunction {
         while ((bytesRead = inputStream.read(buffer)) != -1) {
             contentLength += bytesRead;
             
+            // Fail as soon as we exceed the limit
             if (contentLength > maxSizeBytes) {
                 throw new FunctionValidationException(
                     TYPE,
@@ -89,6 +110,7 @@ public class FileSizeLimitFunction implements BucketFunction {
             }
         }
         
+        // Reset stream if possible
         if (inputStream.markSupported()) {
             inputStream.reset();
         }

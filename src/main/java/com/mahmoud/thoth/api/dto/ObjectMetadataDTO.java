@@ -5,6 +5,7 @@ public class ObjectMetadataDTO {
     private String objectName;
     private long size;
     private String contentType;
+    private boolean ingested;
 
     // Getters and setters
     public String getBucketName() {
@@ -37,5 +38,13 @@ public class ObjectMetadataDTO {
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
+    }
+
+    public boolean isIngested() {
+        return ingested;
+    }
+
+    public void setIngested(boolean ingested) {
+        this.ingested = ingested;
     }
 }

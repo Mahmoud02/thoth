@@ -10,4 +10,5 @@ public interface MetadataStore {
     void updateObjectMetadata(String oldBucketName, String newBucketName);
     void deleteObjectMetadata(String bucketName);
     Map<String, ObjectMetadata> getObjectMetadata(String bucketName);
+    void markObjectAsIngested(String bucketName, String objectName);
 }

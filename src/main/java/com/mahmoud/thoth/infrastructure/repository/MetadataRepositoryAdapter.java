@@ -30,4 +30,9 @@ public class MetadataRepositoryAdapter implements MetadataRepository {
     public void deleteObjectMetadata(String bucketName) {
         metadataStore.deleteObjectMetadata(bucketName);
     }
+
+    @Override
+    public void markObjectAsIngested(String bucketName, String objectName) {
+        metadataStore.markObjectAsIngested(bucketName, objectName);
+    }
 }
