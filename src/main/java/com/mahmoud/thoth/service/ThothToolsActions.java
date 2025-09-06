@@ -20,18 +20,15 @@ import java.util.List;
  */
 
 @Service
-public class BucketManagementByAIService {
+public class ThothToolsActions {
 
-    private final CreateBucketUseCase createBucketUseCase;
-    private final DeleteBucketUseCase deleteBucketUseCase;
-    private final BucketQueryUseCase bucketQueryUseCase;
     private final CreateNamespaceUseCase createNamespaceUseCase;
     private final DeleteNamespaceUseCase deleteNamespaceUseCase;
     private final NamespaceQueryUseCase namespaceQueryUseCase;
     
     // In-memory storage for demo purposes
 
-    public BucketManagementByAIService(
+    public ThothToolsActions(
             CreateBucketUseCase createBucketUseCase,
             DeleteBucketUseCase deleteBucketUseCase,
             BucketQueryUseCase bucketQueryUseCase,
@@ -39,9 +36,7 @@ public class BucketManagementByAIService {
             DeleteNamespaceUseCase deleteNamespaceUseCase,
             NamespaceQueryUseCase namespaceQueryUseCase) {
 
-        this.createBucketUseCase = createBucketUseCase;
-        this.deleteBucketUseCase = deleteBucketUseCase;
-        this.bucketQueryUseCase = bucketQueryUseCase;
+       
         this.createNamespaceUseCase = createNamespaceUseCase;
         this.deleteNamespaceUseCase = deleteNamespaceUseCase;
         this.namespaceQueryUseCase = namespaceQueryUseCase;

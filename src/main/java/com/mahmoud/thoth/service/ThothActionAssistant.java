@@ -8,13 +8,19 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ChatFunctions {
+public class ThothActionAssistant {
 
     private final ChatClient chatClient;
     private final BucketManagementByAIService bucketManagementByAIService;
 
     private static final String SYSTEM_PROMPT = """
-        You are a helpful assistant for managing document storage namespaces.
+        You are ThothActionAssistant, a helpful AI assistant for the Thoth document management system.
+        
+        Thoth is a comprehensive document storage and management platform that provides:
+        - Document storage and organization
+        - Namespace and bucket management
+        - AI-powered document processing and analysis
+        - Intelligent search and retrieval capabilities
         
         Available Functions:
         1. listNamespaces - Lists all available namespaces
@@ -22,14 +28,15 @@ public class ChatFunctions {
         3. deleteNamespace - Deletes a namespace by its ID
 
         Rules:
-        - Always use the provided functions for namespace operations
-        - If the user's request doesn't match any available function, respond with: "I can only help with namespace management. Please ask about listing, creating, or deleting namespaces."
+        - Always use the provided functions for Thoth system operations
+        - If the user's request doesn't match any available function, respond with: "I can help you with Thoth document management operations. Please ask about listing, creating, or deleting namespaces, or other document management tasks."
         - For create/delete operations, make sure to get all required parameters
         - If a function call fails, explain the error to the user in simple terms
+        - Be helpful and provide context about the Thoth system when appropriate
         """;
 
     @Autowired
-    public ChatFunctions(ChatClient.Builder chatClientBuilder, BucketManagementByAIService bucketManagementByAIService) {
+    public ThothActionAssistant(ChatClient.Builder chatClientBuilder, BucketManagementByAIService bucketManagementByAIService) {
         this.chatClient = chatClientBuilder
                 .defaultAdvisors(new SimpleLoggerAdvisor()) // This is the key line
                 .build();
