@@ -131,9 +131,191 @@ To add a new function:
 - `src/main/java/com/mahmoud/thoth/function/impl/FileSizeLimitFunction.java`
 - `src/main/java/com/mahmoud/thoth/function/impl/FileExtensionValidatorFunction.java`
 
+## PostgreSQL as Database Management Engine
+
+### Overview
+PostgreSQL serves as the primary database management engine for the Thoth project, providing advanced capabilities for both vector data storage and JSON data management. This eliminates the need for separate database systems and simplifies the overall architecture.
+
+### Vector Data Storage with pgvector Extension
+
+#### Implementation Details
+PostgreSQL's `pgvector` extension enables efficient storage and querying of vector embeddings for AI-powered document search and retrieval.
+
+**Database Configuration:**
+```sql
+-- Enable pgvector extension
+CREATE EXTENSION IF NOT EXISTS vector;
+
+-- Create table for document chunks with vector embeddings
+CREATE TABLE IF NOT EXISTS document_chunks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    document_id UUID NOT NULL,
+    content TEXT NOT NULL,
+    metadata JSONB,
+    embedding VECTOR(768), -- nomic-embed-text uses 768 dimensions
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create index for vector similarity search using IVFFlat
+CREATE INDEX IF NOT EXISTS document_chunks_embedding_idx 
+ON document_chunks USING ivfflat (embedding vector_cosine_ops);
+```
+
+**Spring AI Integration:**
+```properties
+# Vector store configuration
+spring.ai.ollama.vectorstore.pgvector.dimensions=768
+spring.ai.ollama.vectorstore.pgvector.index-type=hnsw
+```
+
+#### Benefits of pgvector
+1. **Native Vector Operations**: Built-in support for vector similarity search
+2. **Multiple Index Types**: Support for IVFFlat, HNSW, and other indexing algorithms
+3. **Scalability**: Efficient handling of large-scale vector datasets
+4. **Integration**: Seamless integration with Spring AI framework
+5. **Performance**: Optimized for similarity search operations
+
+### JSON Data Management with JSONB
+
+#### Function Configuration Storage
+Instead of creating separate tables for function configurations, PostgreSQL's JSONB data type stores complex configuration objects directly in the `buckets` table.
+
+**Database Schema:**
+```sql
+CREATE TABLE IF NOT EXISTS buckets (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    namespace_id INTEGER NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
+    functions JSONB,  -- Stores function configurations as JSON
+    FOREIGN KEY (namespace_id) REFERENCES namespaces(id)
+);
+```
+
+#### JSONB Conversion System
+
+**JdbcConfig Configuration:**
+```java
+@Configuration
+public class JdbcConfig extends AbstractJdbcConfiguration {
+    @Override
+    @NonNull
+    public JdbcCustomConversions jdbcCustomConversions() {
+        return new JdbcCustomConversions(Arrays.asList(
+                new JsonbWritingConverter(),
+                new JsonbReadingConverter()
+        ));
+    }
+}
+```
+
+**JsonbWritingConverter (Java to PostgreSQL):**
+```java
+@Component
+@WritingConverter
+public class JsonbWritingConverter implements Converter<Map<String, Object>, PGobject> {
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Override
+    public PGobject convert(@NonNull Map<String, Object> source) {
+        try {
+            PGobject jsonObject = new PGobject();
+            jsonObject.setType("jsonb");
+            jsonObject.setValue(objectMapper.writeValueAsString(source));
+            return jsonObject;
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to serialize JSON to jsonb", e);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to set value for PGobject", e);
+        }
+    }
+}
+```
+
+**JsonbReadingConverter (PostgreSQL to Java):**
+```java
+@Component
+@ReadingConverter
+public class JsonbReadingConverter implements Converter<PGobject, Map<String, Object>> {
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Map<String, Object> convert(@NonNull PGobject source) {
+        try {
+            return objectMapper.readValue(source.getValue(), Map.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to deserialize jsonb to Map", e);
+        }
+    }
+}
+```
+
+#### Benefits of JSONB for Function Configuration
+
+1. **Schema Flexibility**: No need to create separate tables for different function types
+2. **Atomic Updates**: Function configurations are updated atomically with bucket metadata
+3. **Query Capabilities**: JSONB supports complex queries and indexing
+4. **Type Safety**: Automatic conversion between Java objects and JSONB
+5. **Performance**: Efficient storage and retrieval of nested configuration objects
+
+### Development Environment Setup
+
+**Docker Compose Configuration:**
+```yaml
+services:
+  development-postgres:
+    image: pgvector/pgvector:pg17  # PostgreSQL with pgvector extension
+    container_name: development-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: thoth
+    ports:
+      - "5432:5432"
+```
+
+### Architecture Benefits
+
+#### Single Database Solution
+1. **Unified Data Management**: Both vector and relational data in one system
+2. **ACID Compliance**: Full transactional support for all data types
+3. **Backup and Recovery**: Single point for data backup and disaster recovery
+4. **Monitoring**: Unified monitoring and performance tuning
+5. **Cost Efficiency**: No need for separate vector database licenses
+
+#### Advanced PostgreSQL Features
+1. **Full-Text Search**: Native text search capabilities alongside vector search
+2. **JSONB Indexing**: GIN indexes for efficient JSON querying
+3. **Triggers and Functions**: Automated timestamp updates and data validation
+4. **Extensions**: Rich ecosystem of extensions (pgvector, pg_trgm, etc.)
+5. **Replication**: Built-in streaming replication for high availability
+
+### Performance Considerations
+
+#### Vector Search Optimization
+- **IVFFlat Index**: Balanced performance for medium-scale datasets
+- **HNSW Index**: Better performance for large-scale vector datasets
+- **Cosine Similarity**: Optimized for semantic similarity search
+
+#### JSONB Query Optimization
+- **GIN Indexes**: Automatic indexing of JSONB keys and values
+- **Partial Indexes**: Indexing specific JSONB paths for targeted queries
+- **Expression Indexes**: Custom indexes on computed JSONB values
+
+### Related Files
+- `src/main/resources/db/migration/V4__document_chunks.sql` - Vector storage schema
+- `src/main/resources/db/migration/V2__Create_Bucket_Table.sql` - JSONB configuration storage
+- `src/main/java/com/mahmoud/thoth/infrastructure/store/impl/sqlite/converter/JdbcConfig.java` - Conversion configuration
+- `src/main/java/com/mahmoud/thoth/infrastructure/store/impl/sqlite/converter/JsonbWritingConverter.java` - Java to JSONB conversion
+- `src/main/java/com/mahmoud/thoth/infrastructure/store/impl/sqlite/converter/JsonbReadingConverter.java` - JSONB to Java conversion
+- `development-dependencies.yml` - PostgreSQL with pgvector setup
+
 ---
 *Last Updated: January 2025*
-*Issues Resolved: Spring Data JDBC @Modifying queries with PGobject parameters, Dynamic function discovery system, Function assignment system evolution*
+*Issues Resolved: Spring Data JDBC @Modifying queries with PGobject parameters, Dynamic function discovery system, Function assignment system evolution, PostgreSQL vector and JSONB capabilities*
 
 ## Function Assignment System Evolution
 

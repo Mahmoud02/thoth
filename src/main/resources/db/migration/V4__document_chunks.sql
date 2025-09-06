@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS document_chunks (
     document_id UUID NOT NULL,
     content TEXT NOT NULL,
     metadata JSONB,
-    embedding VECTOR(1536), -- mxbai-embed-large uses 1024 dimensions
+    embedding VECTOR(768), -- nomic-embed-text uses 768 dimensions
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
