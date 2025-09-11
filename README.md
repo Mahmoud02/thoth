@@ -17,7 +17,7 @@
 
 ## 🏛️ Inspiration
 
-Thoth is inspired by the ancient Egyptian god of wisdom, writing, and knowledge. Just as Thoth was the divine scribe and mediator of the gods, this project aims to be a reliable and intelligent storage solution for modern applications.
+Thoth is inspired by the ancient Egyptian god of wisdom, writing, and knowledge, this project aims to be a reliable and intelligent storage solution for modern applications.
 
 ## 🚀 Overview
 
